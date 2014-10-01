@@ -88,8 +88,8 @@ unsigned char* display_screen(unsigned char color, unsigned char row, unsigned c
 	unsigned char *r = display_screen_ +
 		module * (DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_ROWS * DISPLAY_MODULE_COLORS) +
 		color * (DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_ROWS) + 
-		(DISPLAY_MODULE_ROWS - row - 1) * (DISPLAY_MODULE_COLUMNS) +
-		col;
+		row * (DISPLAY_MODULE_COLUMNS) +
+		(DISPLAY_MODULE_COLUMNS - col - 1);
 
 	assert(r >= display_screen_ && r < (display_screen_ + sizeof(display_screen_)));
 
@@ -137,14 +137,14 @@ void display_render_gradient() {
 	const double T = 64; // seconds for a full cycle
 	const int frames = T * DISPLAY_TARGET_FPS; // frames for a full cycle
 	const int slow_phase_frames = frames / 16;
-	const int fast_phase_frames = slow_phase_frames / 32;
+	const int fast_phase_frames = slow_phase_frames / 16;
 	const int slow_phase = (display_frame % frames) / slow_phase_frames; 
-	const int fast_phase = (display_frame % frames) / fast_phase_frames;
+	const int fast_phase = (display_frame % slow_phase_frames) / fast_phase_frames;
 
 	for(row = 0; row < DISPLAY_MODULE_ROWS; row++) {
 		for(col = 0; col < DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS; col++) {
-			*display_screen(RED, (row + slow_phase) % 16, col) = V[(row + fast_phase) % 8];
-			*display_screen(GREEN, (row + slow_phase) % 16, col) = V[(col + fast_phase / 4) % 8];
+			*display_screen(RED, (row + slow_phase) % 16, (fast_phase + 16) % 8) = V[(128 + row + (fast_phase < 8) ? fast_phase : (16 - fast_phase - 1)) % 8];
+			*display_screen(GREEN, row, (col + slow_phase) % 8) = V[(128 + row - col + fast_phase ) % 8];
 		}
 	}
 }
