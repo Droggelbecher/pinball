@@ -85,8 +85,8 @@ int main(void) {
 			/*selftest = 0;*/
 		/*}*/
 		
-		int i = 0;
-		for(i = 0 ; i < 128; i++) {
+		long i = 0;
+		for(i = 0 ; i < 512L; i++) {
 			output_screen();
 		}
 	}
@@ -96,11 +96,20 @@ unsigned char V[] = { 0, 0x01, 0x03, 0x07, 0x0f, 31, 63, 127, 255 };
 unsigned frame = 0;
 
 void render_selftest(void) {
+	int row = frame % ROWS;
+	int color = frame / ROWS; // % (ROWS * COLORS)
+
+	clear_screen();
+	/*for(col = 0; col < COLS; col++) {*/
+	memset(screen[color][row], V[7], COLUMNS);
+
+
+
 	/*uart_putc('0' + frame);*/
-	memset(screen, V[frame], SCREEN_SIZE);
+	/*memset(screen, V[frame], SCREEN_SIZE);*/
 	/*memset(screen, 0x01, SCREEN_SIZE);*/
 	frame++;
-	if(frame >= 8) { frame = 0; }
+	if(frame >= ROWS * COLORS) { frame = 0; }
 }
 
 void setup_spi(void) {
