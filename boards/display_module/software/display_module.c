@@ -25,6 +25,7 @@
 
 
 unsigned char screen[COLORS][ROWS][COLUMNS];
+#define SCREEN_SIZE (COLORS * ROWS * COLUMNS)
 unsigned char row = 0;
 int demo_state = 1;
 int demo_frame = 0;
@@ -51,6 +52,10 @@ void setup_display(void);
 void uart_putc(char);
 void uart_puts(char*);
 void output_screen(void);
+void render_selftest(void);
+void clear_screen(void);
+
+int selftest = 1;
 
 
 int main(void) {
@@ -58,12 +63,44 @@ int main(void) {
 	setup_uart();
 
 	setup_display();
+	clear_screen();
+	output_screen();
 
-	uart_puts("OK DISPLAY MODULE 0.1\n");
+	uart_puts("\aDISPLAY MODULE 0.1\r\n");
 
+	PORTB |= (1 << PINB0);
 	while(1) {
-		output_screen();
+		
+		/*if(!(PINB & (1 << PINB0))) {  //PB0/pin8 low --> self-test*/
+			/*if(!selftest) {*/
+				/*uart_puts("SELFTEST START\r\n");*/
+			/*}*/
+			/*selftest = 1;*/
+			render_selftest();
+		/*}*/
+		/*else {*/
+			/*if(selftest) {*/
+				/*uart_puts("SELFTEST STOP\r\n");*/
+			/*}*/
+			/*selftest = 0;*/
+		/*}*/
+		
+		int i = 0;
+		for(i = 0 ; i < 128; i++) {
+			output_screen();
+		}
 	}
+}
+
+unsigned char V[] = { 0, 0x01, 0x03, 0x07, 0x0f, 31, 63, 127, 255 };
+unsigned frame = 0;
+
+void render_selftest(void) {
+	/*uart_putc('0' + frame);*/
+	memset(screen, V[frame], SCREEN_SIZE);
+	/*memset(screen, 0x01, SCREEN_SIZE);*/
+	frame++;
+	if(frame >= 8) { frame = 0; }
 }
 
 void setup_spi(void) {
@@ -120,11 +157,15 @@ ISR(PCINT0_vect) {
 
 ISR(SPI_STC_vect) {
 	char ch = SPDR;
+	if(selftest) {
+		uart_putc('!');
+		return;
+	}
 	//uart_putc('[');
 	//uart_putc(ch);
 	//uart_putc(']');
 	//uart_putc('\n');
-	if(screen_index >= sizeof(screen)) {
+	if(screen_index >= SCREEN_SIZE) {
 		screen_index = 0;
 	}
 	((unsigned char*)screen)[screen_index++] = (unsigned char)ch;
@@ -199,9 +240,7 @@ void output_blank_row(void) {
 	}
 	// flank RCK --> write to status registers
 	PORTC = 0b010;
-	//_delay_ms(0.1);
 	PORTC = 0b000;
-	//_delay_ms(100);
 
 	row++;
 }
@@ -218,6 +257,6 @@ void output_screen(void) {
 }
 
 void clear_screen(void) {
-	memset(screen, 0, sizeof(screen));
+	memset(screen, 0, SCREEN_SIZE);
 }
 

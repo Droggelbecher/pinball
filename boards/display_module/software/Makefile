@@ -253,7 +253,7 @@ AVRDUDE_PROGRAMMER = arduino
 
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = /dev/ttyACM4
+AVRDUDE_PORT = /dev/ttyACM3
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
