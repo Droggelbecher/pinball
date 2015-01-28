@@ -46,7 +46,7 @@ void display_end_frame(void) {
 	long delta = (now.tv_sec - display_frame_start_.tv_sec) * 1000
 		+ (now.tv_usec - display_frame_start_.tv_usec) / 1000;
 
-	if(delta > 0) {
+	if(delta >= 0) {
 		usleep(1000.0 * ((1000.0 / DISPLAY_TARGET_FPS) - delta));
 	}
 	display_frame++;
@@ -148,5 +148,17 @@ void display_render_gradient() {
 		}
 	}
 }
+
+/*
+void display_render() {
+	int row, col;
+	
+	enum { MODE_ROW, MODE_COL };
+	int mode = MODE_ROW;
+
+	const double T = 0.5; // seconds per display of row/column
+	const int line_frames = T * DISPLAY_TARGET_FPS;
+
+*/
 
 

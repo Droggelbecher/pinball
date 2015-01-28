@@ -35,6 +35,7 @@
 
 #define SPI_SS_SLAVES_MASK (\
 		(1 << SPI_SS_PIN_LAMPS) | \
+		(1 << SPI_SS_PIN_DISPLAY) | \
 		(1 << SPI_SS_PIN_BUTTONS) | \
 		(1 << SPI_SS_PIN_SOLENOIDS) \
 	)

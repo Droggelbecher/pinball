@@ -76,7 +76,7 @@ int main(void) {
 				/*uart_puts("SELFTEST START\r\n");*/
 			/*}*/
 			/*selftest = 1;*/
-			render_selftest();
+			/*render_selftest();*/
 		/*}*/
 		/*else {*/
 			/*if(selftest) {*/
@@ -85,10 +85,10 @@ int main(void) {
 			/*selftest = 0;*/
 		/*}*/
 		
-		long i = 0;
-		for(i = 0 ; i < 512L; i++) {
+		/*long i = 0;*/
+		/*for(i = 0 ; i < 512L; i++) {*/
 			output_screen();
-		}
+		/*}*/
 	}
 }
 
@@ -151,33 +151,24 @@ void setup_uart(void) {
 
 // SPI transmission start
 ISR(PCINT0_vect) {
-	if(PINB & (1 << PINB2)) {
-		// low to high -> end of transmission
-		//uart_puts("<end>\n");
-		//uart_putc('>');
-	}
-	else {
+	/*if(PINB & (1 << PINB2)) {*/
+		/*// low to high -> end of transmission*/
+		/*//uart_puts("<end>\n");*/
+		/*//uart_putc('>');*/
+	/*}*/
+	/*else {*/
 		// high to low -> start of transmission
 		screen_index = 0;
 		//uart_puts("<start>\n");
 		//uart_putc('<');
-	}
+	/*}*/
 }
 
 ISR(SPI_STC_vect) {
 	char ch = SPDR;
-	if(selftest) {
-		uart_putc('!');
-		return;
+	if(screen_index < SCREEN_SIZE) {
+		((unsigned char*)screen)[screen_index++] = (unsigned char)ch;
 	}
-	//uart_putc('[');
-	//uart_putc(ch);
-	//uart_putc(']');
-	//uart_putc('\n');
-	if(screen_index >= SCREEN_SIZE) {
-		screen_index = 0;
-	}
-	((unsigned char*)screen)[screen_index++] = (unsigned char)ch;
 }
 
 void uart_putc(char x) {

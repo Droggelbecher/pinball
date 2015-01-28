@@ -27,6 +27,8 @@
 #define GPIO_SET *(gpio_map+7)  // sets   bits which are 1 ignores bits which are 0
 #define GPIO_CLR *(gpio_map+10) // clears bits which are 1 ignores bits which are 0
 
+#define GPIO_GET *(gpio_map+13)
+
 //#define GET_GPIO(g) (*(gpio+13)&(1<<g)) // 0 if LOW, (1<<g) if HIGH
 
 extern int gpio_mem_fd;

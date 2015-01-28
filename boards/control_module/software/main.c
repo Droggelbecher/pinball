@@ -11,8 +11,8 @@ int main(int argc, char **argv) {
 	while(1) {
 		display_start_frame();
 
-		/*display_render_gradient();*/
-		display_render_frame();
+		display_render_gradient();
+		/*display_render_frame();*/
 
 		display_refresh();
 		display_end_frame();
