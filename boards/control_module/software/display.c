@@ -105,7 +105,7 @@ void display_render_monochrome(void) {
 
 void display_render_fill(unsigned char red, unsigned char green) {
 	int row, col;
-	for(col = 0; col < DISPLAY_MODULE_COLUMNS; col++) {
+	for(col = 0; col < DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_COUNT; col++) {
 		for(row = 0; row < DISPLAY_MODULE_ROWS; row++) {
 			*display_screen(RED, row, col) = red;
 			*display_screen(GREEN, row, col) = green;

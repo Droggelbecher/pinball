@@ -70,25 +70,7 @@ int main(void) {
 
 	PORTB |= (1 << PINB0);
 	while(1) {
-		
-		/*if(!(PINB & (1 << PINB0))) {  //PB0/pin8 low --> self-test*/
-			/*if(!selftest) {*/
-				/*uart_puts("SELFTEST START\r\n");*/
-			/*}*/
-			/*selftest = 1;*/
-			/*render_selftest();*/
-		/*}*/
-		/*else {*/
-			/*if(selftest) {*/
-				/*uart_puts("SELFTEST STOP\r\n");*/
-			/*}*/
-			/*selftest = 0;*/
-		/*}*/
-		
-		/*long i = 0;*/
-		/*for(i = 0 ; i < 512L; i++) {*/
-			output_screen();
-		/*}*/
+		output_screen();
 	}
 }
 
@@ -98,23 +80,17 @@ unsigned frame = 0;
 void render_selftest(void) {
 	int row = frame % ROWS;
 	int color = frame / ROWS; // % (ROWS * COLORS)
-
 	clear_screen();
-	/*for(col = 0; col < COLS; col++) {*/
 	memset(screen[color][row], V[7], COLUMNS);
-
-
-
-	/*uart_putc('0' + frame);*/
-	/*memset(screen, V[frame], SCREEN_SIZE);*/
-	/*memset(screen, 0x01, SCREEN_SIZE);*/
 	frame++;
 	if(frame >= ROWS * COLORS) { frame = 0; }
 }
 
 void setup_spi(void) {
-	// MISO = output, others input
-	DDRB = 0x14;
+	// MISO = output,
+	// PB1 = output (SS for next module)
+	// others input
+	DDRB = 0x16;
 	// Enable SPI, Master, set clock rate fck/16, SPI MODE 1
 	SPCR = (1<<SPE)|(1<<SPIE); //|(1<<CPHA);
 
@@ -134,6 +110,14 @@ void setup_spi(void) {
 	sei();
 }
 
+void enable_next() {
+	PORTB &= ~0x02;
+}
+
+void disable_next() {
+	PORTB |= 0x02;
+}
+
 void setup_display(void) {
 	// make port C output
 	// (will be used to fill the shift registers)
@@ -151,23 +135,47 @@ void setup_uart(void) {
 
 // SPI transmission start
 ISR(PCINT0_vect) {
-	/*if(PINB & (1 << PINB2)) {*/
+	if(PINB & (1 << PINB2)) {
+#if DEBUG
+		char buf[100];
+		snprintf(buf, sizeof(buf), "SS off idx=%lu / %lu\r\n", (unsigned long)screen_index, (unsigned long)SCREEN_SIZE);
+		uart_puts(buf);
+
+		int i, j;
+		for(i = 0; i < 32; i++) {
+			int p = 0;
+			for(j = 0; j < 8; j++) {
+				p += snprintf(buf + p, sizeof(buf) - p, "%02x ", (int)(((unsigned char*)screen)[i*8 + j]));
+				uart_puts(buf);
+			}
+			uart_puts("\r\n");
+		}
+#endif
+
 		/*// low to high -> end of transmission*/
 		/*//uart_puts("<end>\n");*/
 		/*//uart_putc('>');*/
-	/*}*/
-	/*else {*/
+		disable_next();
+	}
+	else {
+/*#if DEBUG*/ /*char buf[100];*/
+		/*snprintf(buf, sizeof(buf), "SS on idx=%lu / %lu\r\n", (unsigned long)screen_index, (unsigned long)SCREEN_SIZE);*/
+		/*uart_puts(buf);*/
+/*#endif*/
 		// high to low -> start of transmission
 		screen_index = 0;
 		//uart_puts("<start>\n");
 		//uart_putc('<');
-	/*}*/
+	}
 }
 
 ISR(SPI_STC_vect) {
 	char ch = SPDR;
 	if(screen_index < SCREEN_SIZE) {
 		((unsigned char*)screen)[screen_index++] = (unsigned char)ch;
+	}
+	if(screen_index >= SCREEN_SIZE) {
+		enable_next();
 	}
 }
 
