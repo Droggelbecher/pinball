@@ -21,8 +21,7 @@
 #define GREEN 1
 
 
-#define HEARTBEAT 0
-
+#define DEBUG 1
 
 unsigned char screen[COLORS][ROWS][COLUMNS];
 #define SCREEN_SIZE (COLORS * ROWS * COLUMNS)
@@ -70,7 +69,9 @@ int main(void) {
 
 	PORTB |= (1 << PINB0);
 	while(1) {
+#if !DEBUG
 		output_screen();
+#endif
 	}
 }
 
@@ -138,9 +139,15 @@ ISR(PCINT0_vect) {
 	if(PINB & (1 << PINB2)) {
 #if DEBUG
 		char buf[100];
-		snprintf(buf, sizeof(buf), "SS off idx=%lu / %lu\r\n", (unsigned long)screen_index, (unsigned long)SCREEN_SIZE);
+		snprintf(buf, sizeof(buf), "idx=%lu/%lu\r\n", (unsigned long)screen_index, (unsigned long)SCREEN_SIZE);
 		uart_puts(buf);
 
+		snprintf(buf, sizeof(buf), "00: %d\r\n", (char*)memchr((void*)screen, 0x00, sizeof(screen)) - (char*)screen);
+		uart_puts(buf);
+		snprintf(buf, sizeof(buf), "ff: %d\r\n", (char*)memchr((void*)screen, 0xff, sizeof(screen)) - (char*)screen);
+		uart_puts(buf);
+
+		/*
 		int i, j;
 		for(i = 0; i < 32; i++) {
 			int p = 0;
@@ -150,6 +157,7 @@ ISR(PCINT0_vect) {
 			}
 			uart_puts("\r\n");
 		}
+		*/
 #endif
 
 		/*// low to high -> end of transmission*/

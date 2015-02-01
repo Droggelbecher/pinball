@@ -141,10 +141,12 @@ void display_render_gradient() {
 	const int slow_phase = (display_frame % frames) / slow_phase_frames; 
 	const int fast_phase = (display_frame % slow_phase_frames) / fast_phase_frames;
 
+	enum { COLS = DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS };
+
 	for(row = 0; row < DISPLAY_MODULE_ROWS; row++) {
-		for(col = 0; col < DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS; col++) {
-			*display_screen(RED, (row + slow_phase) % 16, (fast_phase + 16) % 8) = V[(128 + row + (fast_phase < 8) ? fast_phase : (16 - fast_phase - 1)) % 8];
-			*display_screen(GREEN, row, (col + slow_phase) % 8) = V[(128 + row - col + fast_phase ) % 8];
+		for(col = 0; col < COLS; col++) {
+			*display_screen(RED, (row + slow_phase) % 16, (fast_phase + 16) % COLS) = V[(128 + row + (fast_phase < 8) ? fast_phase : (16 - fast_phase - 1)) % 8];
+			*display_screen(GREEN, row, (col + slow_phase) % COLS) = V[(128 + row - col + fast_phase ) % 8];
 		}
 	}
 }

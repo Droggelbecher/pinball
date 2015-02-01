@@ -41,6 +41,27 @@ int main(int argc, char **argv) {
 				display_render_frame();
 				break;
 
+			case 'C':
+				puts("clearing screen\n");
+				display_render_clear();
+				break;
+
+			case 'R':
+				puts("rendering red\n");
+				display_render_fill(0xff, 0x00);
+				break;
+
+			case 'G':
+				puts("rendering green\n");
+				display_render_fill(0x00, 0xff);
+				break;
+
+			case 'Y':
+				puts("rendering yellow\n");
+				display_render_fill(0x80, 0xff);
+				break;
+
+
 			case '9':
 				puts("activating display SS\n");
 				spi_ss_activate_only(5);
@@ -49,33 +70,33 @@ int main(int argc, char **argv) {
 				printf("GPIO_GET=%x\n", (unsigned)GPIO_GET);
 				break;
 
-			case 'c':
-				GPIO_CLR = 0;
-				printf("GPIO_CLR=%x\n", (unsigned)GPIO_CLR & SPI_SS_SLAVES_MASK);
-				printf("GPIO_SET=%x\n", (unsigned)GPIO_SET & SPI_SS_SLAVES_MASK);
-				printf("GPIO_GET=%x\n", (unsigned)GPIO_GET & SPI_SS_SLAVES_MASK);
-				break;
+			/*case 'c':*/
+				/*GPIO_CLR = 0;*/
+				/*printf("GPIO_CLR=%x\n", (unsigned)GPIO_CLR & SPI_SS_SLAVES_MASK);*/
+				/*printf("GPIO_SET=%x\n", (unsigned)GPIO_SET & SPI_SS_SLAVES_MASK);*/
+				/*printf("GPIO_GET=%x\n", (unsigned)GPIO_GET & SPI_SS_SLAVES_MASK);*/
+				/*break;*/
 
-			case 'C':
-				GPIO_CLR = SPI_SS_SLAVES_MASK;
-				printf("GPIO_CLR=%x\n", (unsigned)GPIO_CLR & SPI_SS_SLAVES_MASK);
-				printf("GPIO_SET=%x\n", (unsigned)GPIO_SET & SPI_SS_SLAVES_MASK);
-				printf("GPIO_GET=%x\n", (unsigned)GPIO_GET & SPI_SS_SLAVES_MASK);
-				break;
+			/*case 'C':*/
+				/*GPIO_CLR = SPI_SS_SLAVES_MASK;*/
+				/*printf("GPIO_CLR=%x\n", (unsigned)GPIO_CLR & SPI_SS_SLAVES_MASK);*/
+				/*printf("GPIO_SET=%x\n", (unsigned)GPIO_SET & SPI_SS_SLAVES_MASK);*/
+				/*printf("GPIO_GET=%x\n", (unsigned)GPIO_GET & SPI_SS_SLAVES_MASK);*/
+				/*break;*/
 
-			case 's':
-				GPIO_SET = 0;
-				printf("GPIO_CLR=%x\n", (unsigned)GPIO_CLR & SPI_SS_SLAVES_MASK);
-				printf("GPIO_SET=%x\n", (unsigned)GPIO_SET & SPI_SS_SLAVES_MASK);
-				printf("GPIO_GET=%x\n", (unsigned)GPIO_GET & SPI_SS_SLAVES_MASK);
-				break;
+			/*case 's':*/
+				/*GPIO_SET = 0;*/
+				/*printf("GPIO_CLR=%x\n", (unsigned)GPIO_CLR & SPI_SS_SLAVES_MASK);*/
+				/*printf("GPIO_SET=%x\n", (unsigned)GPIO_SET & SPI_SS_SLAVES_MASK);*/
+				/*printf("GPIO_GET=%x\n", (unsigned)GPIO_GET & SPI_SS_SLAVES_MASK);*/
+				/*break;*/
 
-			case 'S':
-				GPIO_SET = SPI_SS_SLAVES_MASK;
-				printf("GPIO_CLR=%x\n", (unsigned)GPIO_CLR & SPI_SS_SLAVES_MASK);
-				printf("GPIO_SET=%x\n", (unsigned)GPIO_SET & SPI_SS_SLAVES_MASK);
-				printf("GPIO_GET=%x\n", (unsigned)GPIO_GET & SPI_SS_SLAVES_MASK);
-				break;
+			/*case 'S':*/
+				/*GPIO_SET = SPI_SS_SLAVES_MASK;*/
+				/*printf("GPIO_CLR=%x\n", (unsigned)GPIO_CLR & SPI_SS_SLAVES_MASK);*/
+				/*printf("GPIO_SET=%x\n", (unsigned)GPIO_SET & SPI_SS_SLAVES_MASK);*/
+				/*printf("GPIO_GET=%x\n", (unsigned)GPIO_GET & SPI_SS_SLAVES_MASK);*/
+				/*break;*/
 
 			case '2':
 				puts("activating display SS\n");
@@ -114,6 +135,11 @@ int main(int argc, char **argv) {
 			case 'd':
 				puts("writing display to SPI\n");
 				spi_readwrite(sizeof(display_screen_), display_screen_, 0);
+				break;
+
+			case 'm':
+				puts("writing module 0 to SPI\n");
+				spi_readwrite(DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_ROWS * DISPLAY_MODULE_COLORS, display_screen_, 0);
 				break;
 		}
 
