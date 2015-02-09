@@ -14,11 +14,23 @@ const unsigned char V[] = {
 	0b00010001,
 	0b00100101,
 	0b01010101,
-	0b01110101,
 	0b11011011,
 	0b11111011,
 	0b11111111
 };
+
+enum {
+	C_BLACK = 0,
+	C_RED = 1,
+	C_GREEN = 2,
+	C_YELLOW = 3,
+	C_ORANGE = 4,
+	C_DARK_RED = 5,
+	C_DARK_GREEN = 6,
+	C_BLOOD_ORANGE = 7,
+
+	C_EOT = 0xff
+}
 
 
 unsigned long display_frame;
@@ -130,6 +142,21 @@ void display_render_frame() {
 	}
 }
 
+void display_render_colors() {
+	enum { COLS = DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS,
+		ROWS = DISPLAY_MODULE_ROWS };
+
+	int row, col;
+
+	for(row = 0; row < DISPLAY_MODULE_ROWS; row++) {
+		for(col = 0; col < COLS; col++) {
+			*display_screen(RED, row, col) = V[col % 8];
+			*display_screen(GREEN, row, col) = V[row % 8];
+		}
+	}
+}
+
+
 
 void display_render_gradient() {
 	int row, col;
@@ -150,6 +177,64 @@ void display_render_gradient() {
 		}
 	}
 }
+
+void display_render_selftest_lines() {
+	enum {
+		COLS = DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_COUNT,
+		ROWS = DISPLAY_MODULE_ROWS,
+		FPL = (int)(DISPLAY_TARGET_FPS / 4),
+		TOTAL_FRAMES = (COLS + ROWS) * 2 * FPL
+	};
+
+	int row, col;
+
+	const double T = 64; // seconds for a full cycle
+	const int frames = T * DISPLAY_TARGET_FPS; // frames for a full cycle
+	const int slow_phase_frames = frames / 16;
+	const int fast_phase_frames = slow_phase_frames / 16;
+	const int slow_phase = (display_frame % frames) / slow_phase_frames; 
+	const int fast_phase = (display_frame % slow_phase_frames) / fast_phase_frames;
+
+	/*enum { COLS = DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS };*/
+
+	for(row = 0; row < DISPLAY_MODULE_ROWS; row++) {
+		for(col = 0; col < COLS; col++) {
+			*display_screen(RED, (row + slow_phase) % 16, (fast_phase + 16) % COLS) = V[7];
+			*display_screen(GREEN, row, (col + slow_phase) % COLS) = V[7];
+		}
+	}
+
+	/*printf("%4d / %4d ( %4d )\n", (int)display_frame, (int)TOTAL_FRAMES, (int)FPL);*/
+	/*int frame = display_frame % TOTAL_FRAMES;*/
+
+	/*display_render_clear();*/
+
+	/*if(display_frame < COLS * FPL * 2) {*/
+	/*frame %= COLS * FPL * 2;*/
+
+		/*int color = (frame >= COLS * FPL);*/
+		/*int col = (frame % (COLS * FPL)) / FPL;*/
+		/*int row;*/
+		/*for(row = 0; row < ROWS; row++) {*/
+			 /**display_screen(color, row, col) = V[7];*/
+			/**display_screen(RED, 4, 3) = 0xff;*/
+		/*}*/
+	/*
+	}
+	else {
+		int frame = display_frame - COLS * FPL * 2;
+		int color = (frame >= ROWS * FPL);
+		int col;
+		int row = frame % (ROWS * FPL);
+		for(col = 0; col < COLS; col++) {
+			*display_screen(color, row, col) = V[7];
+		}
+	}
+	*/
+
+	/*display_frame %= TOTAL_FRAMES;*/
+}
+
 
 /*
 void display_render() {

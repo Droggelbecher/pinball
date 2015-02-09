@@ -8,14 +8,17 @@ int main(int argc, char **argv) {
 	spi_setup();
 	display_setup();
 
+	printf("v2\n");
+
 	int g = 1;
 	while(1) {
 		display_start_frame();
 
 		/*display_render_gradient();*/
 		/*display_render_frame();*/
+		display_render_colors();
 		
-		display_render_fill(g ? 0xff : 0, g ? 0 : 0xff);
+		/*display_render_fill(g ? 0xff : 0, g ? 0 : 0xff);*/
 		g = !g;
 
 		display_refresh();

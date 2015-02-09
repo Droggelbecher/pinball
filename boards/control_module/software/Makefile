@@ -11,7 +11,7 @@ CFLAGS += -I.
 CFLAGS += -g
 LDFLAGS =
 
-DEPLOY_HOST = data
+DEPLOY_HOST = raspberrypi
 DEPLOY_USER = pi
 DEPLOY_DIR = /tmp/pinball
 

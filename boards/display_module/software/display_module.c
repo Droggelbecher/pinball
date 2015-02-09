@@ -91,8 +91,9 @@ void setup_spi(void) {
 	// MISO = output,
 	// PB1 = output (SS for next module)
 	// others input
-	DDRB = 0x16;
-	// Enable SPI, Master, set clock rate fck/16, SPI MODE 1
+	DDRB = PB1 | PB4;
+	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 1
+	// http://maxembedded.com/2013/11/the-spi-of-the-avr/
 	SPCR = (1<<SPE)|(1<<SPIE); //|(1<<CPHA);
 
 	// INT0 is wired to SS to inform us when a SPI transmission starts
@@ -135,17 +136,20 @@ void setup_uart(void) {
 }
 
 // SPI transmission start
-ISR(PCINT0_vect) {
+ISR(PCINT2_vect) {
+#if DEBUG
+	uart_putc((PINB & (1 << PINB2)) ? '0' : '1');
+#endif
 	if(PINB & (1 << PINB2)) {
 #if DEBUG
-		char buf[100];
-		snprintf(buf, sizeof(buf), "idx=%lu/%lu\r\n", (unsigned long)screen_index, (unsigned long)SCREEN_SIZE);
-		uart_puts(buf);
+		/*char buf[100];*/
+		/*snprintf(buf, sizeof(buf), "idx=%lu/%lu\r\n", (unsigned long)screen_index, (unsigned long)SCREEN_SIZE);*/
+		/*uart_puts(buf);*/
 
-		snprintf(buf, sizeof(buf), "00: %d\r\n", (char*)memchr((void*)screen, 0x00, sizeof(screen)) - (char*)screen);
-		uart_puts(buf);
-		snprintf(buf, sizeof(buf), "ff: %d\r\n", (char*)memchr((void*)screen, 0xff, sizeof(screen)) - (char*)screen);
-		uart_puts(buf);
+		/*snprintf(buf, sizeof(buf), "00: %d\r\n", (char*)memchr((void*)screen, 0x00, sizeof(screen)) - (char*)screen);*/
+		/*uart_puts(buf);*/
+		/*snprintf(buf, sizeof(buf), "ff: %d\r\n", (char*)memchr((void*)screen, 0xff, sizeof(screen)) - (char*)screen);*/
+		/*uart_puts(buf);*/
 
 		/*
 		int i, j;
