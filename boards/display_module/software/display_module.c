@@ -115,17 +115,34 @@ ISR(SPI_STC_vect) {
 	char ch = SPDR;
 	if(ch == C_EOT) {
 		screen_index = 0;
+		return;
+	}
+
+	if(screen_index >= PIXELS) {
+		enable_next();
+		return;
+	}
+
+	((unsigned char*)(screen[0]))[screen_index] = palette[0][(int)ch];
+	((unsigned char*)(screen[1]))[screen_index] = palette[1][(int)ch];
+	++screen_index;
+
+#if 0
+	char ch = SPDR;
+	if(ch == C_EOT) {
+		screen_index = 0;
 	}
 	else if(screen_index < PIXELS) {
-		if(ch <= 7) {
-			((unsigned int*)(screen[0]))[screen_index] = palette[0][(int)ch];
-			((unsigned int*)(screen[1]))[screen_index] = palette[1][(int)ch];
-		}
+		/*((unsigned int*)(screen[0]))[screen_index] = palette[0][(int)ch];*/
+		/*((unsigned int*)(screen[1]))[screen_index] = palette[1][(int)ch];*/
+		((unsigned char*)(screen[0]))[screen_index] = palette[0][(int)ch];
+		((unsigned char*)(screen[1]))[screen_index] = palette[1][(int)ch];
 		++screen_index;
 		if(screen_index >= PIXELS) {
 			enable_next();
 		}
 	}
+#endif
 }
 
 void uart_putc(char x) {

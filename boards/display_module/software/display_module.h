@@ -29,7 +29,7 @@ enum {
 };
 
 unsigned int palette[LED_COLORS][COLORS];
-unsigned int screen[LED_COLORS][ROWS][COLUMNS];
+unsigned char screen[LED_COLORS][ROWS][COLUMNS];
 
 #define BAUD 9600UL      // Baudrate
 //#define BAUD 38400UL      // Baudrate

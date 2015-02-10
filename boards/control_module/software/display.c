@@ -99,9 +99,10 @@ void display_render_selftest_fill() {
 }
 
 void display_render_selftest_colorstripes() {
+	enum { FPC = (int)((4.0 + DISPLAY_TARGET_FPS) / 4.0) };
 	int i;
 	for(i = 0; i < DISPLAY_SCREEN_BYTES; i++) {
-		display_screen_[i] = i % COLORS;
+		display_screen_[i] = (i + (display_frame / FPC)) % COLORS;
 	}
 }
 

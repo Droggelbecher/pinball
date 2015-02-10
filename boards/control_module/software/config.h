@@ -3,9 +3,9 @@
 // Display
 //
 
-#define DISPLAY_TARGET_FPS 4.0f
+#define DISPLAY_TARGET_FPS 10.0f
 
-#define DISPLAY_MODULE_COUNT 3
+#define DISPLAY_MODULE_COUNT 5
 #define DISPLAY_MODULE_ROWS 16
 #define DISPLAY_MODULE_COLUMNS 8
 #define DISPLAY_MODULE_COLORS 2
@@ -19,8 +19,9 @@
 #define SPI_BITS_PER_WORD 8
 
 // 1 MHz seems to be what our display module can handle
-#define SPI_BUS_SPEED 1 * 1000 * 1000
 //#define SPI_BUS_SPEED  100 * 1000
+#define SPI_BUS_SPEED  500 * 1000
+//#define SPI_BUS_SPEED 1000 * 1000
 
 //
 // SPI Slave-Select GPIO pin numbers on pi
