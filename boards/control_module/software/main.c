@@ -16,7 +16,8 @@ int main(int argc, char **argv) {
 
 		/*display_render_gradient();*/
 		/*display_render_frame();*/
-		display_render_colors();
+		/*display_render_selftest_fill();*/
+		display_render_selftest_colorstripes();
 		
 		/*display_render_fill(g ? 0xff : 0, g ? 0 : 0xff);*/
 		g = !g;

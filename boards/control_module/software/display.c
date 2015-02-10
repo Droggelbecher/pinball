@@ -8,34 +8,10 @@
 #include "config.h"
 #include "display.h"
 
-const unsigned char V[] = {
-	0b00000000,
-	0b00000001,
-	0b00010001,
-	0b00100101,
-	0b01010101,
-	0b11011011,
-	0b11111011,
-	0b11111111
-};
-
-enum {
-	C_BLACK = 0,
-	C_RED = 1,
-	C_GREEN = 2,
-	C_YELLOW = 3,
-	C_ORANGE = 4,
-	C_DARK_RED = 5,
-	C_DARK_GREEN = 6,
-	C_BLOOD_ORANGE = 7,
-
-	C_EOT = 0xff
-}
-
 
 unsigned long display_frame;
 
-unsigned char display_screen_[DISPLAY_SCREEN_BYTES];
+unsigned char display_screen_[DISPLAY_SCREEN_BYTES + 1];
 struct timeval display_frame_start_;
 unsigned long display_time_passed_ = 0;
 unsigned long display_last_report_ = 0;
@@ -81,25 +57,24 @@ void display_debug_fps(void) {
 
 void display_refresh(void) {
 	spi_ss_activate_only(SPI_SS_PIN_DISPLAY);
+	display_screen_[DISPLAY_SCREEN_BYTES] = C_EOT;
 	spi_readwrite(sizeof(display_screen_), display_screen_, 0);
 	spi_ss_deactivate_all();
 }
 
 
-unsigned char* display_screen(unsigned char color, unsigned char row, unsigned char column) {
+unsigned char* display_screen(unsigned char row, unsigned char column) {
 	const unsigned char module = column / DISPLAY_MODULE_COLUMNS;
 	const unsigned char col = column % DISPLAY_MODULE_COLUMNS;
 
 	// screen[module][colors][rows][columns]
 	
-	assert(0 <= color && color < DISPLAY_MODULE_COLORS);
 	assert(0 <= row && row < DISPLAY_MODULE_ROWS);
 	assert(0 <= col && col < DISPLAY_MODULE_COLUMNS);
 	assert(0 <= module && module < DISPLAY_MODULE_COUNT);
 
 	unsigned char *r = display_screen_ +
-		module * (DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_ROWS * DISPLAY_MODULE_COLORS) +
-		color * (DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_ROWS) + 
+		module * (DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_ROWS) +
 		row * (DISPLAY_MODULE_COLUMNS) +
 		(DISPLAY_MODULE_COLUMNS - col - 1);
 
@@ -109,39 +84,29 @@ unsigned char* display_screen(unsigned char color, unsigned char row, unsigned c
 }
 
 void display_render_clear(void) {
-	memset(display_screen_, 0, sizeof(display_screen_));
-}
-void display_render_monochrome(void) {
-	memset(display_screen_, V[4], sizeof(display_screen_));
+	memset(display_screen_, 0, DISPLAY_SCREEN_BYTES);
 }
 
-void display_render_fill(unsigned char red, unsigned char green) {
-	int row, col;
-	for(col = 0; col < DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_COUNT; col++) {
-		for(row = 0; row < DISPLAY_MODULE_ROWS; row++) {
-			*display_screen(RED, row, col) = red;
-			*display_screen(GREEN, row, col) = green;
-		}
+void display_render_fill(unsigned char color) {
+	memset(display_screen_, color, DISPLAY_SCREEN_BYTES);
+}
+
+void display_render_selftest_fill() {
+	enum { FPC = (int)((4.0 + DISPLAY_TARGET_FPS) / 4.0) };
+	int color = (display_frame % (COLORS * FPC)) / FPC;
+
+	display_render_fill((unsigned char)color);
+}
+
+void display_render_selftest_colorstripes() {
+	int i;
+	for(i = 0; i < DISPLAY_SCREEN_BYTES; i++) {
+		display_screen_[i] = i % COLORS;
 	}
 }
 
-void display_render_frame() {
-	display_render_clear();
-	int row, col;
-	int phase = DISPLAY_PHASE(4.0, 16, display_frame);
-	int v = (phase < 8) ? phase : 16 - phase;
 
-	for(col = 0; col < DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_COUNT; col++) {
-		*display_screen(RED, 0, col) = V[v];
-		*display_screen(GREEN, DISPLAY_MODULE_ROWS - 1, col) = V[v];
-	}
-
-	for(row = 0; row < DISPLAY_MODULE_ROWS ; row++) {
-		*display_screen(RED, row, 0) = V[v];
-		*display_screen(GREEN, row, DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_COUNT - 1) = V[v];
-	}
-}
-
+/*
 void display_render_colors() {
 	enum { COLS = DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS,
 		ROWS = DISPLAY_MODULE_ROWS };
@@ -155,86 +120,7 @@ void display_render_colors() {
 		}
 	}
 }
-
-
-
-void display_render_gradient() {
-	int row, col;
-
-	const double T = 64; // seconds for a full cycle
-	const int frames = T * DISPLAY_TARGET_FPS; // frames for a full cycle
-	const int slow_phase_frames = frames / 16;
-	const int fast_phase_frames = slow_phase_frames / 16;
-	const int slow_phase = (display_frame % frames) / slow_phase_frames; 
-	const int fast_phase = (display_frame % slow_phase_frames) / fast_phase_frames;
-
-	enum { COLS = DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS };
-
-	for(row = 0; row < DISPLAY_MODULE_ROWS; row++) {
-		for(col = 0; col < COLS; col++) {
-			*display_screen(RED, (row + slow_phase) % 16, (fast_phase + 16) % COLS) = V[(128 + row + (fast_phase < 8) ? fast_phase : (16 - fast_phase - 1)) % 8];
-			*display_screen(GREEN, row, (col + slow_phase) % COLS) = V[(128 + row - col + fast_phase ) % 8];
-		}
-	}
-}
-
-void display_render_selftest_lines() {
-	enum {
-		COLS = DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_COUNT,
-		ROWS = DISPLAY_MODULE_ROWS,
-		FPL = (int)(DISPLAY_TARGET_FPS / 4),
-		TOTAL_FRAMES = (COLS + ROWS) * 2 * FPL
-	};
-
-	int row, col;
-
-	const double T = 64; // seconds for a full cycle
-	const int frames = T * DISPLAY_TARGET_FPS; // frames for a full cycle
-	const int slow_phase_frames = frames / 16;
-	const int fast_phase_frames = slow_phase_frames / 16;
-	const int slow_phase = (display_frame % frames) / slow_phase_frames; 
-	const int fast_phase = (display_frame % slow_phase_frames) / fast_phase_frames;
-
-	/*enum { COLS = DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS };*/
-
-	for(row = 0; row < DISPLAY_MODULE_ROWS; row++) {
-		for(col = 0; col < COLS; col++) {
-			*display_screen(RED, (row + slow_phase) % 16, (fast_phase + 16) % COLS) = V[7];
-			*display_screen(GREEN, row, (col + slow_phase) % COLS) = V[7];
-		}
-	}
-
-	/*printf("%4d / %4d ( %4d )\n", (int)display_frame, (int)TOTAL_FRAMES, (int)FPL);*/
-	/*int frame = display_frame % TOTAL_FRAMES;*/
-
-	/*display_render_clear();*/
-
-	/*if(display_frame < COLS * FPL * 2) {*/
-	/*frame %= COLS * FPL * 2;*/
-
-		/*int color = (frame >= COLS * FPL);*/
-		/*int col = (frame % (COLS * FPL)) / FPL;*/
-		/*int row;*/
-		/*for(row = 0; row < ROWS; row++) {*/
-			 /**display_screen(color, row, col) = V[7];*/
-			/**display_screen(RED, 4, 3) = 0xff;*/
-		/*}*/
-	/*
-	}
-	else {
-		int frame = display_frame - COLS * FPL * 2;
-		int color = (frame >= ROWS * FPL);
-		int col;
-		int row = frame % (ROWS * FPL);
-		for(col = 0; col < COLS; col++) {
-			*display_screen(color, row, col) = V[7];
-		}
-	}
-	*/
-
-	/*display_frame %= TOTAL_FRAMES;*/
-}
-
+*/
 
 /*
 void display_render() {

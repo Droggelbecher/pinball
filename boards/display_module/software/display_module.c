@@ -13,18 +13,8 @@
 
 #include <string.h> // memset & co
 
-#define ROW_DELAY 0.1
-#define ROWS 16
-#define COLUMNS 8
-#define COLORS 2
-#define RED 0
-#define GREEN 1
+#include "display_module.h"
 
-
-#define DEBUG 1
-
-unsigned char screen[COLORS][ROWS][COLUMNS];
-#define SCREEN_SIZE (COLORS * ROWS * COLUMNS)
 unsigned char row = 0;
 int demo_state = 1;
 int demo_frame = 0;
@@ -33,28 +23,15 @@ unsigned char pwm_phase = 0;
 volatile unsigned int screen_index = 0;
 
 
-#define BAUD 9600UL      // Baudrate
-//#define BAUD 38400UL      // Baudrate
-
-// Berechnungen
-#define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1)   // clever runden
-#define BAUD_REAL (F_CPU/(16*(UBRR_VAL+1)))     // Reale Baudrate
-#define BAUD_ERROR ((BAUD_REAL*1000)/BAUD) // Fehler in Promille, 1000 = kein Fehler.
-#if ((BAUD_ERROR<990) || (BAUD_ERROR>1010))
-  #error Systematischer Fehler der Baudrate grösser 1% und damit zu hoch! 
-#endif
-
-int main(void);
-void setup_spi(void);
-void setup_uart(void);
-void setup_display(void);
-void uart_putc(char);
-void uart_puts(char*);
-void output_screen(void);
-void render_selftest(void);
-void clear_screen(void);
-
 int selftest = 1;
+
+unsigned int palette[][COLORS] = {
+	// -- RED CHANNEL
+	// BLACK  RED  GREEN YELLOW ORANGE DRK GRE DRK RE
+	{  0x00, 0xff, 0x00,  0x07,  0x1f,   0x00,  0x01, 0x01 },
+	// -- GREEN CHANNEL
+	{  0x00, 0x00, 0xff,  0x1f,  0x1f,   0x03,  0x00, 0x01 }
+};
 
 
 int main(void) {
@@ -69,15 +46,13 @@ int main(void) {
 
 	PORTB |= (1 << PINB0);
 	while(1) {
-#if !DEBUG
 		output_screen();
-#endif
 	}
 }
 
-unsigned char V[] = { 0, 0x01, 0x03, 0x07, 0x0f, 31, 63, 127, 255 };
 unsigned frame = 0;
 
+/*
 void render_selftest(void) {
 	int row = frame % ROWS;
 	int color = frame / ROWS; // % (ROWS * COLORS)
@@ -86,6 +61,7 @@ void render_selftest(void) {
 	frame++;
 	if(frame >= ROWS * COLORS) { frame = 0; }
 }
+*/
 
 void setup_spi(void) {
 	// MISO = output,
@@ -105,9 +81,9 @@ void setup_spi(void) {
 
 
 	// https://sites.google.com/site/qeewiki/books/avr-guide/external-interrupts-on-the-atmega328
-	PCICR |= (1 << PCIE0);    // set PCIE0 to enable PCMSK0 scan
+	/*PCICR |= (1 << PCIE0);    // set PCIE0 to enable PCMSK0 scan*/
 	// Generate interrupt on SS pin change
-	PCMSK0 |= (1 << PCINT2);
+	/*PCMSK0 |= (1 << PCINT2);*/
 
 	sei();
 }
@@ -135,59 +111,20 @@ void setup_uart(void) {
 	UCSR0C = (1<<UCSZ01)|(1 << UCSZ00); // Asynchron 8N1
 }
 
-// SPI transmission start
-ISR(PCINT2_vect) {
-#if DEBUG
-	uart_putc((PINB & (1 << PINB2)) ? '0' : '1');
-#endif
-	if(PINB & (1 << PINB2)) {
-#if DEBUG
-		/*char buf[100];*/
-		/*snprintf(buf, sizeof(buf), "idx=%lu/%lu\r\n", (unsigned long)screen_index, (unsigned long)SCREEN_SIZE);*/
-		/*uart_puts(buf);*/
-
-		/*snprintf(buf, sizeof(buf), "00: %d\r\n", (char*)memchr((void*)screen, 0x00, sizeof(screen)) - (char*)screen);*/
-		/*uart_puts(buf);*/
-		/*snprintf(buf, sizeof(buf), "ff: %d\r\n", (char*)memchr((void*)screen, 0xff, sizeof(screen)) - (char*)screen);*/
-		/*uart_puts(buf);*/
-
-		/*
-		int i, j;
-		for(i = 0; i < 32; i++) {
-			int p = 0;
-			for(j = 0; j < 8; j++) {
-				p += snprintf(buf + p, sizeof(buf) - p, "%02x ", (int)(((unsigned char*)screen)[i*8 + j]));
-				uart_puts(buf);
-			}
-			uart_puts("\r\n");
-		}
-		*/
-#endif
-
-		/*// low to high -> end of transmission*/
-		/*//uart_puts("<end>\n");*/
-		/*//uart_putc('>');*/
-		disable_next();
-	}
-	else {
-/*#if DEBUG*/ /*char buf[100];*/
-		/*snprintf(buf, sizeof(buf), "SS on idx=%lu / %lu\r\n", (unsigned long)screen_index, (unsigned long)SCREEN_SIZE);*/
-		/*uart_puts(buf);*/
-/*#endif*/
-		// high to low -> start of transmission
-		screen_index = 0;
-		//uart_puts("<start>\n");
-		//uart_putc('<');
-	}
-}
-
 ISR(SPI_STC_vect) {
 	char ch = SPDR;
-	if(screen_index < SCREEN_SIZE) {
-		((unsigned char*)screen)[screen_index++] = (unsigned char)ch;
+	if(ch == C_EOT) {
+		screen_index = 0;
 	}
-	if(screen_index >= SCREEN_SIZE) {
-		enable_next();
+	else if(screen_index < PIXELS) {
+		if(ch <= 7) {
+			((unsigned int*)(screen[0]))[screen_index] = palette[0][(int)ch];
+			((unsigned int*)(screen[1]))[screen_index] = palette[1][(int)ch];
+		}
+		++screen_index;
+		if(screen_index >= PIXELS) {
+			enable_next();
+		}
 	}
 }
 
@@ -220,24 +157,24 @@ void shift_row(void) {
 	for(int i = 7; i >= 4; i--) {
 		shift(row == i);
 		// what we name row is a column for the display (brainfuck!)
-		shift(screen[GREEN][i + (row & 8)][row & 7] & pwm_phase);
+		shift(screen[IDX_GREEN][i + (row & 8)][row & 7] & pwm_phase);
 	}
 	
 	// row 3 | green col 3 | ... | row 0 | green col 0
 	for(int i = 0; i < 4; i++) {
-		shift(screen[GREEN][i + (row & 8)][row & 7] & pwm_phase);
+		shift(screen[IDX_GREEN][i + (row & 8)][row & 7] & pwm_phase);
 		shift(row == i);
 	}
 	
 	// red col 4 | row 12 | ... | red col 7 | row 15
 	for(int i = 7; i >= 4; i--) {
 		shift(row == i + 8);
-		shift(screen[RED][i + (row & 8)][row & 7] & pwm_phase);
+		shift(screen[IDX_RED][i + (row & 8)][row & 7] & pwm_phase);
 	}
 	
 	// row 11 | red col 3 | ... | row 8 | red col 0
 	for(int i = 0; i < 4; i++) {
-		shift(screen[RED][i + (row & 8)][row & 7] & pwm_phase);
+		shift(screen[IDX_RED][i + (row & 8)][row & 7] & pwm_phase);
 		shift(row == i + 8);
 	}
 }
@@ -277,6 +214,6 @@ void output_screen(void) {
 }
 
 void clear_screen(void) {
-	memset(screen, 0, SCREEN_SIZE);
+	memset(screen, 0, sizeof(screen));
 }
 

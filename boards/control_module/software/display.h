@@ -13,20 +13,30 @@
 #include "spi_ss.h"
 
 enum {
-	DISPLAY_SCREEN_BYTES =
-		DISPLAY_MODULE_COUNT * DISPLAY_MODULE_ROWS *
-		DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_COLORS,
+	C_BLACK = 0,
+	C_RED = 1,
+	C_GREEN = 2,
+	C_YELLOW = 3,
+	C_ORANGE = 4,
+	C_DARK_RED = 5,
+	C_DARK_GREEN = 6,
+	C_BLOOD_ORANGE = 7,
+
+	COLORS = 8,
+
+	C_EOT = 0xff
 };
 
+
 enum {
-	RED = 0, GREEN = 1
+	DISPLAY_SCREEN_BYTES =
+		DISPLAY_MODULE_COUNT * DISPLAY_MODULE_ROWS *
+		DISPLAY_MODULE_COLUMNS,
 };
 
 #define DISPLAY_PHASE(T, n, frame) ((frame % (unsigned long)((T) * DISPLAY_TARGET_FPS)) / (unsigned long)((T) * DISPLAY_TARGET_FPS / (n)))
 
-// Brightness PWM patterns
-extern const unsigned char V[];
-extern unsigned char display_screen_[DISPLAY_SCREEN_BYTES];
+extern unsigned char display_screen_[DISPLAY_SCREEN_BYTES + 1];
 extern unsigned long display_frame;
 
 void display_setup(void);
@@ -36,13 +46,7 @@ void display_end_frame(void);
 void display_refresh(void);
 void display_debug_fps(void);
 
-unsigned char* display_screen(unsigned char color, unsigned char row, unsigned char column);
-
-void display_render_clear(void);
-void display_render_monochrome(void);
-void display_render_gradient(void);
-void display_render_frame(void);
-
+unsigned char* display_screen(unsigned char row, unsigned char column);
 
 #endif // __DISPLAY_H__
 
