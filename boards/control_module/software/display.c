@@ -19,6 +19,9 @@ unsigned long display_last_report_ = 0;
 struct timeval display_debug_start_;
 unsigned long display_debug_start_frame_ = 0;
 
+double display_avg_error_per_frame_ = 0;
+#define DISPLAY_AVG_ERROR_PER_FRAME_ALPHA_ 0.2
+
 void display_setup(void) {
 	gettimeofday(&display_frame_start_, 0);
 	gettimeofday(&display_debug_start_, 0);
@@ -35,7 +38,7 @@ void display_end_frame(void) {
 		+ (now.tv_usec - display_frame_start_.tv_usec) / 1000;
 
 	if(delta >= 0) {
-		usleep(1000.0 * ((1000.0 / DISPLAY_TARGET_FPS) - delta));
+		usleep(1000.0 * ((1000.0 / DISPLAY_TARGET_FPS) - delta - display_avg_error_per_frame_));
 	}
 	display_frame++;
 }
@@ -46,8 +49,14 @@ void display_debug_fps(void) {
 	long delta = (now.tv_sec - display_debug_start_.tv_sec) * 1000.0f
 		+ (now.tv_usec - display_debug_start_.tv_usec) / 1000.0f;
 
+		double fps = 1000.0f * (display_frame - display_debug_start_frame_) / delta;
+		display_avg_error_per_frame_ += DISPLAY_AVG_ERROR_PER_FRAME_ALPHA_ * (
+				(1000.0 / fps) - (1000.0 / DISPLAY_TARGET_FPS)
+		);
+
 	if(delta >= 10000) {
-		printf("fps_avg %lf %lu\n", 1000.0f * (double)(display_frame - display_debug_start_frame_) / delta, (unsigned long)display_frame);
+
+		printf("fps_avg %lf fr# %lu err %lf\n", fps, (unsigned long)display_frame, display_avg_error_per_frame_);
 		fflush(stdout);
 
 		gettimeofday(&display_debug_start_, 0);
