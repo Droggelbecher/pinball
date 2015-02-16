@@ -52,17 +52,6 @@ int main(void) {
 
 unsigned frame = 0;
 
-/*
-void render_selftest(void) {
-	int row = frame % ROWS;
-	int color = frame / ROWS; // % (ROWS * COLORS)
-	clear_screen();
-	memset(screen[color][row], V[7], COLUMNS);
-	frame++;
-	if(frame >= ROWS * COLORS) { frame = 0; }
-}
-*/
-
 void setup_spi(void) {
 	// MISO = output,
 	// PB1 = output (SS for next module)

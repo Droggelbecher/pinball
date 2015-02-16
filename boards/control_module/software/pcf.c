@@ -35,19 +35,45 @@ struct toc_entry {
 	uint32_t offset;
 };
 
+struct encoding {
+	uint32_t format;
+	uint16_t min_char_or_byte2;
+	uint16_t max_char_or_byte2;
+	uint16_t min_byte1;
+	uint16_t max_byte1;
+	uint16_t default_char;
+	uint16_t *glyphindeces;
+	//[(max_char_or_byte2-min_char_or_byte2+1)*(max_byte1-min_byte1+1)];
+};
+
 // TODO:
 // Ziel: PCF file in font struct laden, dann
 // funktionen haben wie
 // display_render_text(font*, char*, int x, int y);
-/*
-struct font {
+struct font_t; {
 	uint16_t offsets[256];
 
-	// kein glyph ist bei uns breiter als 16 bit
+	uint16_t bitmap_size;
 	uint16_t *bitmap_data;
-}
-*/
+};
 
+uint16_t pcf_read_lsbint16(FILE *fp) {
+	uint16_t r = 0;
+	int ch;
+
+	ch = fgetc(fp); if(ch != EOF) { r = (uint16_t)ch; }
+	ch = fgetc(fp); if(ch != EOF) { r |= (uint16_t)ch << 8; }
+	return r;
+}
+
+uint16_t pcf_read_msbint16(FILE *fp) {
+	uint16_t r = 0;
+	int ch;
+
+	ch = fgetc(fp); if(ch != EOF) { r = (uint16_t)ch << 8; }
+	ch = fgetc(fp); if(ch != EOF) { r |= (uint16_t)ch; }
+	return r;
+}
 
 uint32_t pcf_read_lsbint32(FILE *fp) {
 	uint32_t r = 0;
@@ -80,6 +106,15 @@ uint32_t pcf_read_int32(FILE *fp, unsigned char format) {
 	}
 }
 
+uint16_t pcf_read_int16(FILE *fp, unsigned char format) {
+	if(format & PCF_BYTE_MASK) {
+		return pcf_read_msbint16(fp);
+	}
+	else {
+		return pcf_read_lsbint16(fp);
+	}
+}
+
 void pcf_read_toc_entry(FILE *fp, struct toc_entry *r) {
 	r->type = pcf_read_lsbint32(fp);
 	r->format = pcf_read_lsbint32(fp);
@@ -87,7 +122,48 @@ void pcf_read_toc_entry(FILE *fp, struct toc_entry *r) {
 	r->offset = pcf_read_lsbint32(fp);
 }
 
-void pcf_read(char *filename) {
+void destroy_toc_entry(struct toc_entry *e) {
+}
+
+void pcf_read_encoding(FILE *fp, struct encoding *r) {
+	r->format = pcf_read_lsbint32(fp);
+	r->min_char_or_byte2 = pcf_read_int16(fp, r->format);
+	r->max_char_or_byte2 = pcf_read_int16(fp, r->format);
+	r->min_byte1 = pcf_read_int16(fp, r->format);
+	r->max_byte1 = pcf_read_int16(fp, r->format);
+	r->default_char = pcf_read_int16(fp, r->format);
+
+	uint32_t sz = 2 * (r->max_char_or_byte2 - r->min_char_or_byte2 + 1) * (r->max_byte1 - r->min_byte1 + 1);
+	r->glyphindeces = malloc(sz);
+	fread(r->glyphindeces, sz, 1, fp);
+}
+
+void destroy_encoding(struct encoding *e) {
+	free(r->glyphindeces);
+	r->glyphindeces = 0;
+}
+
+void pcf_read_bitmap(FILE *fp, struct bitmap *r) {
+	r->format = pcf_read_lsbint32(fp);
+	r->glyph_count = pcf_read_int32(fp, r->format);
+	r->offsets = malloc(sizeof(uint32_t) * r->glyph_count);
+	int j;
+	for(j = 0; j < glyph_count; j++) {
+		r->offsets[j] = pcf_read_int32(fp, r->format);
+	}
+	for(j = 0; j < 4; j++) {
+		r->bitmap_sizes[j] = pcf_read_int32(fp, r->format);
+	}
+	uint32_t sz = r->bitmap_sizes[r->format & GLYPH_PAD_MASK];
+	r->bitmap_data = malloc(sz);
+	fread(r->bitmap_data, sz, 1, fp);
+}
+
+void destroy_bitmap(struct bitmap *r) {
+	free(r->offsets); r->offsets = 0;
+}
+
+void pcf_read_font(char *filename, font_t *font) {
 	FILE *fp = fopen(filename, "r");
 	if(!fp) {
 		perror("couldnt open PCF file.\n");
@@ -101,6 +177,7 @@ void pcf_read(char *filename) {
 	ch = fgetc(fp); if(ch != EOF) { assert(ch == 'p'); }
 
 	uint32_t table_count = pcf_read_lsbint32(fp);
+
 
 	int i;
 	for(i = 0; i < table_count; i++) {
@@ -117,6 +194,11 @@ void pcf_read(char *filename) {
 			
 
 		else if(entry.type == PCF_BITMAPS) {
+			if(font->bitmap_data != 0) {
+				perror("we already had a bitmap table. I'm confused.");
+				exit(1);
+			}
+
 			uint32_t format = pcf_read_lsbint32(fp);
 			uint32_t glyph_count = pcf_read_int32(fp, format);
 
@@ -136,15 +218,23 @@ void pcf_read(char *filename) {
 				//printf("bitmap_sizes[%d] = %lu\n", j, bitmap_sizes[j]);
 			}
 
-			char *bitmap_data = malloc(bitmap_sizes[format & 3]);
-			fread(bitmap_data, bitmap_sizes[format & 3], 1, fp);
+			char *bitmap_data = malloc(bitmap_sizes[format & GLYPH_PAD_MASK]);
+			fread(bitmap_data, bitmap_sizes[format & GLYPH_PAD_MASK], 1, fp);
 
 			printf("format: %02x\n", format);
-			printf("bitmap size: %lu\n", bitmap_sizes[format & 3]);
+			printf("bitmap size: %lu\n", bitmap_sizes[format & GLYPH_PAD_MASK]);
 
 			int reverse_bits = !!(format & PCF_BIT_MASK);
 			int reverse_bytes = !!(format & PCF_BYTE_MASK);
 			int bytes_per_row = 1 << (format & PCF_GLYPH_PAD_MASK);
+
+			//
+			// Now actually write the font_t data.
+			//
+
+			font->bitmap_size = bitmap_sizes[bitmap_sizes[1]];
+			font->bitmap_data = malloc(font->bitmap_size);
+			memset(font->offsets, 0xff, sizeof(font->offsets));
 
 			for(j = 0; j < glyph_count; j++) {
 				printf("glyph: %d offs %ld\n", j, (int32_t)offsets[j]);

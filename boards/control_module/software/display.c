@@ -115,33 +115,3 @@ void display_render_selftest_colorstripes() {
 	}
 }
 
-
-/*
-void display_render_colors() {
-	enum { COLS = DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS,
-		ROWS = DISPLAY_MODULE_ROWS };
-
-	int row, col;
-
-	for(row = 0; row < DISPLAY_MODULE_ROWS; row++) {
-		for(col = 0; col < COLS; col++) {
-			*display_screen(RED, row, col) = V[col % 8];
-			*display_screen(GREEN, row, col) = V[row % 8];
-		}
-	}
-}
-*/
-
-/*
-void display_render() {
-	int row, col;
-	
-	enum { MODE_ROW, MODE_COL };
-	int mode = MODE_ROW;
-
-	const double T = 0.5; // seconds per display of row/column
-	const int line_frames = T * DISPLAY_TARGET_FPS;
-
-*/
-
-
