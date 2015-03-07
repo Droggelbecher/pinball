@@ -1,6 +1,6 @@
 
 #include "config.h"
-#include "spi.h"
+#include "raspberry_spi.h"
 
 int spi_cs_fd;
 

@@ -1,14 +1,41 @@
 
+USE_DEBUG_DISPLAY = 1
+USE_DEBUG_SPI = 1
+USE_DEBUG_GPIO = 1
+
 TARGET = pinball_controller
 OBJDIR = obj
 
-SOURCES_CONTROLLER = gpio.c main.c spi.c spi_ss.c display.c
-SOURCES_SPI_DEBUG = gpio.c spi_debug.c spi.c spi_ss.c display.c
+SOURCES_CONTROLLER = main.c spi_ss.c render.c
+SOURCES_SPI_DEBUG = gpio.c spi_debug.c spi.c spi_ss.c display.c 
 #HEADERS = config.h gpio.h spi.h spi_ss.h
 
 CFLAGS = -Wall -Wundef -Wstrict-prototypes
 CFLAGS += -I.
 CFLAGS += -g
+CFLAGS += -DUSE_DEBUG_DISPLAY=$(USE_DEBUG_DISPLAY)
+CFLAGS += -DUSE_DEBUG_SPI=$(USE_DEBUG_SPI)
+CFLAGS += -DUSE_DEBUG_GPIO=$(USE_DEBUG_GPIO)
+
+ifeq ($(USE_DEBUG_DISPLAY),1)
+ SOURCES_CONTROLLER += debug_display.c
+else
+ SOURCES_CONTROLLER += spi_display.c
+endif
+
+ifeq ($(USE_DEBUG_SPI),1)
+ SOURCES_CONTROLLER += debug_spi.c
+else
+ SOURCES_CONTROLLER += linux_spi.c
+endif
+
+ifeq ($(USE_DEBUG_GPIO),1)
+ SOURCES_CONTROLLER += debug_gpio.c
+else
+ SOURCES_CONTROLLER += raspberry_gpio.c
+endif
+
+
 LDFLAGS =
 
 DEPLOY_HOST = raspberrypi

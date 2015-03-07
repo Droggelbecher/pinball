@@ -2,19 +2,11 @@
 #ifndef __SPI_H__
 #define __SPI_H__
 
-#include <fcntl.h>
-#include <linux/spi/spidev.h>
-#include <linux/types.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
-#include <time.h>
-#include <unistd.h>
-
-extern int spi_cs_fd;
-
-int spi_setup(void);
-int spi_readwrite(size_t size, unsigned char *wr, unsigned char *rd);
+#if USE_DEBUG_SPI
+	#include "debug_spi.h"
+#else
+	#include "linux_spi.h"
+#endif
 
 #endif // __SPI_H__
 

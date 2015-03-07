@@ -6,7 +6,7 @@
 #include <assert.h>
 
 #include "config.h"
-#include "display.h"
+#include "spi_display.h"
 
 
 unsigned long display_frame;
