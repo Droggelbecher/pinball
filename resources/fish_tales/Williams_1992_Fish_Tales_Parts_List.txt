@@ -1,0 +1,2211 @@
+ITEM #  LEVEL    PART NUMBER       DESCRIPTION                                   #USED
+                                                                                      
+1       1        A-5343-50005-1    e prom assy U6 revL5                              1
+2       .2       5343-12881-00     e prom 27c040 4meg 120nsec                        1
+3       .2       16-9419-1         label-rev L5-U6 rom1-50005                        1
+4       ..3      RM-33-01          label 1-1/8x7/16-white                            1
+5       1        A-8552-50005      back glass assy                                   1
+6       .2       03-8228-2         channel glass top                                 1
+7       .2       03-8228-3         channel glass edge                                2
+8       .2       03-8229-1         channel glass lift                                1
+9       .2       08-7456           glass 27 X 18-7/8                                 1
+10      .2       31-1357-50005     scrnd translite b/glass                           1
+11      1        A-15579-1         cash box assy-50005                               1
+12      .2       A-14354           c/box cover assy                                  1
+13      ..3      01-10020          cover-domestic cashbox                            1
+14      ..3      01-9989           cashbox handle                                    1
+15      ..3      4008-01041-06     ms 8-32X3/8 p-flh                                 2
+16      ..3      4700-00023-00     fw .203X.625X.059                                 2
+17      ..3      4408-01119-01     nut 8-32 esna/ntm                                 2
+18      .2       03-7626           cashbox-pin                                       1
+19      ..3      03-7626.1         cashbox-pin                                       1
+20      .2       03-7557           kicker protector mylar                            2
+21      .2       03-8194           flipper gauge                                     2
+22      .2       08-7377           "leveler-leg adjuster 3.0"""                      4
+23      .2       20-6500           ball-steel 1-1/16                                 3
+24      .2       20-6502-A         plumb bob                                         1
+25      .2       20-8842           envelope 3 x 5-1/2                                4
+26      .2       20-9292           envelope kraft 7-1/2 x 10-1/2                     1
+27      .2       20-9791           envelope backbox screws                           1
+28      .2       20-9620           key T-20 TR-TX long arm                           1
+29      .2       20-9384           torx driver bit 440-TX20H                         1
+30      .2       20-9384-2         torx driver bit 440-TX25H                         1
+31      .2       24-6549           bulb-#44                                          2
+32      .2       24-8704           bulb #89                                          2
+33      .2       24-8767           socket-pcb twist                                  1
+34      .2       24-8768           bulb #555 6.3Volts .25Amps                        5
+35      .2       24-8802           bulb #906 13V 0.69                                1
+36      .2       27-1041-11        lbl-25cent-usa                                    2
+37      .2       31-1676-2         plfd plastic-fishtales                            1
+38      .2       31-1676-22        plfd plastic-fishtales                            1
+39      .2       31-1676-24        plfd plastic-fishtales                            1
+40      .2       20-9718           wing screw 3/8-16 x 2                             2
+41      .2       4322-01125-40     blt 3/8-16x2 1 /2 ah                              8
+42      .2       4406-01120-00     nut 6-32 wing                                     2
+43      .2       4422-01117-00     nut 3/8-16 hex                                    4
+44      .2       5730-09071-00     fuse 8A 32V                                       1
+45      .2       5730-09252-00     fuse 8A 250V                                      1
+46      .2       5730-09797-00     fuse 3/4A 250V                                    1
+47      .2       5731-10356-00     fuse sb 3A 250V                                   1
+48      .2       5731-09128-00     fuse sb 2.5 250V                                  1
+49      .2       5731-09651-00     fuse sb 5A 250V                                   1
+50      .2       5731-12328-00     fuse sb 3/8A 250V                                 1
+51      .2       5731-09432-00     fuse sb 7A 250V                                   1
+52      .2       20-9780           envelope 3 1/8 x 5 1/2-printed                    1
+53      .2       4008-01093-16B    tr 8-32X1 ph                                      4
+54      1        A-15306           fish panel assy                                   1
+55      .2       A-11734           bulb & socket assy                                1
+56      .2       A-12887           socket & #555 bulb assy                           1
+57      .2       A-12336-1         socket & #906 bulb assy                           1
+58      .2       A-15304           coil unit assy                                    1
+59      ..3      A-15305           coil brkt sub-assy                                1
+60      ...4     01-10620          brkt coil leg mtg                                 1
+61      ..3      A-6306-2          bell armature assy                                1
+62      ..3      10-135            spring-plunger                                    1
+63      ..3      03-7067-5         tubing-coil                                       1
+64      ..3      23-6420           grommet                                           1
+65      ..3      01-8-508-T        brkt coil retainer                                1
+66      ..3      4008-01017-04     ms 8-32X1/4 p-rh-s                                2
+67      ..3      AE-23-800         coil assy                                         1
+68      ...4     MW-130-23         magnet wire-130deg c sns 23ga                     0
+69      ...4     16-8943-1         coil tape-1 3/8 wide                              0
+70      ...4     A-22181           small bobbin assy                                 0
+71      ....5    03-7041-1         bobbin                                            0
+72      ....5    01-14673          terminal coil                                     0
+73      ....5    07-6688-17        rivet 5/32X1/8                                    0
+74      .2       A-15713           fish assy                                         1
+75      .2       4106-01114-08     tcs #6X1/2 pl-hwh t-17                            7
+76      .2       A-15585           fish protect plate                                1
+77      .2       11-1059           panel-wood top                                    1
+78      .2       01-10618          brkt fish panel mtg                               2
+79      .2       31-1692           translite fish panel                              1
+80      .2       4408-01119-00     nut 8-32 esn                                      1
+81      .2       4008-01003-20     ms 8-32X1-1/4 p-ph-s                              4
+82      .2       4700-00070-00     fw .187X.625X.059                                 9
+83      .2       4408-01128-00     nut 8-32 keps                                     4
+84      .2       4008-01003-08     ms 8-32 X 1/2 p-ph-s                              6
+85      .2       4408-01118-02     nut 8-32 tee 9/32l                                6
+86      .2       31-1682-5         decal-playfield                                   1
+87      .2       H-15497           fish backbox cable                                1
+88      ..3      H-15497-C         fish backbox cable-cut wire                       1
+89      ...4     CW-30022-3        wire 22awg orange                                31
+90      ...4     CW-30022-93       wire 22awg wht/org                               31
+91      ...4     CW-30022-78       wire 22awg vio/gry                               18
+92      ...4     CW-30022-61       wire 22awg blu/brn                               24
+93      ...4     HW-30018-74       wire 18awg vio/yel                               18
+94      ...4     HW-30018-29       wire 18awg red/wht                               24
+95      ..3      5791-10772-00     2P11625 03-06-2023                                1
+96      ..3      5791-09400-00     4P1490 03-09-2042                                 1
+97      ..3      5820-09080-00     terminal-pm1190 02-09-2101                        2
+98      ..3      5820-09078-00     pm1560 02-06-2101                                 4
+99      ..3      5820-13237-00     male term pin .093 18-22                          2
+100     ..3      03-7520-2         tie wrap-nylon 3 7/8                             14
+101     .2       03-7655-8         "clamp cable 1/2""dia"                            4
+102     .2       CW-30022-4        wire 22awg yellow                                10
+103     1        A-15632           fish panel cover assy                             1
+104     .2       03-8653           cover-fish panel                                  1
+105     .2       31-1682-6         decal-playfield                                   1
+106     .2       20-9768-1         large reflector                                   1
+107     1        A-15565           5 lamp pcb assy                                   1
+108     .2       5768-13228-00     PCB-5 lamp                                        1
+109     .2       24-8805           socket-pcb H wedge                                5
+110     .2       24-8768           bulb #555 6.3Volts .25Amps                        5
+111     1        A-15740           plate & decal assy                                1
+112     .2       01-10817          plate-back box cover                              1
+113     .2       31-1706           decal-cover plate-50005                           1
+114     1        03-8022-4         "spacer .250 L"""                                 4
+115     1        C-10843           chrome metal leg assy                             4
+116     1        D-12615           front molding assy-stainless                      1
+117     1        RM-27-09          "slit hose sleeve 1""-gray"                      30
+118     1        01-9012           plate-backing                                     2
+119     1        01-10714          cover-line cord                                   1
+120     1        03-7933           "tie wrap-8 1/2"""                                2
+121     1        03-7520-2         tie wrap-nylon 3 7/8                              3
+122     1        08-7028-T         glass-playfield                                   1
+123     1        08-7473           carton-outer williams & bally                     1
+124     1        08-7477           carton-rail side                                  2
+125     1        08-7649           carton-backbox wrapper                            1
+126     1        08-7650           carton-front panel                                1
+127     1        08-7666           carton-rear panel                                 1
+128     1        08-7678           "carton-cashbox 12 15/16"" long"                  1
+129     1        08-7648           carton-leg                                        1
+130     1        11-536            wood block shipping                               1
+131     1        16-50005-2        card-instruction                                  1
+132     1        16-50005-101      manual-instruction                                1
+133     1        16-50005-102      manual-schematic instruction                      1
+134     1        16-50005-103      manual-operators handbook                         1
+135     1        16-50005-AMD-4    amendment-coinage                                 1
+136     1        16-50005-AMD-2    amendment-schematic                               1
+137     1        16-50005-AMD-3    amendment-reel                                    1
+138     1        16-8978           label-install 3 balls                             1
+139     1        16-8587-143       label-shipping block                              1
+140     1        16-8587-880       label-check cables                                1
+141     1        16-8587-888-1     label-game serial number                          1
+142     1        16-8903           card-game registration                            1
+143     1        16-9350-1         sheet-reel installation                           1
+144     1        16-9045           card-flipper gauge                                1
+145     1        16-9340           sheet-instruction-c/box locate                    1
+146     1        16-9356           sheet-slide assy caution                          1
+147     1        16-9388           sheet-iec320 line filter                          1
+148     1        16-9387           pricing card 50 cent                              1
+149     1        16-9405           pricing card insert-usa                           1
+150     1        16-9319           label-caution e.o.s. switch                       1
+151     1        16-9090-1         instr-plfd mylar                                  1
+152     1        16-9093           form * journal                                    1
+153     1        16-9243           card-sheet-wpc/diamond plate                      1
+154     1        16-9357-1         sheet-remove foam                                 1
+155     1        20-9768-2         small reflector                                   1
+156     1        20-8842           envelope 3 x 5-1/2                                1
+157     1        20-9295           envelope williams 10 x 13-1/2                     1
+158     1        23-6534           "rubber protector  20""in"                        1
+159     1        23-6534-3         rubber protector 1 1/2                            2
+160     1        23-6628           foam rubber-insert                                1
+161     1        23-6633-3         "foam-rubber insert 10"""                         1
+162     1        23-6519-4         flipper ring-red                                  2
+163     1        4008-01003-16     ms 8-32X1 p-ph-s                                  4
+164     1        4106-01115-16     sms #6X1 pl-hwh-a                                 4
+165     1        4108-01019-10     sms #8X5/8 p-rh-a                                 2
+166     1        4320-01123-24B    blt 1/4-20X1 1/2 cb                               6
+167     1        4420-01141-00     nut 1/4-20 flangrip                               6
+168     1        4008-01003-20     ms 8-32X1-1/4 p-ph-s                              2
+169     1        4408-01119-00     nut 8-32 esn                                      2
+170     1        4700-00070-00     fw .187X.625X.059                                 2
+171     1        4700-00060-00     fw .219X.500X.063                                 4
+172     1        4108-01092-10B    txt #8 X 5/8 ph                                  16
+173     1        4108-01219-11     sms #8 x 11/16 pin-hd-ab spcl                     3
+174     1        4310-01123-24B    blt 10-24X1 1/2 cb                                4
+175     1        4410-01119-00     nut 10-24 esn                                     4
+176     1        50005-PL          fishtales playfield assy                          1
+177     .2       A-10417           micro sw assy comp                                1
+178     ..3      A-10415           switch & term strip assy                          1
+179     ...4     A-7438-1          terminal strp assy                                1
+180     ...4     01-7151           brkt guide                                        1
+181     ...4     4004-01003-10     ms 4-40X5/8 p-ph-s                                2
+182     ...4     5647-12133-12     switch mini micro                                 1
+183     ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+184     .2       A-11271           socket & #44 bulb assy                            1
+185     ..3      A-11271-1         skt & bulb sub-assy                               1
+186     ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+187     .2       A-11754           socket & #44 bulb assy                            3
+188     ..3      A-11755           socket & #44 bulb assy                            3
+189     ..3      5070-09054-00     diode-1N4004 1.0a                                 3
+190     .2       A-11657-2         b/popper sw assy                                  1
+191     ..3      A-11658-1         sw & diode assy                                   1
+192     ...4     SW-1A-167-1       switch                                            1
+193     ....5    A-11659           blade & contct assy                               1
+194     .....6   06-82-8           blade-contact                                     1
+195     .....6   5860-09374-00     cp prec met 7309fs                                1
+196     ....5    A-8380            blade & contact assy                              1
+197     .....6   06-7J-14          blade-contact                                     1
+198     .....6   5860-09374-00     cp prec met 7309fs                                1
+199     ....5    01-916-H          "spacer- 3/32"""                                  3
+200     ....5    01-916-S          "spacer-tight 1/16"""                             2
+201     ....5    03-7007-7         "tubing switch-7/16"""                            2
+202     ....5    06-17             blade-side lug                                    1
+203     ...4     5070-09054-00     diode-1N4004 1.0a                                 1
+204     ..3      01-3670-1         plate-switch flat                                 1
+205     ..3      4205-01016-14     ws #5X7/8 p-rh                                    2
+206     .2       A-11680           sub-mini switch assy                              1
+207     ..3      01-8652           brkt mtg                                          1
+208     ..3      4002-01105-06     ms 2-56x3/8 p-ph-s                                2
+209     ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+210     ..3      5647-12693-08     switch sub mini micro                             1
+211     .2       A-11905           socket & #44 bulb assy                           27
+212     .2       A-12010           spinnner micro switch assy                        1
+213     ..3      A-7438-1          terminal strp assy                                1
+214     ..3      01-7151           brkt guide                                        1
+215     ..3      4004-01003-10     ms 4-40X5/8 p-ph-s                                2
+216     ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+217     ..3      5647-12133-08     switch mini micro                                 1
+218     .2       A-12687           sub-mini switch assy                              1
+219     ..3      01-12356          brkt-switch mtg                                   1
+220     ..3      4002-01105-06     ms 2-56x3/8 p-ph-s                                2
+221     ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+222     ..3      5647-12693-18     switch sub mini micro                             1
+223     .2       A-12688           rollover micro switch assy                        8
+224     ..3      01-8719           brkt switch mtg                                   8
+225     ..3      4002-01105-06     ms 2-56x3/8 p-ph-s                               16
+226     ..3      5070-09054-00     diode-1N4004 1.0a                                 8
+227     ..3      5647-12693-19     switch sub mini micro                             8
+228     .2       A-12688-1         rollover micro switch assy                        1
+229     ..3      01-8719-1         brkt switch mtg                                   1
+230     ..3      4002-01105-06     ms 2-56x3/8 p-ph-s                                2
+231     ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+232     ..3      5647-12693-19     switch sub mini micro                             1
+233     .2       A-13204-50005     bottom arch assy-fishtales                        1
+234     ..3      A-15633           shooter plate assy                                1
+235     ...4     01-10136-1        plate-shooter cover                               1
+236     ...4     31-1694-1         decal-shoot plate cover                           1
+237     ..3      12-6842           fence-bottom arch                                 1
+238     ..3      16-9210           label-caution hi-vlt(btm arch)                    1
+239     ..3      20-9041           speednut tinnerman                                2
+240     ..3      20-9045           cover-instruction card-clear                      2
+241     ..3      20-9601           nut retainer #8-32                                4
+242     ..3      23-6313-1         grommet                                           1
+243     ..3      4008-01017-10     ms 8-32X5/8 p-rh-s                                4
+244     ..3      4700-00011-00     fw .172X.437X.059                                 4
+245     ..3      31-1008-50005     scrnd bottom arch-fishtales                       1
+246     ..3      4106-01004-06     sms #6X3/8 p-ph-st                                2
+247     .2       A-12336-1         socket & #906 bulb assy                           2
+248     .2       A-14369-R         coil & brkt assy                                  1
+249     ..3      AE-27-1200        coil assy                                         1
+250     ...4     A-22181           small bobbin assy                                 0
+251     ....5    03-7041-1         bobbin                                            0
+252     ....5    01-14673          terminal coil                                     0
+253     ....5    07-6688-17        rivet 5/32X1/8                                    0
+254     ...4     MW-130-27         magnet wire-130deg c sns 27ga                     0
+255     ...4     16-8943-11        coil tape-1 3/8 wide                              0
+256     ..3      B-7572-1          brkt & stop assy                                  1
+257     ..3      01-8-508-S        brkt coil retainer                                1
+258     ..3      03-7066           tubing-coil                                       1
+259     ..3      4006-01017-06     ms 6-32X3/8 p-rh-s                                2
+260     ..3      4406-01119-00     nut 6-32 esn                                      2
+261     .2       A-14422           ball gate actuator assy                           1
+262     ..3      A-11146           b/g armature assy                                 1
+263     ...4     A-15821           armature sub assy                                 1
+264     ...4     01-8391           armature tip                                      1
+265     ...4     4006-01003-03     ms 6-32X3/16 p-ph-s                               2
+266     ..3      A-14406           coil assy                                         1
+267     ..3      A-6892            frame & eyelet assy                               1
+268     ..3      01-8111           brkt ball gate                                    1
+269     ..3      10-120            spring-armature                                   1
+270     ..3      10-194            spring-extension                                  1
+271     ..3      4008-01021-07     ms 8-32X7/16 p-rh-brass                           1
+272     ..3      4700-00089-00     fw .172X.437X.062 brass                           1
+273     ..3      4701-00003-00     lw #8 split                                       1
+274     .2       A-14525           kicker brkt assy                                  1
+275     ..3      A-14526           kicker mtg brkt weld assy                         1
+276     ..3      A-6306-2          bell armature assy                                1
+277     ..3      01-8-508-T        brkt coil retainer                                1
+278     ..3      10-135            spring-plunger                                    1
+279     ..3      23-6420           grommet                                           1
+280     ..3      AE-23-800         coil assy                                         1
+281     ...4     MW-130-23         magnet wire-130deg c sns 23ga                     0
+282     ...4     16-8943-1         coil tape-1 3/8 wide                              0
+283     ...4     A-22181           small bobbin assy                                 0
+284     ....5    03-7041-1         bobbin                                            0
+285     ....5    01-14673          terminal coil                                     0
+286     ....5    07-6688-17        rivet 5/32X1/8                                    0
+287     ..3      03-7067-5         tubing-coil                                       1
+288     ..3      4008-01017-04     ms 8-32X1/4 p-rh-s                                2
+289     ..3      03-8523           insulator                                         1
+290     .2       A-14632-2         "mtg bracket clamp assy-1/2"""                    5
+291     ..3      03-7655-8         "clamp cable 1/2""dia"                            5
+292     ..3      4006-01027-06     ms 6-32X3/8 p-rwh                                 5
+293     ..3      01-10724-1        brkt cable                                        5
+294     .2       A-14632-3         "mtg bracket clamp assy-3/4"""                   10
+295     ..3      03-7655-12        "clamp cable 3/4""dia"                           10
+296     ..3      4006-01027-06     ms 6-32X3/8 p-rwh                                10
+297     ..3      01-10724-1        brkt cable                                       10
+298     .2       A-14945           fish reel unit assy                               1
+299     ..3      14-7967           motor-50v                                         1
+300     ..3      A-14948           wheel brkt assy                                   1
+301     ..3      03-8705           pulley-wheel                                      1
+302     ..3      03-8614           belt-drive                                        1
+303     ..3      03-8612           wheel-fishing reel                                1
+304     ..3      4700-00072-00     fw .265X.500X.032                                 2
+305     ..3      20-8712-25        e ring 1/4 shaft                                  1
+306     ..3      A-14232           photo trans assy                                  2
+307     ...4     5768-13154-04     pcb-phot trans                                    0
+308     ...4     5163-12732-00     trans npn photo                                   0
+309     ....5    5163-14114-00     trans-photo infra red T1&3/4                      0
+310     ..3      A-14231           led assy                                          2
+311     ...4     5671-12731-00     led diode infra red                               0
+312     ...4     5768-13155-02     pcb-single IR LED (green mask)                    0
+313     ..3      4106-01114-08     tcs #6X1/2 pl-hwh t-17                            8
+314     ..3      01-10378          brkt wheel opto                                   1
+315     ..3      4008-01076-06     ss 8-32x3/8sh-cp                                  1
+316     ..3      02-4290           collar                                            1
+317     ..3      03-8086           pulley                                            1
+318     ..3      4010-01006-10     ms 10-32X5/8 p-ph-s                               4
+319     ..3      4008-01017-04     ms 8-32X1/4 p-rh-s                                4
+320     ..3      01-10533          brkt wheel opto top                               1
+321     ..3      31-1683-3         decal-playfield                                   1
+322     ..3      31-1694-2         decal-fish reel                                   1
+323     ..3      03-8506-1         base-opto mtg-white                               2
+324     ..3      03-8506           base-opto mtg-black                               2
+325     ..3      4104-01001-06     sms #4X3/8 p-ph-a                                 4
+326     ..3      H-15606           opto switch cable                                 1
+327     ...4     03-7520-2         tie wrap-nylon 3 7/8                              6
+328     ...4     H-15606-C         opto switch cable-cut wire                        1
+329     ....5    CW-30022-2        wire 22awg red                                   32
+330     ....5    CW-30022-0        wire 22awg black                                 32
+331     ....5    CW-30022-53       wire 22awg grn/org                               32
+332     ....5    CW-30022-97       wire 22awg wht/vio                               16
+333     ....5    CW-30022-98       wire 22awg wht/gry                               16
+334     ...4     5792-10817-05     5r mt/end 22/156                                  2
+335     ...4     5823-10820-00     "plz key mt .156"""                               2
+336     ..3      03-7520-2         tie wrap-nylon 3 7/8                              1
+337     .2       A-14947           catapult unit assy                                1
+338     ..3      A-14946           catapult brkt assy                                1
+339     ..3      23-6577           rubber bumper plug 5/8                            1
+340     ..3      03-8089           catapult arm                                      1
+341     ..3      A-12293           catapult plunger assy                             1
+342     ...4     02-4347           plunger solenoid                                  1
+343     ...4     20-9370-1         pin spl 5/32 x 7/16                               1
+344     ...4     03-8050-1         flipper link                                      1
+345     ..3      02-4301           pin catapult arm                                  1
+346     ..3      10-135            spring-plunger                                    1
+347     ..3      01-8413           brkt coil mtg                                     1
+348     ..3      AL-23-800         coil assembly                                     1
+349     ...4     A-22248           bobbin assy-small/2-left                          0
+350     ....5    03-7041-1         bobbin                                            0
+351     ....5    01-14673          terminal coil                                     0
+352     ....5    07-6688-17        rivet 5/32X1/8                                    0
+353     ...4     MW-130-23         magnet wire-130deg c sns 23ga                     0
+354     ...4     16-8943-2         coil tape-1 3/8 wide                              0
+355     ..3      A-10821           flpr stop bkt assy                                1
+356     ..3      5647-12133-12     switch mini micro                                 1
+357     ..3      A-7438-1          terminal strp assy                                1
+358     ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+359     ..3      4008-01017-04     ms 8-32X1/4 p-rh-s                                2
+360     ..3      4010-01066-06     cs 10-32 X 3/8 sh                                 2
+361     ..3      4701-00004-00     lw #10 split                                      2
+362     ..3      4004-01003-10     ms 4-40X5/8 p-ph-s                                2
+363     ..3      4700-00104-00     fw .361X.500X.059                                 2
+364     ..3      20-8712-31        e ring 5/16 shaft                                 2
+365     ..3      03-7066           tubing-coil                                       1
+366     ..3      23-6622           tape-double sided                                 1
+367     ..3      H-19523           2 pin cable-solenoid                              1
+368     ...4     5791-12570-00     1545-Z 03-09-2022                                 1
+369     ...4     5820-09080-00     terminal-pm1190 02-09-2101                        2
+370     ...4     HW-30018-2        wire 18awg red                                    3
+371     ...4     HW-30018-7        wire 18awg violet                                 3
+372     ..3      H-16437           mini switch cable                                 1
+373     ...4     5791-10772-00     2P11625 03-06-2023                                1
+374     ...4     5820-09078-00     pm1560 02-06-2101                                 2
+375     ...4     03-7520-2         tie wrap-nylon 3 7/8                              1
+376     ...4     CW-30022-5        wire 22awg green                                3.5
+377     ...4     CW-30022-9        wire 22awg white                                3.5
+378     .2       A-15069           ball guide assy                                   1
+379     .2       A-15055           boat ramp assy                                    1
+380     ..3      03-8637           ramp-boat                                         1
+381     ..3      01-10439          flap-ramp                                         1
+382     ..3      31-1676-9         plfd plastic-fishtales                            1
+383     ..3      31-1676-10        plfd plastic-fishtales                            1
+384     ..3      07-6688-19N       rivet 7/32X1/8 nickel                            12
+385     ..3      4700-00003-00     fw .125X.281X.032                                12
+386     ..3      01-10095          brkt hanger                                       2
+387     ..3      5647-12693-21     switch sub mini micro                             2
+388     ..3      01-8652           brkt mtg                                          2
+389     ..3      4002-01105-07     ms 2-56x7/16 p-ph-s                               4
+390     ..3      5070-09054-00     diode-1N4004 1.0a                                 2
+391     ..3      4006-01027-06     ms 6-32X3/8 p-rwh                                 6
+392     ..3      4406-01128-00     nut 6-32 keps                                     6
+393     ..3      H-15530           ramp exit switch cable                            2
+394     ...4     H-15530-C         ramp exit switch cbl-cut wire                     2
+395     ....5    CW-30022-5        wire 22awg green                                 20
+396     ....5    CW-30022-9        wire 22awg white                                 20
+397     ...4     5791-10772-00     2P11625 03-06-2023                                2
+398     ...4     5820-09078-00     pm1560 02-06-2101                                 4
+399     ...4     RM-23-01          tubing-heat shrink-1/8 poly                      18
+400     .2       A-15109           boat unit assy-complete                           1
+401     ..3      36-50005-1        scrn up-plfd w/hrdct fishtales                    1
+402     ...4     31-1002A-50005    plfd scrn -ini fishtales                          1
+403     ....5    A-13769A-50005    mini plfd & inserts-fishtales                     1
+404     .....6   03-8310-10        insert rec3/4x1.50 stp tr-blu                     1
+405     .....6   03-8310-11        ins-rect 3/4x1-1/2 stp trp-grn                    1
+406     .....6   03-8310-12        ins-rect 3/4x1-1/2 stp trp-org                    1
+407     .....6   03-8310-13        ins-rect 3/4x1-1/2 stp clear                      1
+408     .....6   03-8310-9         ins-rect 3/4x1-1/2 stp trp-red                    1
+409     .....6   03-8359-11        insert-arrow 2 1/2 stpl tr-grn                    2
+410     .....6   03-8359-18        insert-arrow 2 1/2 stp trp-vio                    2
+411     ...4     03-8674-4         mylar fishtales-plfd/boat                         1
+412     ..3      A-15108           ball guide assy-boat                              1
+413     ..3      01-10492-1        ball guide-left side boat                         1
+414     ..3      01-10492-2        ball guide-right side boat                        1
+415     ..3      12-7053-47        "ball guide 7"""                                  2
+416     ..3      01-10440          flap-boat                                         1
+417     ..3      4408-01119-01     nut 8-32 esna/ntm                                 2
+418     ..3      01-10491          brkt boat support                                 1
+419     ..3      4106-01114-08     tcs #6X1/2 pl-hwh t-17                           20
+420     ..3      A-14691-5         stat tgt-frt mtg95 rnd op-whit                    1
+421     ...4     01-12346          brkt switch mtg 95degree red                      1
+422     ...4     01-8657           brkt stop                                         1
+423     ...4     01-916-H          "spacer- 3/32"""                                  1
+424     ...4     01-916-S          "spacer-tight 1/16"""                             2
+425     ...4     01-916-T          "spacer- 1/32"""                                  1
+426     ...4     01-3670           plate-switch curved                               1
+427     ...4     03-7007-6         "tubing-3/8"""                                    2
+428     ...4     03-8093-5         "tgt 1""round-op white"                           1
+429     ...4     06-20-20          blade-back up                                     2
+430     ...4     06-73-2           blade-insulator                                   1
+431     ...4     06-1-14           blade-contact                                     1
+432     ...4     06-13G-14         blade-contact                                     1
+433     ...4     07-6688-27        rivet 9/16X1/8                                    2
+434     ...4     07-6697-4         rivet .125X.187x.218 zinc                         1
+435     ...4     4700-00003-00     fw .125X.281X.032                                 1
+436     ...4     23-6534-9         rubber protector 3/8                              1
+437     ...4     5070-09054-00     diode-1N4004 1.0a                                 1
+438     ...4     06-1F-14          blade-contact                                     2
+439     ...4     5860-09374-00     cp prec met 7309fs                                2
+440     ..3      A-12687           sub-mini switch assy                              1
+441     ...4     01-12356          brkt-switch mtg                                   1
+442     ...4     4002-01105-06     ms 2-56x3/8 p-ph-s                                2
+443     ...4     5070-09054-00     diode-1N4004 1.0a                                 1
+444     ...4     5647-12693-18     switch sub mini micro                             1
+445     ..3      A-12688-1         rollover micro switch assy                        1
+446     ...4     01-8719-1         brkt switch mtg                                   1
+447     ...4     4002-01105-06     ms 2-56x3/8 p-ph-s                                2
+448     ...4     5070-09054-00     diode-1N4004 1.0a                                 1
+449     ...4     5647-12693-19     switch sub mini micro                             1
+450     ..3      03-8022-1         "spacer .541 L"""                                 3
+451     ..3      4106-01115-06Y    sms #6x3/8 pl-hwh-yel                            11
+452     ..3      4106-01115-16     sms #6X1 pl-hwh-a                                 3
+453     ..3      A-15471           5 lamp & brkt assy                                1
+454     ...4     A-15457           5 lamp pcb assy                                   1
+455     ....5    24-8802           bulb #906 13V 0.69                                5
+456     ....5    24-8805           socket-pcb H wedge                                5
+457     ....5    5791-10871-07     7h spl sq pin .156                                1
+458     ....5    5768-13199-00     PCB-5 lamp                                        1
+459     ...4     01-10712          brkt 5 lamp mounting                              2
+460     ...4     07-6688-18N       rivet 3/16X1/8 nickel                             2
+461     ...4     4700-00003-00     fw .125X.281X.032                                 2
+462     ..3      A-11905           socket & #44 bulb assy                            2
+463     ..3      A-11271           socket & #44 bulb assy                            4
+464     ...4     A-11271-1         skt & bulb sub-assy                               4
+465     ...4     5070-09054-00     diode-1N4004 1.0a                                 4
+466     ..3      H-15494           boat sw lamp cable                                1
+467     ...4     H-15494-C         boat/sw lamp cable cut-wire                       1
+468     ....5    CW-30022-28       wire 22awg red/gry                               18
+469     ....5    CW-30022-27       wire 22awg red/vio                               14
+470     ....5    CW-30022-26       wire 22awg red/blu                               18
+471     ....5    CW-30022-25       wire 22awg red/grn                               14
+472     ....5    CW-30022-43       wire 22awg yel/org                               53
+473     ....5    CW-30022-92       wire 22awg wht/red                               20
+474     ....5    CW-30022-93       wire 22awg wht/org                               20
+475     ....5    CW-30022-54       wire 22awg grn/yel                               48
+476     ....5    CW-30022-91       wire 22awg wht/brn                               20
+477     ....5    CW-30022-97       wire 22awg wht/vio                               37
+478     ....5    CW-30022-7        wire 22awg violet                                37
+479     ...4     5791-09138-00     9P1625 03-06-2092                                 1
+480     ...4     5820-09078-00     pm1560 02-06-2101                                11
+481     ...4     5791-10774-00     4P2004 03 06-2044                                 1
+482     ...4     03-7520-2         tie wrap-nylon 3 7/8                              9
+483     ...4     5822-10872-06     term 22-18 TAB.110                                2
+484     ..3      A-15338           5 lamp pcb assy                                   1
+485     ...4     A-15338-AI        5 lamp pcb assy                                   1
+486     ....5    5768-13161-00     PCB-5 lamp                                        1
+487     ....5    5070-09054-00     diode-1N4004 1.0a                                 5
+488     ...4     24-8767           socket-pcb twist                                  5
+489     ...4     24-8768           bulb #555 6.3Volts .25Amps                        5
+490     ...4     5791-10871-07     7h spl sq pin .156                                1
+491     ..3      03-7655-4         "clamp cable 1/4""dia"                            1
+492     ..3      03-7655-8         "clamp cable 1/2""dia"                            2
+493     ..3      02-4036-1         post-bumper                                       2
+494     ..3      23-6556           rubber bumper sleeve-black                        2
+495     .2       A-15178           ball guide assy                                   1
+496     .2       A-15179           ball guide assy                                   1
+497     .2       A-15180           ball guide assy                                   1
+498     .2       A-15182           ball guide assy                                   1
+499     .2       A-15205-L-2       electronc flipper asy-blu coil                    1
+500     ..3      B-13104-L         flipper bracket staked assy                       1
+501     ...4     B-13104.1-L       flipper brkt sub assy                             1
+502     ..3      B-13882-L         crank link assy                                   1
+503     ...4     B-13884-L         flipper crank assy                                1
+504     ....5    01-8073-L         crank-flipper left                                1
+505     ....5    4700-00107-01     fw modified crank washer                          1
+506     ....5    RM-23-06          "heat shrink tubing 1/4"" DWP"                  0.5
+507     ....5    4010-01066-20     cs 10-32X1 1/4 sh                                 1
+508     ....5    4410-01127-00     nut 10-32 hex                                     1
+509     ....5    4700-00107-00     fw .203X.625X.104                                 1
+510     ....5    4701-00004-00     lw #10 split                                      1
+511     ....5    01-9376           brkt retain spring                                1
+512     ...4     A-10656           flipper link assy                                 1
+513     ....5    02-4219           plunger coil                                      1
+514     .....6   02-4219.1         plunger-coil                                      1
+515     ....5    03-8050-1         flipper link                                      1
+516     ....5    20-9370-1         pin spl 5/32 x 7/16                               1
+517     ...4     02-4179           bushing link spacer                               1
+518     ...4     4010-01086-14     cs 10-32X7/8 sh                                   1
+519     ...4     4700-00023-00     fw .203X.625X.059                                 2
+520     ...4     4701-00004-00     lw #10 split                                      1
+521     ...4     4410-01132-00     nut 10-32 esn                                     1
+522     ..3      A-12390           flpr stop brkt                                    1
+523     ..3      FL-11629          flipper coil-blue                                 1
+524     ..3      01-7695-1         brkt-solenoid                                     1
+525     ..3      03-7066-5         tubing-coil                                       1
+526     ..3      03-7568           bushing-flipper                                   1
+527     ..3      10-364            spring-retractor                                  1
+528     ..3      SW-1A-194         switch assy-make                                  1
+529     ...4     06-1-20           blade-contact                                     1
+530     ...4     06-2V-14          blade-contact                                     1
+531     ...4     03-7007-4A        tubing-switch                                     2
+532     ...4     01-916-L          "spacer-loose 1/16"""                             2
+533     ...4     01-916-S          "spacer-tight 1/16"""                             2
+534     ...4     5860-09374-00     cp prec met 7309fs                                1
+535     ...4     5860-06244-00     cp prec met 7207FSn                               1
+536     ..3      20-6516           tinnerman sp/nut C06704-Z4-4                      1
+537     ..3      23-6577           rubber bumper plug 5/8                            1
+538     ..3      4105-01019-10     sms #5X5/8 p-rh-a                                 2
+539     ..3      4701-00002-00     lw #6 split                                       2
+540     ..3      4010-01066-06     cs 10-32 X 3/8 sh                                 2
+541     ..3      4701-00004-00     lw #10 split                                      2
+542     ..3      4006-01005-06     ms 6-32X3/8 p-ph                                  3
+543     ..3      4406-01117-00     nut 6-32 hex                                      3
+544     ..3      4006-01017-04     ms 6-32X1/4 p-rh-s                                2
+545     ..3      4008-01079-05     cs 8-32X5/16 h-soc                                2
+546     ..3      01-9375           brkt switch mtg                                   1
+547     ..3      4701-00003-00     lw #8 split                                       2
+548     .2       A-15205-R-2       electronc flipper asy-blu coil                    1
+549     ..3      B-13104-R         flipper bracket staked assy                       1
+550     ..3      B-13882-R         crank link assy                                   1
+551     ...4     B-13884-R         flipper crank assy                                1
+552     ....5    01-8073-R         crank-flipper right                               1
+553     ....5    4700-00107-01     fw modified crank washer                          1
+554     ....5    RM-23-06          "heat shrink tubing 1/4"" DWP"                  0.5
+555     ....5    4010-01066-20     cs 10-32X1 1/4 sh                                 1
+556     ....5    4410-01127-00     nut 10-32 hex                                     1
+557     ....5    4700-00107-00     fw .203X.625X.104                                 1
+558     ....5    4701-00004-00     lw #10 split                                      1
+559     ....5    01-9376           brkt retain spring                                1
+560     ...4     A-10656           flipper link assy                                 1
+561     ....5    02-4219           plunger coil                                      1
+562     .....6   02-4219.1         plunger-coil                                      1
+563     ....5    03-8050-1         flipper link                                      1
+564     ....5    20-9370-1         pin spl 5/32 x 7/16                               1
+565     ...4     02-4179           bushing link spacer                               1
+566     ...4     4010-01086-14     cs 10-32X7/8 sh                                   1
+567     ...4     4700-00023-00     fw .203X.625X.059                                 2
+568     ...4     4701-00004-00     lw #10 split                                      1
+569     ...4     4410-01132-00     nut 10-32 esn                                     1
+570     ..3      A-12390           flpr stop brkt                                    1
+571     ..3      FL-11629          flipper coil-blue                                 1
+572     ..3      01-7695-1         brkt-solenoid                                     1
+573     ..3      03-7066-5         tubing-coil                                       1
+574     ..3      03-7568           bushing-flipper                                   1
+575     ..3      10-364            spring-retractor                                  1
+576     ..3      SW-1A-194         switch assy-make                                  1
+577     ...4     06-1-20           blade-contact                                     1
+578     ...4     06-2V-14          blade-contact                                     1
+579     ...4     03-7007-4A        tubing-switch                                     2
+580     ...4     01-916-L          "spacer-loose 1/16"""                             2
+581     ...4     01-916-S          "spacer-tight 1/16"""                             2
+582     ...4     5860-09374-00     cp prec met 7309fs                                1
+583     ...4     5860-06244-00     cp prec met 7207FSn                               1
+584     ..3      20-6516           tinnerman sp/nut C06704-Z4-4                      1
+585     ..3      23-6577           rubber bumper plug 5/8                            1
+586     ..3      4105-01019-10     sms #5X5/8 p-rh-a                                 2
+587     ..3      4701-00002-00     lw #6 split                                       2
+588     ..3      4010-01066-06     cs 10-32 X 3/8 sh                                 2
+589     ..3      4701-00004-00     lw #10 split                                      2
+590     ..3      4006-01005-06     ms 6-32X3/8 p-ph                                  3
+591     ..3      4406-01117-00     nut 6-32 hex                                      3
+592     ..3      4006-01017-04     ms 6-32X1/4 p-rh-s                                2
+593     ..3      4008-01079-05     cs 8-32X5/16 h-soc                                2
+594     ..3      01-9375           brkt switch mtg                                   1
+595     ..3      4701-00003-00     lw #8 split                                       2
+596     .2       A-15208           back panel assy                                   1
+597     ..3      11-831-50005      back panel-50005                                  1
+598     ..3      A-15339           3 lamp pcb assy                                   1
+599     ...4     A-15339-AI        3 lamp pcb assy                                   1
+600     ....5    5768-13162-00     PCB-3 lamp                                        1
+601     ....5    5070-09054-00     diode-1N4004 1.0a                                 3
+602     ...4     24-8768           bulb #555 6.3Volts .25Amps                        3
+603     ...4     24-8767           socket-pcb twist                                  3
+604     ...4     5791-10871-05     5h spl sq pin .156                                1
+605     ..3      4106-01114-08     tcs #6X1/2 pl-hwh t-17                            3
+606     ..3      4106-01033-08B    sms #6X 1/2 p-tr-hd-a                             7
+607     ..3      01-10726          leg-rear guide                                    2
+608     ..3      4506-01106-16B    sss 6-32x1                                        4
+609     ..3      4406-01128-00     nut 6-32 keps                                     4
+610     ..3      31-1676A-1        plfd plastic-fishtales                            1
+611     ..3      H-15912           back panel gi cable                               1
+612     ...4     H-15912-C         back panel gi cable-cut wire                      1
+613     ....5    HW-30018-97       wire 18awg wht/vio                               11
+614     ....5    HW-30018-7        wire 18awg violet                                11
+615     ....5    CW-30022-26       wire 22awg red/blu                               17
+616     ....5    CW-30022-48       wire 22awg yel/gry                               17
+617     ...4     5791-09400-00     4P1490 03-09-2042                                 1
+618     ...4     5820-09080-00     terminal-pm1190 02-09-2101                        2
+619     ...4     5820-13237-00     male term pin .093 18-22                          2
+620     ...4     03-7520-2         tie wrap-nylon 3 7/8                              4
+621     ..3      A-12887           socket & #555 bulb assy                           4
+622     ..3      CW-30022-4        wire 22awg yellow                                36
+623     ..3      03-7655-8         "clamp cable 1/2""dia"                            1
+624     ..3      A-8882            lite skt assy w/dio                               1
+625     ...4     A-8882-1          socket & #44 bulb assy                            1
+626     ...4     5070-09054-00     diode-1N4004 1.0a                                 1
+627     ..3      4106-01115-06Y    sms #6x3/8 pl-hwh-yel                             5
+628     .2       A-15211           1 bank drop target assy                           1
+629     ..3      03-8750           tgt-flush                                         1
+630     ..3      A-14617           brkt & post assy                                  1
+631     ..3      4408-01119-00     nut 8-32 esn                                      4
+632     ..3      A-11397           drop tgt stop bkt                                 1
+633     ..3      AE-26-1200        coil assy comp                                    1
+634     ...4     MW-130-26         magnet wire-130deg c sns 26ga                     0
+635     ...4     16-8943-8         coil tape-1 3/8 wide                              0
+636     ...4     A-22181           small bobbin assy                                 0
+637     ....5    03-7041-1         bobbin                                            0
+638     ....5    01-14673          terminal coil                                     0
+639     ....5    07-6688-17        rivet 5/32X1/8                                    0
+640     ..3      01-8413           brkt coil mtg                                     1
+641     ..3      03-7066-4         tubing-coil                                       1
+642     ..3      A-11388-2         plunger & reset plate assy                        1
+643     ...4     02-3972-1         plunger                                           1
+644     ...4     01-10380          plate-sngl target reset                           1
+645     ...4     4410-01132-01     nut 10-32 esna/ntm                                1
+646     ..3      4700-00072-00     fw .265X.500X.032                                 4
+647     ..3      10-392            spring-extension                                  1
+648     ..3      20-8712-25        e ring 1/4 shaft                                  2
+649     ..3      01-10183          brkt switch                                       1
+650     ..3      4006-01003-03     ms 6-32X3/16 p-ph-s                               6
+651     ..3      03-8034           stop-single target                                1
+652     ..3      4010-01025-14     ms 10-32X7/8 p-rh                                 1
+653     ..3      07-6688-17N       rivet 5/32X1/8 nickel                             2
+654     ..3      10-433            spring-extension                                  1
+655     ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+656     ..3      5647-12693-31     switch sub mini micro                             1
+657     ..3      01-8600           insulator                                         1
+658     ..3      4002-01105-10     ms 2-56x5/8 p-ph-s                                2
+659     ..3      01-8240           plate-nut #2-56                                   1
+660     ..3      01-8647-R         actuator                                          1
+661     ..3      03-8630           guide actuator                                    1
+662     ..3      A-15821           armature sub assy                                 1
+663     ..3      A-15209           frame & eyelet assy                               1
+664     ..3      10-363            spring-extension                                  1
+665     ..3      SM1-26-600        coil assy                                         1
+666     ...4     A-11147-1         bobbin assy                                       0
+667     ....5    02-3910           core coil                                         0
+668     ....5    03-7045           bobbin                                            0
+669     ....5    5825-08639-00     sld lg berg #3056                                 0
+670     ...4     MW-130-26         magnet wire-130deg c sns 26ga                     0
+671     ...4     16-8797-10        coil tape-9/16 wide                               0
+672     ..3      4008-01021-06     ms 8-32X3/8 p-rh-brass                            1
+673     ..3      4700-00089-00     fw .172X.437X.062 brass                           1
+674     ..3      4701-00003-00     lw #8 split                                       1
+675     .2       A-15333-1         3 lamp brd & spacer assy                          1
+676     ..3      A-15333           3 lamp pcb assy                                   1
+677     ...4     A-15333-AI        3 lamp pcb assy                                   1
+678     ....5    5768-13156-00     PCB-3 lamp                                        1
+679     ....5    5070-09054-00     diode-1N4004 1.0a                                 3
+680     ...4     24-8767           socket-pcb twist                                  3
+681     ...4     24-8768           bulb #555 6.3Volts .25Amps                        3
+682     ...4     5791-10871-05     5h spl sq pin .156                                1
+683     ..3      03-8022-1         "spacer .541 L"""                                 2
+684     .2       A-15334-1         4 lamp brd & spacer assy                          1
+685     ..3      A-15334           4 lamp pcb assy                                   1
+686     ...4     A-15334-AI        4 lamp pcb assy                                   1
+687     ....5    5768-13157-00     PCB-4 lamp                                        1
+688     ....5    5070-09054-00     diode-1N4004 1.0a                                 4
+689     ...4     24-8767           socket-pcb twist                                  4
+690     ...4     24-8768           bulb #555 6.3Volts .25Amps                        4
+691     ...4     5791-10871-06     6h spl sq pin .156                                1
+692     ..3      03-8022-1         "spacer .541 L"""                                 3
+693     .2       A-15335-1         5 lamp brd & spacer assy                          1
+694     ..3      A-15335           5 lamp pcb assy                                   1
+695     ...4     A-15335-AI        5 lamp pcb assy                                   1
+696     ....5    5768-13158-00     PCB-5 lamp                                        1
+697     ....5    5070-09054-00     diode-1N4004 1.0a                                 5
+698     ...4     24-8767           socket-pcb twist                                  5
+699     ...4     24-8768           bulb #555 6.3Volts .25Amps                        5
+700     ...4     5791-10871-07     7h spl sq pin .156                                1
+701     ..3      03-8022-1         "spacer .541 L"""                                 3
+702     .2       A-15336-1         6 lamp brd & spacer assy                          1
+703     ..3      A-15336           6 lamp pcb assy                                   1
+704     ...4     A-15336-AI        6 lamp pcb assy                                   1
+705     ....5    5768-13159-00     PCB-6 lamp                                        1
+706     ....5    5070-09054-00     diode-1N4004 1.0a                                 6
+707     ...4     24-8767           socket-pcb twist                                  6
+708     ...4     24-8768           bulb #555 6.3Volts .25Amps                        6
+709     ...4     5791-10871-08     8h spl sq pin .156                                1
+710     ..3      03-8022-1         "spacer .541 L"""                                 4
+711     .2       A-15337-1         15 lamp brd & spacer assy                         1
+712     ..3      A-15337           15 lamp pcb assy                                  1
+713     ...4     A-15337-AI        15 lamp pcb assy                                  1
+714     ....5    5768-13160-00     PCB-15 lamp                                       1
+715     ....5    5070-09054-00     diode-1N4004 1.0a                                15
+716     ....5    5010-09534-00     res 0ohm 0w                                       2
+717     ...4     24-8767           socket-pcb twist                                 15
+718     ...4     24-8768           bulb #555 6.3Volts .25Amps                       15
+719     ...4     5791-10871-09     9h spl sq pin .156                                1
+720     ..3      03-8022-1         "spacer .541 L"""                                 5
+721     .2       A-15340-1         motor emi/brake asy-w/spacers                     1
+722     ..3      03-8022-1         "spacer .541 L"""                                 4
+723     ..3      A-15340           motor emi w/brake assy                            1
+724     ...4     A-15340-AI        motor emi w/brake asy-auto ins                    0
+725     ....5    5768-13163-01     pcb-motor emi w/brake                             0
+726     ....5    5010-08998-00     res 2.2k 1/4w 5%                                  0
+727     ....5    5070-09054-00     diode-1N4004 1.0a                                 0
+728     ...4     5551-09822-00     ind 4.7 uh 3a                                     0
+729     ...4     5791-12273-03     3h str sq lck .156                                0
+730     ...4     5791-12273-02     2h str sq lck .156                                0
+731     ...4     5162-12635-00     trans tip 102                                     0
+732     .2       A-15373           ball guide unit assy                              1
+733     ..3      A-15177           ball guide assy                                   1
+734     ...4     01-10576          brkt ball deflector                               1
+735     ...4     01-10537          ball guide                                        1
+736     ..3      12-7035           gate-wire                                         1
+737     ..3      A-11271           socket & #44 bulb assy                            1
+738     ...4     A-11271-1         skt & bulb sub-assy                               1
+739     ...4     5070-09054-00     diode-1N4004 1.0a                                 1
+740     ..3      H-15534           bait shop cable                                   1
+741     ...4     H-15534-C         bait shop cable-cut wire                          1
+742     ....5    CW-30022-29       wire 22awg red/wht                                9
+743     ....5    CW-30022-63       wire 22awg blu/org                                9
+744     ....5    CW-30022-21       wire 22awg red/brn                               12
+745     ....5    CW-30022-47       wire 22awg yel/vio                               12
+746     ...4     03-7520-2         tie wrap-nylon 3 7/8                              2
+747     ...4     5791-10772-00     2P11625 03-06-2023                                2
+748     ...4     5820-09078-00     pm1560 02-06-2101                                 4
+749     ...4     RM-23-03          heat shrink tubing 3/16 dia                       6
+750     ..3      31-1676-7         plfd plastic-fishtales                            1
+751     ..3      4006-01003-08     ms 6-32X1/2 p-ph-s                                2
+752     ..3      4006-01003-14     ms 6-32X7/8 p-ph-s                                2
+753     ..3      4406-01128-00     nut 6-32 keps                                     3
+754     ..3      03-8022-5         "spacer .343 L"""                                 2
+755     ..3      A-9302            socket & #89 bulb assy                            1
+756     .2       A-15401           spin target light unit assy                       1
+757     ..3      A-15402           spin target sub assy                              1
+758     ...4     01-10658          brkt spin tgt light mtg                           1
+759     ..3      03-7796           washer-.07                                        3
+760     ..3      12-6780           wire actuator                                     1
+761     ..3      20-9597           prism foil                                        2
+762     ..3      A-11915           shaft & target assy                               1
+763     ..3      A-15415           5 lamp pcb assy                                   1
+764     ...4     A-15415-AI        5 lamp pcb assy                                   1
+765     ....5    5768-13178-00     PCB-5 lamp                                        1
+766     ....5    5070-09054-00     diode-1N4004 1.0a                                 5
+767     ...4     24-8767           socket-pcb twist                                  5
+768     ...4     24-8768           bulb #555 6.3Volts .25Amps                        5
+769     ...4     5791-10871-07     7h spl sq pin .156                                1
+770     ..3      31-1676-8         plfd plastic-fishtales                            1
+771     ..3      4006-01003-14     ms 6-32X7/8 p-ph-s                                2
+772     ..3      03-8022-5         "spacer .343 L"""                                 2
+773     ..3      03-8063-6         sleeve lite-yellow                                5
+774     ..3      4008-01003-08     ms 8-32 X 1/2 p-ph-s                              2
+775     ..3      4408-01128-00     nut 8-32 keps                                     2
+776     ..3      4406-01128-00     nut 6-32 keps                                     2
+777     ..3      A-12336-1         socket & #906 bulb assy                           1
+778     ..3      07-6688-18N       rivet 3/16X1/8 nickel                             1
+779     ..3      4700-00003-00     fw .125X.281X.032                                 1
+780     ..3      H-15684           truth flash cable                                 1
+781     ...4     H-15684-C         truth flash cable-cut wire                        1
+782     ....5    CW-30022-29       wire 22awg red/wht                               10
+783     ....5    CW-30022-62       wire 22awg blu/red                               10
+784     ...4     5791-10772-00     2P11625 03-06-2023                                1
+785     ...4     5820-09078-00     pm1560 02-06-2101                                 2
+786     ...4     RM-23-01          tubing-heat shrink-1/8 poly                       8
+787     .2       A-15403-1         flipper return frame assy-left                    1
+788     ..3      01-6794-L-1       ball guide-flp rtn                                2
+789     ..3      03-8022-1         "spacer .541 L"""                                 9
+790     ..3      31-1676-3         plfd plastic-fishtales                            1
+791     ..3      4006-01027-40     ms 6-32X2 1/2 p-rwh                               3
+792     .2       A-15403-2         flipper return frame asy-right                    1
+793     ..3      01-6794-R-1       ball guide-flp rtn                                2
+794     ..3      03-8022-1         "spacer .541 L"""                                 9
+795     ..3      31-1676-4         plfd plastic-fishtales                            1
+796     ..3      4006-01027-40     ms 6-32X2 1/2 p-rwh                               3
+797     .2       A-15404           reel enter ramp assy                              1
+798     ..3      12-7010           ramp-reel enter                                   1
+799     ..3      5647-12693-17     switch sub mini micro                             1
+800     ..3      4002-01105-08     ms 2-56x1/2 p-ph-s                                2
+801     ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+802     ..3      01-10666          brkt wire switch cover                            1
+803     ..3      31-1683-4         decal-playfield                                   1
+804     ..3      H-15530           ramp exit switch cable                            1
+805     ...4     H-15530-C         ramp exit switch cbl-cut wire                     1
+806     ....5    CW-30022-5        wire 22awg green                                 10
+807     ....5    CW-30022-9        wire 22awg white                                 10
+808     ...4     5791-10772-00     2P11625 03-06-2023                                1
+809     ...4     5820-09078-00     pm1560 02-06-2101                                 2
+810     ...4     RM-23-01          tubing-heat shrink-1/8 poly                       9
+811     .2       A-16637-1         playfield slide assy-left                         1
+812     ..3      01-11436-1        slide-plfd                                        1
+813     ..3      01-10664          retainer-lever                                    1
+814     ..3      02-4615           shoulder rivet                                    1
+815     .2       A-16637-2         playfield slide assy-right                        1
+816     ..3      01-11436-2        slide-plfd                                        1
+817     ..3      01-10664          retainer-lever                                    1
+818     ..3      02-4615           shoulder rivet                                    1
+819     .2       A-15405           fish rod & reel cover assy                        1
+820     ..3      03-8646           cover-fish rod/reel                               1
+821     ..3      31-1682-1         decal-playfield                                   1
+822     ..3      31-1682-2         decal-playfield                                   1
+823     ..3      31-1682-3         decal-playfield                                   1
+824     .2       A-15412           right wire ramp assy                              1
+825     ..3      12-7013           ramp-right                                        1
+826     ..3      23-6686           pad-round                                         1
+827     .2       A-15413           left wire ramp assy                               1
+828     ..3      12-7012           ramp-left                                         1
+829     ..3      23-6686           pad-round                                         1
+830     .2       A-15470-1         3 lamp brd & spacer assy                          2
+831     ..3      A-15470           3 lamp pcb assy                                   2
+832     ...4     A-15470-AI        3 lamp pcb assy                                   2
+833     ....5    5768-13207-00     PCB-3 lamp                                        2
+834     ....5    5070-09054-00     diode-1N4004 1.0a                                 6
+835     ...4     24-8767           socket-pcb twist                                  6
+836     ...4     24-8768           bulb #555 6.3Volts .25Amps                        6
+837     ...4     5791-10871-05     5h spl sq pin .156                                2
+838     ..3      03-8022-1         "spacer .541 L"""                                 4
+839     .2       A-15506           plfd plst & brkt assy                             1
+840     ..3      01-10723          brkt plfd plastic                                 1
+841     ..3      07-6688-18N       rivet 3/16X1/8 nickel                             2
+842     ..3      31-1676A-2        plfd plastic-fishtales                            1
+843     ..3      4700-00003-00     fw .125X.281X.032                                 2
+844     .2       A-15531           wire ramp cover assy                              1
+845     ..3      01-10667          brkt wire ramp cover                              1
+846     ..3      31-1683-1         decal-playfield                                   1
+847     ..3      31-1683-2         decal-playfield                                   1
+848     .2       A-15544-1         plfd plastic assy-50005                           1
+849     ..3      31-1676-13        plfd plastic-fishtales                            1
+850     ..3      03-8022-3         "spacer 1.171 L"""                                2
+851     ..3      4106-01022-27     sms #6X1-11/16 p-rwh-a                            2
+852     .2       A-15544-2         plfd plastic assy-50005                           1
+853     ..3      31-1676-20        plfd plastic-fishtales                            1
+854     ..3      03-8022-3         "spacer 1.171 L"""                                1
+855     ..3      4106-01022-27     sms #6X1-11/16 p-rwh-a                            1
+856     .2       A-15544-3         plfd plastic assy-50005                           1
+857     ..3      31-1676-18        plfd plastic-fishtales                            1
+858     ..3      03-8022-3         "spacer 1.171 L"""                                2
+859     ..3      4106-01022-27     sms #6X1-11/16 p-rwh-a                            2
+860     .2       A-15544-4         plfd plastic assy-50005                           1
+861     ..3      31-1676-6         plfd plastic-fishtales                            1
+862     ..3      03-8022-3         "spacer 1.171 L"""                                2
+863     ..3      4106-01022-27     sms #6X1-11/16 p-rwh-a                            2
+864     .2       A-15544-5         plfd plastic assy-50005                           1
+865     ..3      31-1676-11        plfd plastic-fishtales                            1
+866     ..3      03-8022-3         "spacer 1.171 L"""                                2
+867     ..3      4106-01022-27     sms #6X1-11/16 p-rwh-a                            2
+868     .2       A-15544-6         plfd plastic assy-50005                           1
+869     ..3      03-8022-6         "spacer .733 L"""                                 1
+870     ..3      31-1676-14        plfd plastic-fishtales                            1
+871     ..3      03-8022-2         "spacer 1.062 L"""                                1
+872     ..3      4006-01005-24     ms 6-32 X1 1/2 p-ph                               1
+873     ..3      4006-01005-18     ms 6-32X1-1/8 p-ph                                1
+874     .2       A-15544-7         plfd plastic assy-50005                           1
+875     ..3      31-1676-5         plfd plastic-fishtales                            1
+876     ..3      31-1676A-3        plfd plastic-fishtales                            1
+877     ..3      4106-01022-27     sms #6X1-11/16 p-rwh-a                            1
+878     ..3      03-8022-3         "spacer 1.171 L"""                                2
+879     ..3      4006-01005-20     ms 6-32X1-1/4 p-ph                                2
+880     ..3      03-8022-1         "spacer .541 L"""                                 1
+881     ..3      4406-01119-00     nut 6-32 esn                                      2
+882     ..3      01-10870          brkt deflector                                    1
+883     ..3      07-6688-18N       rivet 3/16X1/8 nickel                             2
+884     ..3      03-8022-6         "spacer .733 L"""                                 2
+885     ..3      4106-01033-08     sms #6X1/2 p-tr-hd-a                              1
+886     ..3      03-8044-9         post mini-tr red                                  1
+887     .2       A-15544-8         plfd plastic assy-50005                           1
+888     ..3      31-1676-21        plfd plastic-fishtales                            1
+889     ..3      03-8044-9         post mini-tr red                                  2
+890     ..3      4106-01033-08     sms #6X1/2 p-tr-hd-a                              2
+891     .2       A-15544-9         plfd plastic assy-50005                           1
+892     ..3      31-1676-15        plfd plastic-fishtales                            1
+893     ..3      03-8044-9         post mini-tr red                                  1
+894     ..3      4106-01033-08     sms #6X1/2 p-tr-hd-a                              1
+895     .2       A-15648           single lamp pcb & spacer assy                     4
+896     ..3      B-12224           single lamp assy                                  4
+897     ...4     B-12224-AI        sngl lamp & dio asy-auto insrt                    4
+898     ....5    5768-12312-00     pcb-single lamp                                   4
+899     ....5    5070-09054-00     diode-1N4004 1.0a                                 4
+900     ...4     24-8767           socket-pcb twist                                  4
+901     ...4     24-8768           bulb #555 6.3Volts .25Amps                        4
+902     ..3      03-8022-1         "spacer .541 L"""                                 8
+903     .2       A-15658-6         stat tgt-frt mtg95 oblg-op yel                    1
+904     ..3      SW-1A-178-6       switch-oblong tgt-yellow                          1
+905     ...4     A-11175           bld & contact assy                                1
+906     ....5    06-1-14           blade-contact                                     1
+907     ....5    5860-09374-00     cp prec met 7309fs                                1
+908     ...4     B-12582-6         blade & target assy                               1
+909     ....5    A-12581           blade & cntact assy                               1
+910     .....6   06-13H-14         blade-contact                                     1
+911     .....6   5860-09374-00     cp prec met 7309fs                                1
+912     ....5    03-8225-6         tgt oblong stat-op yellow                         1
+913     ....5    07-6697-4         rivet .125X.187x.218 zinc                         1
+914     ....5    4700-00003-00     fw .125X.281X.032                                 1
+915     ...4     01-916-H          "spacer- 3/32"""                                  1
+916     ...4     01-916-S          "spacer-tight 1/16"""                             2
+917     ...4     01-916-T          "spacer- 1/32"""                                  1
+918     ...4     03-7007-6         "tubing-3/8"""                                    2
+919     ...4     06-1F-14          blade-contact                                     2
+920     ...4     06-20-20          blade-back up                                     2
+921     ...4     06-73-2           blade-insulator                                   1
+922     ..3      01-3670           plate-switch curved                               1
+923     ..3      01-12346          brkt switch mtg 95degree red                      1
+924     ..3      01-8657           brkt stop                                         1
+925     ..3      07-6688-27        rivet 9/16X1/8                                    2
+926     ..3      23-6534-9         rubber protector 3/8                              1
+927     ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+928     .2       A-15698           opto sw brd & spacer assy                         1
+929     ..3      A-13901-1         opto switch pcb assy                              1
+930     ...4     A-13901-1-AI      opto ramp switch assy                             1
+931     ....5    5768-12686-00     pcb-opto ramp sw                                  1
+932     ....5    5010-08774-00     res 22K 1/4W 5%                                   2
+933     ....5    5010-09034-00     res 10k 1/4w 5%                                   1
+934     ....5    5010-09162-00     res 100k 1/4w 5%                                  2
+935     ....5    5010-09999-00     res 2K 1/4 W 5%                                   6
+936     ....5    5043-08980-00     cap 0.01m 50v +80-20 axial                        1
+937     ....5    5070-09054-00     diode-1N4004 1.0a                                 4
+938     ...4     16-8850-353       label-pcb asy id A-13901-1                        1
+939     ...4     5010-12733-00     res 220ohm 1w 5%                                  3
+940     ...4     5370-12272-00     ic LM339 quad comp                                1
+941     ...4     5791-12273-05     5h str sq lk .156                                 2
+942     ...4     5791-12273-07     7h str sq lck .156                                1
+943     ...4     5040-12298-00     cap 100M 40V-10+50 axial                          1
+944     ..3      20-9521           standoff pcb lock'g                               4
+945     .2       A-15741           stationary target & decal assy                    4
+946     ..3      31-1705           decal-stat target                                 4
+947     ..3      A-15330-2         sta tgt-frt mtg95 rect-op grn                     4
+948     ...4     A-11175           bld & contact assy                                4
+949     ....5    06-1-14           blade-contact                                     4
+950     ....5    5860-09374-00     cp prec met 7309fs                                4
+951     ...4     03-8656-2         "tgt-1.37x1"" opq green"                          4
+952     ...4     01-916-H          "spacer- 3/32"""                                  4
+953     ...4     01-916-T          "spacer- 1/32"""                                  4
+954     ...4     01-916-S          "spacer-tight 1/16"""                             8
+955     ...4     06-1F-14          blade-contact                                     8
+956     ...4     06-20-20          blade-back up                                     8
+957     ...4     01-8657           brkt stop                                         4
+958     ...4     06-73-2           blade-insulator                                   4
+959     ...4     01-3670           plate-switch curved                               4
+960     ...4     23-6684-2         rubber protector-target                           4
+961     ...4     03-7007-6         "tubing-3/8"""                                    8
+962     ...4     01-12346          brkt switch mtg 95degree red                      4
+963     ...4     07-6697-4         rivet .125X.187x.218 zinc                         4
+964     ...4     A-8378            blade & contact assy                              4
+965     ....5    06-13G-14         blade-contact                                     4
+966     ....5    5860-09374-00     cp prec met 7309fs                                4
+967     ...4     4700-00003-00     fw .125X.281X.032                                 4
+968     ...4     07-6688-27        rivet 9/16X1/8                                    8
+969     ...4     5070-09054-00     diode-1N4004 1.0a                                 4
+970     .2       A-15749           coil & brkt assy                                  1
+971     ..3      AE-27-1200        coil assy                                         1
+972     ...4     A-22181           small bobbin assy                                 0
+973     ....5    03-7041-1         bobbin                                            0
+974     ....5    01-14673          terminal coil                                     0
+975     ....5    07-6688-17        rivet 5/32X1/8                                    0
+976     ...4     MW-130-27         magnet wire-130deg c sns 27ga                     0
+977     ...4     16-8943-11        coil tape-1 3/8 wide                              0
+978     ..3      B-7572-1          brkt & stop assy                                  1
+979     ..3      01-8-508-S        brkt coil retainer                                1
+980     ..3      4006-01017-06     ms 6-32X3/8 p-rh-s                                2
+981     ..3      4406-01119-00     nut 6-32 esn                                      2
+982     ..3      03-7066           tubing-coil                                       1
+983     .2       A-8039-3          ball release assy                                 1
+984     ..3      A-6378            mtg plate assy                                    1
+985     ...4     01-3567           plate-mounting                                    1
+986     ...4     02-2991           stud kicker                                       1
+987     ..3      A-6889            kicker lever assy                                 1
+988     ...4     01-3568           lever-kicker                                      1
+989     ...4     02-2990           hub kicker                                        1
+990     ...4     02-3369           stud spring                                       1
+991     ..3      A-8038            coil stop assy                                    1
+992     ..3      AE-27-1200        coil assy                                         1
+993     ...4     A-22181           small bobbin assy                                 0
+994     ....5    03-7041-1         bobbin                                            0
+995     ....5    01-14673          terminal coil                                     0
+996     ....5    07-6688-17        rivet 5/32X1/8                                    0
+997     ...4     MW-130-27         magnet wire-130deg c sns 27ga                     0
+998     ...4     16-8943-11        coil tape-1 3/8 wide                              0
+999     ..3      03-7066           tubing-coil                                       1
+1000    ..3      03-7176-1         striker ring                                      1
+1001    ..3      10-101-4          spring-reset                                      1
+1002    ..3      20-8712-25        e ring 1/4 shaft                                  1
+1003    ..3      4006-01003-03     ms 6-32X3/16 p-ph-s                               2
+1004    ..3      02-2364           plunger-coil                                      1
+1005    ..3      20-8716-5         pin roll 1/8 x 7/16                               1
+1006    ..3      01-4251           ball return link                                  2
+1007    .2       A-8284-2          kicker switch assy                                2
+1008    ..3      CW-30022-03       wire 22awg blk/org                               24
+1009    ..3      A-11701           sw & brkt assy                                    2
+1010    ...4     SW-1A-114         switch-kicker                                     2
+1011    ....5    A-8394            blade & contact assy                              2
+1012    .....6   06-36-10          blade-contact                                     2
+1013    .....6   5860-09374-00     cp prec met 7309fs                                2
+1014    ....5    A-8395            blade & contact assy                              2
+1015    .....6   06-35-8           blade-contact                                     2
+1016    .....6   5860-09374-00     cp prec met 7309fs                                2
+1017    ....5    01-916-H          "spacer- 3/32"""                                  2
+1018    ....5    01-916-L          "spacer-loose 1/16"""                             4
+1019    ....5    01-916-T          "spacer- 1/32"""                                  2
+1020    ....5    01-916-S          "spacer-tight 1/16"""                             4
+1021    ....5    03-7007-6A        "tubing-13/32"""                                  4
+1022    ....5    06-20-20          blade-back up                                     2
+1023    ...4     01-3670           plate-switch curved                               2
+1024    ...4     01-624            brkt switch                                       2
+1025    ...4     07-6688-26        rivet 1/2X1/8                                     4
+1026    ..3      A-17186           stand up switch & brkt assy                       2
+1027    ...4     SW-1A-120-1       switch-stand up                                   2
+1028    ....5    A-8394            blade & contact assy                              2
+1029    .....6   06-36-10          blade-contact                                     2
+1030    .....6   5860-09374-00     cp prec met 7309fs                                2
+1031    ....5    A-8395            blade & contact assy                              2
+1032    .....6   06-35-8           blade-contact                                     2
+1033    .....6   5860-09374-00     cp prec met 7309fs                                2
+1034    ....5    01-916-L          "spacer-loose 1/16"""                             4
+1035    ....5    01-916-Q          "spacer- 1/64"""                                  2
+1036    ....5    01-916-S          "spacer-tight 1/16"""                             4
+1037    ....5    01-916-T          "spacer- 1/32"""                                  2
+1038    ....5    03-7007-5A        "tubing-11/32"""                                  4
+1039    ....5    06-17             blade-side lug                                    2
+1040    ....5    06-20-20          blade-back up                                     2
+1041    ...4     01-624            brkt switch                                       2
+1042    ...4     01-3670           plate-switch curved                               2
+1043    ...4     07-6688-27        rivet 9/16X1/8                                    4
+1044    ...4     5070-09054-00     diode-1N4004 1.0a                                 2
+1045    .2       A-8645            wire form & brkt assy                             1
+1046    ..3      01-497            brkt mtg wire                                     1
+1047    ..3      12-6581           wire                                              1
+1048    .2       A-8798            socket & #89 bulb assy                            2
+1049    .2       A-9381-R          eject switch & brkt assy                          1
+1050    ..3      A-7438-1          terminal strp assy                                1
+1051    ..3      01-7151           brkt guide                                        1
+1052    ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+1053    ..3      5647-12133-11     switch mini micro                                 1
+1054    ..3      4004-01003-10     ms 4-40X5/8 p-ph-s                                2
+1055    .2       A-9361-R-11       ball eject assy right                             1
+1056    ..3      A-6949-R          spring plate assy                                 1
+1057    ..3      A-7471-R          eject cam assy                                    1
+1058    ..3      A-8050-2          plunger assy                                      1
+1059    ...4     02-3407-1         plunger coil 2-5/16                               1
+1060    ...4     03-8085           armature link                                     1
+1061    ...4     20-8716-5         pin roll 1/8 x 7/16                               1
+1062    ..3      A-18146           mtg brkt assy                                     1
+1063    ..3      10-320            spring-eject (red)                                1
+1064    ..3      12-6227           clip-hair pin                                     2
+1065    ..3      4700-00030-00     fw .265X.500X.067                                 1
+1066    ..3      4700-00103-00     fw .265X.500X.015                                 1
+1067    .2       A-9415-2          jet bumper coil assy-2 pin con                    3
+1068    ..3      AE-26-1200        coil assy comp                                    3
+1069    ...4     MW-130-26         magnet wire-130deg c sns 26ga                     0
+1070    ...4     16-8943-8         coil tape-1 3/8 wide                              0
+1071    ...4     A-22181           small bobbin assy                                 0
+1072    ....5    03-7041-1         bobbin                                            0
+1073    ....5    01-14673          terminal coil                                     0
+1074    ....5    07-6688-17        rivet 5/32X1/8                                    0
+1075    ..3      B-7417            bkt & stop assy                                   3
+1076    ...4     04-10888          brkt-jet bumper stop                              3
+1077    ..3      01-1747           brkt coil retainer                                3
+1078    ..3      01-5492           link-armature                                     3
+1079    ..3      01-5493           link-armature                                     3
+1080    ..3      02-3406-1         plunger coil                                      3
+1081    ..3      03-7066           tubing-coil                                       3
+1082    ..3      10-326            spring-jet bumper                                 3
+1083    ..3      4006-01017-04     ms 6-32X1/4 p-rh-s                                6
+1084    ..3      H-19523           2 pin cable-solenoid                              3
+1085    ...4     5791-12570-00     1545-Z 03-09-2022                                 3
+1086    ...4     5820-09080-00     terminal-pm1190 02-09-2101                        6
+1087    ...4     HW-30018-2        wire 18awg red                                    9
+1088    ...4     HW-30018-7        wire 18awg violet                                 9
+1089    ..3      5070-09054-00     diode-1N4004 1.0a                                 3
+1090    .2       B-9362-R-3        coil & brkt-assy AE-26-1200                       2
+1091    ..3      AE-26-1200        coil assy comp                                    2
+1092    ...4     MW-130-26         magnet wire-130deg c sns 26ga                     0
+1093    ...4     16-8943-8         coil tape-1 3/8 wide                              0
+1094    ...4     A-22181           small bobbin assy                                 0
+1095    ....5    03-7041-1         bobbin                                            0
+1096    ....5    01-14673          terminal coil                                     0
+1097    ....5    07-6688-17        rivet 5/32X1/8                                    0
+1098    ..3      A-17808           brkt & stop                                       2
+1099    ..3      01-8-508-S        brkt coil retainer                                2
+1100    ..3      03-7066           tubing-coil                                       2
+1101    ..3      4006-01017-06     ms 6-32X3/8 p-rh-s                                4
+1102    ..3      4406-01119-00     nut 6-32 esn                                      4
+1103    ..3      H-19523           2 pin cable-solenoid                              2
+1104    ...4     5791-12570-00     1545-Z 03-09-2022                                 2
+1105    ...4     5820-09080-00     terminal-pm1190 02-09-2101                        4
+1106    ...4     HW-30018-2        wire 18awg red                                    6
+1107    ...4     HW-30018-7        wire 18awg violet                                 6
+1108    .2       B-10732-L         ball gate assy-l                                  1
+1109    ..3      01-6935           flap-ball gate                                    1
+1110    ..3      01-6938-1         brkt gate mtg                                     1
+1111    ..3      12-6657-L         gate-wire                                         1
+1112    ..3      12-6882-1         wire hinge pin 1 3/4                              1
+1113    .2       B-12030-1         jet bumper-leaf switch assy                       1
+1114    ..3      A-16443           jet bumper switch & diode assy                    1
+1115    ...4     SW-11A-37         switch-jet bumper                                 1
+1116    ....5    A-8198            blade & contact assy                              1
+1117    .....6   06-1-14           blade-contact                                     1
+1118    .....6   5860-09374-00     cp prec met 7309fs                                1
+1119    ....5    A-8199            blade & contact assy                              1
+1120    .....6   06-68D-8          blade-contact                                     1
+1121    .....6   5860-09374-00     cp prec met 7309fs                                1
+1122    ....5    01-916-Q          "spacer- 1/64"""                                  1
+1123    ....5    01-916-H          "spacer- 3/32"""                                  3
+1124    ....5    01-916-S          "spacer-tight 1/16"""                             2
+1125    ....5    03-7007-7A        "tubing 15/32"" LONG"                             2
+1126    ....5    06-17             blade-side lug                                    1
+1127    ....5    06-21B-12         blade-contact                                     1
+1128    ...4     5070-09054-00     diode-1N4004 1.0a                                 1
+1129    ..3      01-1168           brkt bumper switch mounting                       1
+1130    ..3      01-3670           plate-switch curved                               1
+1131    ..3      03-7395           switch actuator                                   1
+1132    ..3      4005-01003-12     ms 5-40x3/4 p-phs                                 2
+1133    ..3      4405-01117-00     nut 5-40 hex                                      2
+1134    .2       B-12030-2         jet bumper-leaf switch assy                       2
+1135    ..3      A-16443           jet bumper switch & diode assy                    2
+1136    ...4     SW-11A-37         switch-jet bumper                                 2
+1137    ....5    A-8198            blade & contact assy                              2
+1138    .....6   06-1-14           blade-contact                                     2
+1139    .....6   5860-09374-00     cp prec met 7309fs                                2
+1140    ....5    A-8199            blade & contact assy                              2
+1141    .....6   06-68D-8          blade-contact                                     2
+1142    .....6   5860-09374-00     cp prec met 7309fs                                2
+1143    ....5    01-916-Q          "spacer- 1/64"""                                  2
+1144    ....5    01-916-H          "spacer- 3/32"""                                  6
+1145    ....5    01-916-S          "spacer-tight 1/16"""                             4
+1146    ....5    03-7007-7A        "tubing 15/32"" LONG"                             4
+1147    ....5    06-17             blade-side lug                                    2
+1148    ....5    06-21B-12         blade-contact                                     2
+1149    ...4     5070-09054-00     diode-1N4004 1.0a                                 2
+1150    ..3      01-1168           brkt bumper switch mounting                       2
+1151    ..3      01-3670           plate-switch curved                               2
+1152    ..3      03-7395           switch actuator                                   2
+1153    ..3      4005-01003-12     ms 5-40x3/4 p-phs                                 4
+1154    ..3      4405-01117-00     nut 5-40 hex                                      4
+1155    .2       B-12665           nylon kicker assy                                 2
+1156    ..3      A-12664           crank assy                                        2
+1157    ..3      A-5653            kickr mtg bkt assy                                2
+1158    ..3      12-6227           clip-hair pin                                     4
+1159    ..3      4700-00030-00     fw .265X.500X.067                                 2
+1160    ..3      03-8085           armature link                                     2
+1161    ..3      02-2364           plunger-coil                                      2
+1162    ..3      20-8716-5         pin roll 1/8 x 7/16                               2
+1163    .2       B-8925            micro switch plate assy                           1
+1164    ..3      A-8924            mtg plate assy                                    1
+1165    ..3      23-6716-2         "tubing-clear 1 1/2"""                            2
+1166    ..3      4004-01003-10     ms 4-40X5/8 p-ph-s                                4
+1167    ..3      4005-01005-02     ms 5-40X1/8 p-ph                                  4
+1168    ..3      5070-09054-00     diode-1N4004 1.0a                                 2
+1169    ..3      5647-09957-00     switch micro E21-50H                              2
+1170    ..3      5825-09372-00     #6 solder lug-bent                                2
+1171    ..3      12-6546           wire-switch                                       1
+1172    ..3      12-6547           wire-switch                                       1
+1173    ..3      01-60-A           brkt wire mtg                                     1
+1174    ..3      01-60-F           brkt wire mtg                                     1
+1175    .2       B-8623            runway ball guide w/baffle                        1
+1176    .2       B-9414-3          jet bumper assy-red wafer                         3
+1177    ..3      A-4754            bumper ring assy                                  3
+1178    ..3      03-6009-A5        bumper wht base                                   3
+1179    ..3      03-6035-4         wafer-jet bumper red                              3
+1180    ..3      03-7443-5         bumper body wht                                   3
+1181    ..3      10-7              spring-jet bumper                                 3
+1182    ..3      24-8776           socket-wedge base                                 3
+1183    ..3      24-8768           bulb #555 6.3Volts .25Amps                        3
+1184    .2       CW-30022-4        wire 22awg yellow                                50
+1185    .2       C-9638            outhole eject assy                                1
+1186    ..3      A-6949-L          spring plate assy                                 1
+1187    ..3      A-8247            eject cam assy                                    1
+1188    ..3      A-18146           mtg brkt assy                                     1
+1189    ..3      10-362            spring-eject (plain)                              1
+1190    ..3      12-6227           clip-hair pin                                     2
+1191    ..3      4700-00030-00     fw .265X.500X.067                                 1
+1192    ..3      4700-00103-00     fw .265X.500X.015                                 1
+1193    ..3      02-3407-2         plunger coil 2-1/8                                1
+1194    ..3      03-8085           armature link                                     1
+1195    ..3      20-8716-5         pin roll 1/8 x 7/16                               1
+1196    .2       D-11335-1         ball popper assy                                  1
+1197    ..3      A-11336           armature assy                                     1
+1198    ..3      AE-24-900         coil sub-assy                                     1
+1199    ...4     A-22181           small bobbin assy                                 0
+1200    ....5    03-7041-1         bobbin                                            0
+1201    ....5    01-14673          terminal coil                                     0
+1202    ....5    07-6688-17        rivet 5/32X1/8                                    0
+1203    ...4     MW-130-24         magnet wire-130deg c sns 24ga                     0
+1204    ...4     16-8943-4         coil tape-1 3/8 wide                              0
+1205    ..3      B-11631           b/pop brkt sub-assy                               1
+1206    ...4     01-8466           brkt mtg                                          1
+1207    ...4     02-4299           pin locating                                      2
+1208    ..3      01-9794           brkt mtg                                          1
+1209    ..3      03-7067           tubing-coil                                       1
+1210    ..3      03-8053           cap-ball popper                                   1
+1211    ..3      10-135            spring-plunger                                    1
+1212    ..3      20-9314-7         pin dowel 3/32 x 1/2                              1
+1213    ..3      23-6420           grommet                                           1
+1214    ..3      4008-01017-04     ms 8-32X1/4 p-rh-s                                2
+1215    .2       H-15466           plfd switch cable                                 1
+1216    ..3      H-15466-C         plfd switch cable-cut wire                        1
+1217    ...4     CW-30022-91       wire 22awg wht/brn                              131
+1218    ...4     CW-30022-92       wire 22awg wht/red                              151
+1219    ...4     CW-30022-93       wire 22awg wht/org                              164
+1220    ...4     CW-30022-94       wire 22awg wht/yel                              147
+1221    ...4     CW-30022-95       wire 22awg wht/grn                              218
+1222    ...4     CW-30022-96       wire 22awg wht/blu                              213
+1223    ...4     CW-30022-97       wire 22awg wht/vio                              259
+1224    ...4     CW-30022-98       wire 22awg wht/gry                              295
+1225    ...4     CW-30022-51       wire 22awg grn/brn                              203
+1226    ...4     CW-30022-52       wire 22awg grn/red                              125
+1227    ...4     CW-30022-53       wire 22awg grn/org                              154
+1228    ...4     CW-30022-54       wire 22awg grn/yel                              177
+1229    ...4     CW-30022-50       wire 22awg grn/blk                              254
+1230    ...4     CW-30022-56       wire 22awg grn/blu                              198
+1231    ...4     CW-30022-84       wire 22awg gry/yel                              126
+1232    ...4     CW-30022-0        wire 22awg black                                122
+1233    ...4     CW-30022-3        wire 22awg orange                               144
+1234    ...4     CW-30022-05       wire 22awg blk/grn                              136
+1235    ...4     CW-30022-06       wire 22awg blk/blu                              136
+1236    ..3      5792-12116-09     9r mt/end 22/.100                                 2
+1237    ..3      5792-12116-06     6r mt/end 22/.100                                 1
+1238    ..3      5792-10817-04     4r mt/end 22/156                                  1
+1239    ..3      5792-10847-07     7r mt/thru 22/156                                 1
+1240    ..3      5792-10775-00     4R2004 03-06-1044                                 1
+1241    ..3      5792-10773-00     2R11625 03-06-1023                                3
+1242    ..3      5821-09079-00     pf1561 02-06-1101                                11
+1243    ..3      5822-10872-06     term 22-18 TAB.110                               12
+1244    ..3      5823-12119-00     plz key-mt .100                                   3
+1245    ..3      5823-10820-00     "plz key mt .156"""                               3
+1246    ..3      03-7520-2         tie wrap-nylon 3 7/8                             52
+1247    ..3      5792-09125-00     1R1625 03-06-1011                                 1
+1248    .2       H-15467           plfd lamp cable                                   1
+1249    ..3      H-15467-C         plfd lamp cable cut-wire                          1
+1250    ...4     CW-30022-41       wire 22awg yel/brn                              177
+1251    ...4     CW-30022-42       wire 22awg yel/red                              137
+1252    ...4     CW-30022-43       wire 22awg yel/org                              135
+1253    ...4     CW-30022-40       wire 22awg yel/blk                              207
+1254    ...4     CW-30022-45       wire 22awg yel/grn                              167
+1255    ...4     CW-30022-46       wire 22awg yel/blu                              100
+1256    ...4     CW-30022-47       wire 22awg yel/vio                               73
+1257    ...4     CW-30022-48       wire 22awg yel/gry                              110
+1258    ...4     CW-30022-21       wire 22awg red/brn                              264
+1259    ...4     CW-30022-20       wire 22awg red/blk                              270
+1260    ...4     CW-30022-23       wire 22awg red/org                              200
+1261    ...4     CW-30022-24       wire 22awg red/yel                              270
+1262    ...4     CW-30022-25       wire 22awg red/grn                              296
+1263    ...4     CW-30022-26       wire 22awg red/blu                              290
+1264    ...4     CW-30022-27       wire 22awg red/vio                              248
+1265    ...4     CW-30022-28       wire 22awg red/gry                              265
+1266    ...4     HW-30018-4        wire 18awg yellow                               148
+1267    ...4     HW-30018-94       wire 18awg wht/yel                              148
+1268    ...4     HW-30018-7        wire 18awg violet                               125
+1269    ...4     HW-30018-97       wire 18awg wht/vio                              125
+1270    ...4     HW-30018-3        wire 18awg orange                                38
+1271    ...4     HW-30018-93       wire 18awg wht/org                               38
+1272    ..3      5792-10818-11     11R mt/end 18/156                                 1
+1273    ..3      5792-12116-09     9r mt/end 22/.100                                 1
+1274    ..3      5792-10847-05     5r mt/thru 22/156                                 4
+1275    ..3      5792-10847-07     7r mt/thru 22/156                                 3
+1276    ..3      5792-10847-08     8r mt/thru 22/156                                 1
+1277    ..3      5792-10847-09     9r mt/thru 22/156                                 1
+1278    ..3      5823-10820-00     "plz key mt .156"""                              12
+1279    ..3      5823-12119-00     plz key-mt .100                                   1
+1280    ..3      03-7520-2         tie wrap-nylon 3 7/8                             46
+1281    ..3      5821-09079-00     pf1561 02-06-1101                                18
+1282    ..3      5820-09078-00     pm1560 02-06-2101                                 3
+1283    ..3      5792-10847-06     6r mt/thru 22/156                                 1
+1284    ..3      5792-10775-00     4R2004 03-06-1044                                 1
+1285    ..3      5792-10771-00     3R11625 03-06-1032                                1
+1286    ..3      5791-10770-00     3p11625 03-06-2032 nmt sm                         1
+1287    ..3      5792-10910-00     4R1490 03-09-1042                                 1
+1288    ..3      5821-09081-00     pf1189 02-09-1101                                 2
+1289    ..3      5792-09139-00     9R1625 03-06-1092                                 1
+1290    ..3      5792-10773-00     2R11625 03-06-1023                                1
+1291    ..3      5821-13238-00     female pin  .093 18-22                            2
+1292    ..3      5792-10817-09     9r mt/end 22/156                                  1
+1293    .2       H-15468           plfd solenoid cable                               1
+1294    ..3      H-15468-C         plfd solenoid cable- cut wire                     1
+1295    ...4     CW-30022-71       wire 22awg vio/brn                              140
+1296    ...4     CW-30022-72       wire 22awg vio/red                              115
+1297    ...4     CW-30022-73       wire 22awg vio/org                              102
+1298    ...4     CW-30022-74       wire 22awg vio/yel                              122
+1299    ...4     CW-30022-75       wire 22awg vio/grn                              139
+1300    ...4     CW-30022-76       wire 22awg vio/blu                               91
+1301    ...4     CW-30022-70       wire 22awg vio/blk                               54
+1302    ...4     CW-30022-78       wire 22awg vio/gry                               58
+1303    ...4     CW-30022-10       wire 22awg brn/blk                              139
+1304    ...4     CW-30022-12       wire 22awg brn/red                              138
+1305    ...4     CW-30022-13       wire 22awg brn/org                               89
+1306    ...4     CW-30022-14       wire 22awg brn/yel                              131
+1307    ...4     CW-30022-15       wire 22awg brn/grn                              131
+1308    ...4     CW-30022-16       wire 22awg brn/blu                               92
+1309    ...4     CW-30022-17       wire 22awg brn/vio                              131
+1310    ...4     CW-30022-18       wire 22awg brn/gry                               99
+1311    ...4     CW-30022-01       wire 22awg blk/brn                               87
+1312    ...4     CW-30022-02       wire 22awg blk/red                              103
+1313    ...4     CW-30022-03       wire 22awg blk/org                              116
+1314    ...4     CW-30022-04       wire 22awg blk/yel                              116
+1315    ...4     CW-30022-65       wire 22awg blu/grn                              118
+1316    ...4     CW-30022-60       wire 22awg blu/blk                              118
+1317    ...4     CW-30022-67       wire 22awg blu/vio                              118
+1318    ...4     CW-30022-61       wire 22awg blu/brn                              165
+1319    ...4     CW-30022-62       wire 22awg blu/red                               84
+1320    ...4     CW-30022-63       wire 22awg blu/org                              120
+1321    ...4     CW-30022-64       wire 22awg blu/yel                              108
+1322    ...4     HW-30018-73       wire 18awg vio/org                              397
+1323    ...4     HW-30018-74       wire 18awg vio/yel                              328
+1324    ...4     HW-30018-29       wire 18awg red/wht                              144
+1325    ...4     HW-30018-84       wire 18awg gry/yel                              141
+1326    ...4     HW-30018-64       wire 18awg blu/yel                              141
+1327    ...4     HW-30018-35       wire 18awg org/grn                              139
+1328    ...4     HW-30018-36       wire 18awg org/blu                              139
+1329    ...4     HW-30018-67       wire 18awg blu/vio                              139
+1330    ...4     HW-30018-68       wire 18awg blu/gry                              139
+1331    ..3      5792-10818-06     6r mt/end 18/156                                  1
+1332    ..3      5792-10818-13     13r mt/end 18/156                                 1
+1333    ..3      5792-10817-09     9r mt/end 22/156                                  3
+1334    ..3      5792-10817-13     13r mt/end 22/.156                                1
+1335    ..3      5792-10847-07     7r mt/thru 22/156                                 1
+1336    ..3      5792-09110-00     3R1396 03-09-1032                                 1
+1337    ..3      5820-09078-00     pm1560 02-06-2101                                 1
+1338    ..3      5821-09079-00     pf1561 02-06-1101                                 4
+1339    ..3      5823-10820-00     "plz key mt .156"""                               9
+1340    ..3      5792-10848-09     9r mt/thru 18/156                                 1
+1341    ..3      5792-10817-03     3r mt end 22/156                                  1
+1342    ..3      5792-10910-00     4R1490 03-09-1042                                 1
+1343    ..3      5792-10773-00     2R11625 03-06-1023                                2
+1344    ..3      5821-13238-00     female pin  .093 18-22                            3
+1345    ..3      5821-09081-00     pf1189 02-09-1101                                 3
+1346    ..3      03-7520-2         tie wrap-nylon 3 7/8                             59
+1347    ..3      5791-09124-00     1P1625 03-06-2011                                 1
+1348    .2       H-15653           50005-motor cable                                 1
+1349    ..3      H-15653-C         50005-motor cable cut wire                        1
+1350    ...4     CW-30022-2        wire 22awg red                                   20
+1351    ...4     CW-30022-0        wire 22awg black                                 20
+1352    ..3      5792-10817-02     2r mt end 22/156                                  1
+1353    ..3      03-7520-2         tie wrap-nylon 3 7/8                              5
+1354    .2       RM-27-07          "slit hose sleeve 1""-black"                     30
+1355    .2       RM-21-02          #3 tubing .234 id                                 4
+1356    .2       RM-21-03          #10 tubing .106id                                 3
+1357    .2       01-3569-1         runway-ball return                                1
+1358    .2       01-5575           brkt bottom arch mtg                              2
+1359    .2       01-6933           deflector-eject hole                              1
+1360    .2       01-8419           brkt playfield hanger                             2
+1361    .2       01-9511-1         plate-nut                                         2
+1362    .2       01-10379          brkt wheel cover                                  1
+1363    .2       01-10438          brkt playfield mtg                                1
+1364    .2       01-10489          brkt shooter ramp                                 1
+1365    .2       01-10599          ball guide-long runway                            1
+1366    .2       01-10621          plate-strike                                      1
+1367    .2       01-10721          leg support                                       2
+1368    .2       02-3905           post-#8 ws                                        3
+1369    .2       02-4660           post-single bumper #10                            2
+1370    .2       02-4659-1         post-#10 (3/8 deep ms top)                        3
+1371    .2       02-4252-40        spacer f-f 6-32 x2 1/2 (1/4hex                    1
+1372    .2       02-4657           post 6-32x 3.62 ramp mtg                          1
+1373    .2       02-4424-1         post-fastner 6-32/8-32 ms                         5
+1374    .2       02-4425-1         post fastner 8-32/8-32x5/8top                     2
+1375    .2       02-4426-1         post-fastner #8 ws 6-32 top                       8
+1376    .2       02-4426-2         post-fastner #8ws 6-32top                         2
+1377    .2       02-4435           "post spacer #8X 1 3/16"""                        2
+1378    .2       02-4433           "post spacer-#8x1 3/16"""                         2
+1379    .2       02-4434           "post-spacer #8x1"""                              3
+1380    .2       02-4658           post-double bumper #10                            1
+1381    .2       02-4493           post double bumper-hex base                       1
+1382    .2       02-4608           post-double bumper                                2
+1383    .2       03-7351-1-9       shield eject tr-red                               1
+1384    .2       03-7655-4         "clamp cable 1/4""dia"                            5
+1385    .2       03-7655-8         "clamp cable 1/2""dia"                            2
+1386    .2       03-7722-4         "clip-kwik 1/4""dia x 3/4""wide"                  1
+1387    .2       03-8254-9         cap-jet bumper-tr red                             3
+1388    .2       03-8365-16        post #8 trp-yellow                               14
+1389    .2       03-8318-9         hood lite-dbl side stip tr-red                    4
+1390    .2       03-8319-16        post #8 starred trp-yellow                       19
+1391    .2       03-8371           spacer spool #8                                   2
+1392    .2       03-8633           mount-level                                       1
+1393    .2       10-128            spring-kicker                                     4
+1394    .2       10-439            spring slide                                      2
+1395    .2       11-1054-A         rail wood-1/2x 1 1/8 x 9 1/2                      1
+1396    .2       11-1054-B         rail wood- 1/2 x1 1/8 x 10 1/2                    1
+1397    .2       11-1054-C         rail wood- 1/2 x 1 1/8 x 20                       1
+1398    .2       11-1054-D         rail wood- 1/2 x 1 1/8 x 41                       1
+1399    .2       12-6466-10        ball guide 2 1/2                                  2
+1400    .2       12-6542           gate-runway wire                                  1
+1401    .2       12-7011           ramp-catapult                                     1
+1402    .2       12-7024-1         ball guide                                        1
+1403    .2       12-7024-2         ball guide                                        1
+1404    .2       12-7033           ball guide                                        1
+1405    .2       20-6500           ball-steel 1-1/16                                 1
+1406    .2       20-9734-6         flipper euro w/shaft yellow                       2
+1407    .2       20-8716-17        pin roll 1/8 x 3/4                                2
+1408    .2       20-9691           level                                             1
+1409    .2       23-6300           "white rubber ring 5/16"""                        4
+1410    .2       23-6301           "white rubber ring 3/4"""                         3
+1411    .2       23-6306           "white rubber ring 2 1/2"""                       4
+1412    .2       23-6302           "white rubber ring 1"""                           3
+1413    .2       23-6307           "white rubber ring 3"""                           1
+1414    .2       23-6535           grommet-rubber white                              4
+1415    .2       23-6556           rubber bumper sleeve-black                        3
+1416    .2       23-6641-1         white rubber ring                                 7
+1417    .2       36-50005          scrn plds w/hardcoat fishtales                    1
+1418    ..3      31-1002-50005     plfd scrnd-fishtales                              1
+1419    ...4     A-13769-50005     plfd & inserts assy-fishtales                     1
+1420    ....5    03-8492-12        ins-circle 1.18 s/brst trp-org                    1
+1421    ....5    03-8310-11        ins-rect 3/4x1-1/2 stp trp-grn                    4
+1422    ....5    03-8493-9         "insert-round s/b  1"" trp-red"                   3
+1423    ....5    03-8493-13        "insert round s/b  1""clear"                      2
+1424    ....5    50-34-13          ins-rect 2.25 s/burst clear                       5
+1425    ....5    03-8459-11        insert-diamond trp-grn                            6
+1426    ....5    03-8359-18        insert-arrow 2 1/2 stp trp-vio                    2
+1427    ....5    03-8491-9         "insert-arrow s/b  2"" trp-red"                   4
+1428    ....5    03-8491-16        "insert-arrow s/b  2""trp-yellow"                 1
+1429    ....5    03-7644-12        insert-arrow 1 1/2 s/b trp-org                    1
+1430    ....5    4408-01118-00     nut 8-32 tee 3/8 l                                4
+1431    ....5    03-8495-11        "ins-square s/brst 1"" trp-grn"                   3
+1432    ....5    03-8489-11        ins-triang 1.18 s/brst trp-grn                    6
+1433    ....5    03-8489-13        ins-triang 1.18 s/brst clear                      4
+1434    ....5    03-8489-16        ins-triang 1.18 s/brst trp-yel                    6
+1435    ..3      16-9265           label-playfield bar code                          1
+1436    ..3      03-8674-2         mylar-fishtales jet bumper                        1
+1437    ..3      03-8674-3         mylar fishtales-plfd/small                        1
+1438    .2       31-1676-1         plfd plastic-fishtales                            1
+1439    .2       31-1676-12        plfd plastic-fishtales                            1
+1440    .2       31-1676-16        plfd plastic-fishtales                            1
+1441    .2       31-1676-17        plfd plastic-fishtales                            1
+1442    .2       31-1676-19        plfd plastic-fishtales                            1
+1443    .2       31-1676-23        plfd plastic-fishtales                            1
+1444    .2       31-1682-4         decal-playfield                                   1
+1445    .2       4104-01020-08     sms #4X1/2 p-rh-ab                                6
+1446    .2       4104-01001-06     sms #4X3/8 p-ph-a                                 2
+1447    .2       4104-01042-08     sms #4X1/2 p-flh-a                                2
+1448    .2       4106-01033-08     sms #6X1/2 p-tr-hd-a                             13
+1449    .2       4108-01022-08     sms #8X1/2 p-rwh-a                                4
+1450    .2       4106-01042-20     sms #6X1-1/4 p-flh-a                             25
+1451    .2       4106-01019-06     sms #6X3/8 p-rh-a                                 4
+1452    .2       4106-01115-06Y    sms #6x3/8 pl-hwh-yel                            44
+1453    .2       4106-01114-08     tcs #6X1/2 pl-hwh t-17                          175
+1454    .2       4700-00005-00     fw .141X.437X.032                                 6
+1455    .2       4205-01041-14     ws #5X7/8 p-flh                                   6
+1456    .2       4406-01118-00     nut 6-32 tee                                      6
+1457    .2       4506-01104-20     sss 6-32X1 1/4                                    9
+1458    .2       4008-01017-10     ms 8-32X5/8 p-rh-s                                7
+1459    .2       4106-01115-16     sms #6X1 pl-hwh-a                                33
+1460    .2       4408-01119-01     nut 8-32 esna/ntm                                12
+1461    .2       4410-01132-01     nut 10-32 esna/ntm                                7
+1462    .2       4700-00021-00     fw .203X.437X.032                                 9
+1463    .2       4408-01118-00     nut 8-32 tee 3/8 l                               25
+1464    .2       4406-01119-00     nut 6-32 esn                                     26
+1465    .2       4008-01059-20     ms 8-32X1 1/4 sl-hwh                              4
+1466    .2       4700-00011-00     fw .172X.437X.059                                17
+1467    .2       4108-01001-24     sms #8X1 1/2 p-ph-a                               5
+1468    .2       4108-01001-26     sms #8x1 5/8 p-ph-a                               9
+1469    .2       4008-01005-28     ms 8-32X1-3/4 p-ph                                9
+1470    .2       4006-01027-06     ms 6-32X3/8 p-rwh                                 7
+1471    .2       4008-01017-08     ms 8-32X1/2 p-rh-s                                2
+1472    .2       4006-01003-06     ms 6-32X3/8 p-ph-s                                2
+1473    .2       4006-01017-08     ms 6-32x1/2 p-rh-s                                1
+1474    .2       4106-01022-27     sms #6X1-11/16 p-rwh-a                            2
+1475    1        50005-BB          fishtales backbox                                 1
+1476    .2       A-12497           upper insert hinge assy                           1
+1477    .2       A-12498           lower insert hinge assy                           1
+1478    .2       A-12697-1         wpc power driver pcb assy                         1
+1479    ..3      A-12697-1-AI      wpc power driver-auto insert                      1
+1480    ...4     5763-12405-03     pcb-power driver                                  1
+1481    ...4     5010-08981-00     res 10K 1/2W 5%                                   1
+1482    ...4     5010-08991-00     res 4.7k 1/4w 5%                                 35
+1483    ...4     5010-08992-00     res 560 1/4w 5%                                  13
+1484    ...4     5010-08993-00     res 68  1/2W 5%                                  28
+1485    ...4     5010-08997-00     res 2.7k 1/4w 5%                                 29
+1486    ...4     5010-08998-00     res 2.2k 1/4w 5%                                  8
+1487    ...4     5010-09034-00     res 10k 1/4w 5%                                  13
+1488    ...4     5010-09085-00     res 1.5k 1/4w 5%                                  8
+1489    ...4     5010-09086-00     res 6.8K 1/4W 5%                                  1
+1490    ...4     5010-09224-00     res 270 1/4W 5%                                   9
+1491    ...4     5010-09314-00     res 1.2K 1/4W 5%                                  8
+1492    ...4     5010-09324-00     res 27k 1/4w 5%                                   1
+1493    ...4     5010-09358-00     res 1k 1/4w 5%                                   13
+1494    ...4     5010-09361-00     res 220 1/2W 5%                                   8
+1495    ...4     5010-09416-00     res 470 1/4w 5%                                  28
+1496    ...4     5010-09534-00     res 0ohm 0w                                       2
+1497    ...4     5010-11079-00     res 51 1/4W 5%                                    5
+1498    ...4     5010-12427-00     res .22ohm 1w 5%                                  8
+1499    ...4     5043-08980-00     cap 0.01m 50v +80-20 axial                        7
+1500    ...4     5043-08996-00     cap 0.1UF 50v +/-20 axial Z5U                     9
+1501    ...4     5043-09845-00     cap 1kp 50v +/-20 axial                           2
+1502    ...4     5048-10994-00     cap .33mfd 50v 20% axial Z5U                      1
+1503    ...4     5070-08919-00     diode-1N4148 150ma                                2
+1504    ...4     5070-09054-00     diode-1N4004 1.0a                                29
+1505    ...4     5041-09163-00     cap 2.2mfd 15v +20% axial                         1
+1506    ..3      16-8850-323       label-pcb assy id A-12697-1                       1
+1507    ..3      4004-01005-06     ms 4-40X3/8 p-ph                                  5
+1508    ..3      4006-01005-06     ms 6-32X3/8 p-ph                                  3
+1509    ..3      4404-01119-00     nut 4-40 esn                                      5
+1510    ..3      4406-01128-00     nut 6-32 keps                                     3
+1511    ..3      4010-01006-10     ms 10-32X5/8 p-ph-s                               2
+1512    ..3      5012-12632-00     res .12 ohm 10w 5%                                1
+1513    ..3      5012-12238-00     res 3.3K 5W 10%                                   2
+1514    ..3      5019-10143-00     sip res 470x9r                                    1
+1515    ..3      5040-08986-00     cap 100M 10V +/-20 axial                          1
+1516    ..3      5040-09421-00     cap 100m 25v +50-10 radial                        1
+1517    ..3      5040-09537-00     cap 100M 100V +/-20 radial                        1
+1518    ..3      5040-12313-00     cap 15KM 25V +-20% radial                         5
+1519    ..3      5100-09690-00     brdg 35a rect 200v                                5
+1520    ..3      5131-12725-00     triac BT138E 4 quad low gate                      5
+1521    ..3      5162-12422-00     trans uln 2803 oc-drl                             1
+1522    ..3      5162-12635-00     trans tip 102                                    36
+1523    ..3      5191-12179-00     trans TIP36C pnp                                  8
+1524    ..3      5192-12428-00     trans tip 107                                     8
+1525    ..3      5194-09055-00     trans MPSD52 pnp                                 34
+1526    ..3      5250-12634-00     reg LM 323 5V                                     1
+1527    ..3      5281-09486-00     ic 74LS374 8 d f/f                                6
+1528    ..3      5281-09487-00     ic 74LS74 dual d f/f                              4
+1529    ..3      5281-10182-00     ic 74LS240 l/drvr                                 1
+1530    ..3      5370-12272-00     ic LM339 quad comp                                3
+1531    ..3      5460-12423-00     ic lm 7812                                        1
+1532    ..3      5490-10892-00     ic opto isolator 4N25                             2
+1533    ..3      5580-08994-01     relay 4PDT 6VDC5A VS                              1
+1534    ..3      5671-09019-00     led dspl red                                      7
+1535    ..3      5701-09652-00     thermal pad to-3                                  1
+1536    ..3      5705-09199-00     h/sink 6030b                                      1
+1537    ..3      5705-12637-00     h/sink                                            1
+1538    ..3      5705-12638-00     h/sink 5298b                                      5
+1539    ..3      5705-12698-00     h/sink #62365 avvd                                1
+1540    ..3      5730-09071-00     fuse 8A 32V                                       1
+1541    ..3      5730-09797-00     fuse 3/4A 250V                                    1
+1542    ..3      5731-09651-00     fuse sb 5A 250V                                   7
+1543    ..3      5731-09432-00     fuse sb 7A 250V                                   1
+1544    ..3      5731-10356-00     fuse sb 3A 250V                                   6
+1545    ..3      5733-12060-01     fuse hldr pc MT3AG                               16
+1546    ..3      5791-10862-03     3h str sq pin .156                                3
+1547    ..3      5791-10862-04     4h str sq pin .156                                4
+1548    ..3      5791-10862-05     5h str sq pin .156                               10
+1549    ..3      5791-10862-06     6h str sq pin .156                                1
+1550    ..3      5791-10862-07     7h str sq pin .156                                3
+1551    ..3      5791-10862-09     9h str sq pin .156                                8
+1552    ..3      5791-10862-11     11h str sq pin .156                               2
+1553    ..3      5791-10862-12     12h str sq pin.156                                1
+1554    ..3      5791-10862-13     13h str sq pin .156                               1
+1555    ..3      5791-12461-05     5h str sq pin .100                                1
+1556    ..3      5791-12461-09     9h str sq pin .100                                3
+1557    ..3      5791-12516-00     34 hdr 2x17 .100                                  1
+1558    ..3      5824-09248-00     test point #1502-1                                8
+1559    .2       A-12742-50005     wpc cpu assy                                      1
+1560    ..3      A-12741-1         wpc cpu sub pcb assy                              1
+1561    ...4     A-12741-1-AI      wpc cpu sub assy-auto insert                      1
+1562    ....5    5764-12431-04     pcb-cpu wpc                                       1
+1563    ....5    5010-09034-00     res 10k 1/4w 5%                                  29
+1564    ....5    5010-09085-00     res 1.5k 1/4w 5%                                  6
+1565    ....5    5010-09314-00     res 1.2K 1/4W 5%                                 16
+1566    ....5    5010-09358-00     res 1k 1/4w 5%                                   26
+1567    ....5    5010-09416-00     res 470 1/4w 5%                                   9
+1568    ....5    5010-09534-00     res 0ohm 0w                                       9
+1569    ....5    5010-10258-00     res 1M 1/4W 5%                                    2
+1570    ....5    5010-10989-00     res 470K 1/4W 5%                                  1
+1571    ....5    5010-12104-00     res 22M 1/4W 5%                                   1
+1572    ....5    5043-08980-00     cap 0.01m 50v +80-20 axial                       16
+1573    ....5    5043-09030-00     cap .047M 50V +/-20 axial                         1
+1574    ....5    5043-09065-00     cap 470P 50V +/-20 axial                         24
+1575    ....5    5043-09491-00     cap 22P 1KV +/-10 axial                           4
+1576    ....5    5043-09492-00     cap 100p 50v +/-10 axial                          1
+1577    ....5    5043-09845-00     cap 1kp 50v +/-20 axial                           2
+1578    ....5    5048-11033-00     cap .022m 50v 10% axial                           1
+1579    ....5    5070-08919-00     diode-1N4148 150ma                               17
+1580    ....5    5070-09266-00     diode-1N5817 1.0a                                 2
+1581    ...4     5019-09362-00     sip 4.7k 9r 10 5%                                 1
+1582    ...4     5040-08986-00     cap 100M 10V +/-20 axial                          1
+1583    ...4     5160-10269-00     trans 2N3904 npn                                  1
+1584    ...4     5162-12422-00     trans uln 2803 oc-drl                             1
+1585    ...4     5281-09308-00     ic 74LS245 trncv                                  1
+1586    ...4     5281-09486-00     ic 74LS374 8 d f/f                                1
+1587    ...4     5281-09851-00     ic 74LS14 soic                                    1
+1588    ...4     5281-09867-00     ic 74LS244 oct buf                                3
+1589    ...4     5281-10182-00     ic 74LS240 l/drvr                                 4
+1590    ...4     5284-12651-00     ic 4584 hex schmtt                                1
+1591    ...4     5340-12278-00     s/ram 2064 150NS                                  1
+1592    ...4     5370-12272-00     ic LM339 quad comp                                4
+1593    ...4     5370-12687-00     ic mc 34064 reset chp                             1
+1594    ...4     5520-10438-00     crystal 8.0MHZ                                    1
+1595    ...4     5520-12084-00     crystal 32.768 khz dt38                           1
+1596    ...4     5551-09822-00     ind 4.7 uh 3a                                     1
+1597    ...4     5671-13732-00     led dspl red                                      3
+1598    ...4     5700-08985-00     socket ic 40pin .6                                1
+1599    ...4     5700-12088-00     "socket-dip 32.6P"""                              1
+1600    ...4     5700-12424-00     socket 84 pin plcc                                1
+1601    ...4     5791-10850-00     26h str sq .100                                   2
+1602    ...4     5791-10862-07     7h str sq pin .156                                1
+1603    ...4     5791-13830-08     8h str sq pin .100 solid tab                      1
+1604    ...4     5791-13830-09     9h str sq pin .100 solid tab                      4
+1605    ...4     5791-13830-12     12h str sq pin .100 solid tab                     1
+1606    ...4     5791-12516-00     34 hdr 2x17 .100                                  2
+1607    ...4     A-15814           battery holder assy                               1
+1608    ....5    03-8747           holder-bat                                        1
+1609    ....5    01-10884          contact-battery                                   6
+1610    ..3      5400-10320-00     ic mpu 68B09E                                     1
+1611    ..3      5410-12426-00     ic wpc-89 ASIC                                    1
+1612    ...4     5410-12426-01     ic wpc asic (clone 1)                             1
+1613    ..3      5880-09022-00     "battery 1.5v ""AA"" ALK"                         3
+1614    ..3      16-8850-394       label-pcb asy id A-12742-50005                    1
+1615    .2       A-12738-50005     wpc snd assy                                      1
+1616    ..3      A-12737-1         wpc sound assy                                    1
+1617    ...4     A-12737-1-AI      wpc sound assy auto insert                        1
+1618    ....5    5766-12433-04     pcb-wpc sound board                               1
+1619    ....5    5010-08772-00     res 15K 1/4W 5%                                   1
+1620    ....5    5010-08991-00     res 4.7k 1/4w 5%                                  1
+1621    ....5    5010-09034-00     res 10k 1/4w 5%                                  13
+1622    ....5    5010-09035-00     res 47k 1/4w 5%                                   1
+1623    ....5    5010-09036-00     res 100 1/4w 5%                                   1
+1624    ....5    5010-09134-00     res 150k 1/4w 5%                                  7
+1625    ....5    5010-09162-00     res 100k 1/4w 5%                                  2
+1626    ....5    5010-08774-00     res 22K 1/4W 5%                                   4
+1627    ....5    5010-09269-00     res 12k 1/4w 5%                                   1
+1628    ....5    5010-09358-00     res 1k 1/4w 5%                                    2
+1629    ....5    5010-09416-00     res 470 1/4w 5%                                  12
+1630    ....5    5010-09534-00     res 0ohm 0w                                       6
+1631    ....5    5010-10171-00     res 56 1/4W 5%                                    2
+1632    ....5    5010-10258-00     res 1M 1/4W 5%                                    1
+1633    ....5    5010-10650-00     res 62k 1/4w 5%                                   2
+1634    ....5    5010-10987-00     res 56k 1/4w 5%                                   2
+1635    ....5    5010-10989-00     res 470K 1/4W 5%                                  3
+1636    ....5    5010-12752-00     res 1ohm 1/4w 5% axial                            1
+1637    ....5    5010-12065-00     res 120k 1/4w 5%                                  2
+1638    ....5    5041-09031-00     cap 1M 25V +/-20 axial                            8
+1639    ....5    5041-09243-00     cap 10M 10V +/-10 axial                           2
+1640    ....5    5043-08980-00     cap 0.01m 50v +80-20 axial                       18
+1641    ....5    5043-08996-00     cap 0.1UF 50v +/-20 axial Z5U                     2
+1642    ....5    5048-11027-00     cap 33p 50v axial                                 2
+1643    ....5    5048-11028-00     cap 22p 50v axial                                 1
+1644    ....5    5048-11029-00     cap 100p 50v 5% axial                             1
+1645    ....5    5048-11030-00     cap 470p 50v axial                                1
+1646    ....5    5048-11031-00     cap .001m 50V 10% axial                           2
+1647    ....5    5048-11065-00     cap .0022 u 50v axial                             1
+1648    ....5    5048-11072-00     cap .0033m 50v axial                              2
+1649    ....5    5048-12036-00     cap .22m 50v axial                                1
+1650    ....5    5048-12745-00     cap 1800p 50v 10% axial                           2
+1651    ....5    5048-12746-00     cap 330p 18v 10% axial                            2
+1652    ....5    5048-12748-00     cap 220p 50v 10% axial                            3
+1653    ....5    5070-08919-00     diode-1N4148 150ma                                2
+1654    ...4     01-9980           shield-wire protect                               1
+1655    ...4     4004-01005-06     ms 4-40X3/8 p-ph                                  1
+1656    ...4     4104-01012-04     sms #4X1/4 p-ph-rlk                               2
+1657    ...4     4404-01119-00     nut 4-40 esn                                      1
+1658    ...4     5040-08986-00     cap 100M 10V +/-20 axial                          1
+1659    ...4     5040-09332-00     cap 47m 25v +50-10 axial                          5
+1660    ...4     5040-11036-00     cap 47mfd 16v radial 20% 105c                     2
+1661    ...4     5040-12729-00     cap 4700 mfd 35v radial                           2
+1662    ...4     5040-12750-00     cap 22m 35v radial                                1
+1663    ...4     5043-08980-00     cap 0.01m 50v +80-20 axial                        1
+1664    ...4     5048-11029-00     cap 100p 50v 5% axial                             1
+1665    ...4     5070-09045-00     diode-MR501 3.0a                                  4
+1666    ...4     5250-10495-00     reg 7912 1.0a                                     1
+1667    ...4     5281-09215-00     ic 74LS04 hex inv                                 1
+1668    ...4     5281-09246-00     ic 74LS139 2-4 dec                                1
+1669    ...4     5281-09486-00     ic 74LS374 8 d f/f                                3
+1670    ...4     5281-09487-00     ic 74LS74 dual d f/f                              4
+1671    ...4     5281-09745-00     ic 74LS138 dmltpx                                 2
+1672    ...4     5281-09850-00     ic 74LS11 trpl and                                1
+1673    ...4     5281-10577-00     ic 74LS125 q/b bfr                                1
+1674    ...4     5284-12651-00     ic 4584 hex schmtt                                1
+1675    ...4     5340-12278-00     s/ram 2064 150NS                                  1
+1676    ...4     5370-09691-00     ic 55536 CVSD                                     1
+1677    ...4     5370-12260-00     ic 3340 elec                                      1
+1678    ...4     5370-12728-00     ic audio amp lm1875 20w                           1
+1679    ...4     5370-12730-00     ic op amp TL084                                   2
+1680    ...4     5370-12742-00     ic op amp tl082                                   1
+1681    ...4     5371-12727-00     ic dac AD7524                                     1
+1682    ...4     5432-12726-00     ic ee prom pot x9503                              1
+1683    ...4     5460-12423-00     ic lm 7812                                        1
+1684    ...4     5460-12743-00     ic lm 7809                                        1
+1685    ...4     5520-09020-00     crystal 3.58mhz                                   1
+1686    ...4     5521-10931-00     osc 8mhz                                          1
+1687    ...4     5551-09822-00     ind 4.7 uh 3a                                     1
+1688    ...4     5700-08985-00     socket ic 40pin .6                                1
+1689    ...4     5700-09004-00     "socket IC 24P .6"""                              1
+1690    ...4     5700-09006-00     "socket IC 16P .3"""                              1
+1691    ...4     5700-12088-00     "socket-dip 32.6P"""                              3
+1692    ...4     5705-12755-00     h/sink-5299b-220                                  1
+1693    ...4     5733-12060-01     fuse hldr pc MT3AG                                2
+1694    ...4     5791-10862-04     4h str sq pin .156                                2
+1695    ...4     5791-10862-05     5h str sq pin .156                                1
+1696    ...4     5791-10862-07     7h str sq pin .156                                1
+1697    ...4     5791-12462-03     3h str sq lck .100                                1
+1698    ...4     5791-12462-04     4h str sq lck .100                                1
+1699    ...4     5791-12516-00     34 hdr 2x17 .100                                  1
+1700    ..3      A-5343-50005-3    U18 mus/spch game rom                             1
+1701    ...4     5343-12881-00     e prom 27c040 4meg 120nsec                        1
+1702    ...4     16-9419-2         label-rev L1-U18 sound-50005                      1
+1703    ....5    RM-33-01          label 1-1/8x7/16-white                            1
+1704    ..3      5370-11086-00     ic YM2151 sound                                   1
+1705    ..3      5371-11087-00     ic conv d/a YM3012                                1
+1706    ..3      5400-10320-00     ic mpu 68B09E                                     1
+1707    ..3      5731-10356-00     fuse sb 3A 250V                                   2
+1708    ..3      16-8850-396       label-pcb asy id A-12738-50005                    1
+1709    .2       A-13379           lock & plate assy                                 1
+1710    ..3      01-9519           plate-lock                                        1
+1711    ..3      20-9637           lock & cam kit                                    1
+1712    .2       A-14039           dot matrix controller assy                        1
+1713    ..3      A-14039-AI        dot matrix controller assy                        1
+1714    ...4     5010-08991-00     res 4.7k 1/4w 5%                                  1
+1715    ...4     5010-09036-00     res 100 1/4w 5%                                  10
+1716    ...4     5010-09224-00     res 270 1/4W 5%                                   1
+1717    ...4     5010-10171-00     res 56 1/4W 5%                                    1
+1718    ...4     5010-12832-00     res 47k 1/2w 5%                                   4
+1719    ...4     5010-12841-00     res 120 1/2w 5%                                   2
+1720    ...4     5043-08980-00     cap 0.01m 50v +80-20 axial                       35
+1721    ...4     5043-09492-00     cap 100p 50v +/-10 axial                          2
+1722    ...4     5043-09845-00     cap 1kp 50v +/-20 axial                           3
+1723    ...4     5070-09054-00     diode-1N4004 1.0a                                 1
+1724    ...4     5075-12824-00     zn 1n4742a 12v 1w                                 2
+1725    ...4     5075-12826-00     zn 1n4759 62v 1w                                  1
+1726    ...4     5075-12823-00     zn 1n4758a 56v 1w                                 2
+1727    ...4     5760-12710-11     pcb-dot disply controller                         1
+1728    ..3      4006-01003-06     ms 6-32X3/8 p-ph-s                                3
+1729    ..3      4406-01128-00     nut 6-32 keps                                     3
+1730    ..3      5012-12830-00     res 1.8k 5w 5%                                    1
+1731    ..3      5012-12843-00     res 4.7k 5w 5%                                    1
+1732    ..3      5012-12842-00     res 120 ohm 5w 5%                                 1
+1733    ..3      5040-08986-00     cap 100M 10V +/-20 axial                          1
+1734    ..3      5040-12324-00     cap 150M 160V +-50 axial                          2
+1735    ..3      5043-09072-00     cap .1M 500V +80-20 radial                        3
+1736    ..3      5100-12833-00     brdg 1a rect 400v                                 2
+1737    ..3      5160-10269-00     trans 2N3904 npn                                  1
+1738    ..3      5164-09056-00     trans MPSD02 npn                                  2
+1739    ..3      5164-12154-00     trans MJE15030 npn                                2
+1740    ..3      5194-09055-00     trans MPSD52 pnp                                  2
+1741    ..3      5194-12155-00     trans MJE15031 pnp                                1
+1742    ..3      5281-09738-00     ic 74ls157                                        4
+1743    ..3      5281-10033-00     ic 74LS30                                         1
+1744    ..3      5281-10043-00     ic 74LS175                                        4
+1745    ..3      5311-10946-00     ic 74hc74 dual f/f                                5
+1746    ..3      5311-10947-00     ic 74hc125                                        1
+1747    ..3      5311-10951-00     ic 74hc161                                        2
+1748    ..3      5311-10977-00     ic 74hc04 hex inv                                 1
+1749    ..3      5311-12817-00     ic 74hc165 shift register                         1
+1750    ..3      5311-12819-00     ic 74hc688 comparator                             1
+1751    ..3      5311-12820-00     ic 74hc27 3 input nor                             1
+1752    ..3      5311-12822-00     ic 74hc193 counter                                3
+1753    ..3      5315-12009-00     ic 74hct374 8-b ltch                              1
+1754    ..3      5315-12812-00     ic 74hct138 3to8 decoder                          3
+1755    ..3      5281-09308-00     ic 74LS245 trncv                                  1
+1756    ..3      5315-12815-00     ic 74hct08 quad aud                               2
+1757    ..3      5315-12816-00     ic 74hct32                                        1
+1758    ..3      5315-12821-00     ic 74hct240 octal buffer                          1
+1759    ..3      5340-12278-00     s/ram 2064 150NS                                  1
+1760    ..3      5551-09822-00     ind 4.7 uh 3a                                     1
+1761    ..3      5671-13732-00     led dspl red                                      1
+1762    ..3      5731-12328-00     fuse sb 3/8A 250V                                 2
+1763    ..3      5733-12060-01     fuse hldr pc MT3AG                                2
+1764    ..3      5791-10850-00     26h str sq .100                                   1
+1765    ..3      5791-10862-05     5h str sq pin .156                                1
+1766    ..3      5791-10862-07     7h str sq pin .156                                1
+1767    ..3      5791-10862-08     8h str sq pin .156                                1
+1768    ..3      5791-12516-00     34 hdr 2x17 .100                                  1
+1769    ..3      5791-12827-00     14 hen 7x2 str                                    1
+1770    ..3      5705-09199-00     h/sink 6030b                                      3
+1771    .2       A-14092-3         wpc mounting plate assy                           1
+1772    ..3      01-9822-3         plate-wpc board mounting                          1
+1773    ..3      20-9534           standoff clip 1/2                                29
+1774    .2       A-14376-50005     backbox assy                                      1
+1775    .2       A-15472           fliptronic II assy                                1
+1776    ..3      A-15472-AI        fliptronic II assy                                1
+1777    ...4     5010-09034-00     res 10k 1/4w 5%                                   9
+1778    ...4     5010-09358-00     res 1k 1/4w 5%                                   16
+1779    ...4     5010-09361-00     res 220 1/2W 5%                                   4
+1780    ...4     5010-09416-00     res 470 1/4w 5%                                   8
+1781    ...4     5010-09534-00     res 0ohm 0w                                       2
+1782    ...4     5010-10171-00     res 56 1/4W 5%                                    8
+1783    ...4     5011-12956-00     res 2.7k 1w 5%                                    8
+1784    ...4     5043-08980-00     cap 0.01m 50v +80-20 axial                        6
+1785    ...4     5070-09054-00     diode-1N4004 1.0a                                24
+1786    ...4     5768-13208-03     pcb-fliptronic II                                 1
+1787    ..3      16-8850-438       label-pcb assy id A-15472                         1
+1788    ..3      01-10572          heat sink-flip board                              1
+1789    ..3      4006-01003-08     ms 6-32X1/2 p-ph-s                                4
+1790    ..3      4406-01128-00     nut 6-32 keps                                     4
+1791    ..3      5040-08986-00     cap 100M 10V +/-20 axial                          1
+1792    ..3      5040-09537-00     cap 100M 100V +/-20 radial                        1
+1793    ..3      5100-09690-00     brdg 35a rect 200v                                1
+1794    ..3      5162-12635-00     trans tip 102                                     8
+1795    ..3      5190-09016-00     trans 2N4403 pnp                                  8
+1796    ..3      5191-12179-00     trans TIP36C pnp                                  4
+1797    ..3      5315-12009-00     ic 74hct374 8-b ltch                              1
+1798    ..3      5315-12031-00     ic 74HCT244                                       1
+1799    ..3      5315-12812-00     ic 74hct138 3to8 decoder                          1
+1800    ..3      5315-12951-00     ic 74hct 00                                       1
+1801    ..3      5370-12272-00     ic LM339 quad comp                                2
+1802    ..3      5731-10356-00     fuse sb 3A 250V                                   4
+1803    ..3      5733-12060-01     fuse hldr pc MT3AG                                4
+1804    ..3      5791-10862-05     5h str sq pin .156                                2
+1805    ..3      5791-10862-09     9h str sq pin .156                                1
+1806    ..3      5791-10862-13     13h str sq pin .156                               1
+1807    ..3      5791-13830-06     6h str sq pin .100 solid tab                      1
+1808    ..3      5791-12516-00     34 hdr 2x17 .100                                  1
+1809    .2       A-15498           spkr/display assy                                 1
+1810    ..3      A-15469           speaker panel sub assy                            1
+1811    ..3      H-15011           speaker panel cable                               1
+1812    ...4     CW-30022-0        wire 22awg black                               62.5
+1813    ...4     CW-30022-04       wire 22awg blk/yel                            64.25
+1814    ...4     5791-09124-00     1P1625 03-06-2011                                 1
+1815    ...4     5820-09078-00     pm1560 02-06-2101                                 1
+1816    ...4     5792-10817-04     4r mt/end 22/156                                  1
+1817    ...4     03-7520-2         tie wrap-nylon 3 7/8                              8
+1818    ..3      B-13826-3         "ground lug assy 12"""                            1
+1819    ...4     HW-30018-54       wire 18awg grn/yel                               12
+1820    ...4     5822-10879-01     ring term- #8 22-18                               2
+1821    ..3      01-10056          shield-dot matrix                                 1
+1822    ..3      01-8535           brkt spkr latch                                   2
+1823    ..3      03-8265-1         spkr panel brkt                                   1
+1824    ..3      03-7655-4         "clamp cable 1/4""dia"                            3
+1825    ..3      23-6534-15        "rubber protector 14"" (black)"                   2
+1826    ..3      23-6534-16        "rubber protector 3 5/8"""                        2
+1827    ..3      31-1420-50005     cover-scrnd spkr panel                            1
+1828    ..3      5901-12784-00     dot matrix display comp                           1
+1829    ..3      5555-12924-00     speaker-4 ohm tweeter 15w                         1
+1830    ..3      5555-12856-00     speaker 5 1/4 4ohm 25w                            1
+1831    ..3      4008-01017-10     ms 8-32X5/8 p-rh-s                                4
+1832    ..3      4008-01017-06     ms 8-32X3/8 p-rh-s                                8
+1833    ..3      4008-01041-06     ms 8-32X3/8 p-flh                                 4
+1834    ..3      03-6047-13        spacer 5/8                                        4
+1835    ..3      4406-01128-00     nut 6-32 keps                                     4
+1836    ..3      4700-00005-00     fw .141X.437X.032                                 4
+1837    ..3      4106-01115-06Y    sms #6x3/8 pl-hwh-yel                             2
+1838    ..3      5045-12914-00     cap 10 mfd non pol 50v +-20%                      1
+1839    ..3      5825-09372-00     #6 solder lug-bent                                1
+1840    ..3      4506-01106-24B    sss 6-32x1 1/2                                    4
+1841    ..3      RM-21-06          #18 vinyl sleeving                                1
+1842    .2       B-10686-1         knocker assy                                      1
+1843    ..3      A-5387            coil plunger assy                                 1
+1844    ..3      AE-23-800         coil assy                                         1
+1845    ...4     MW-130-23         magnet wire-130deg c sns 23ga                     0
+1846    ...4     16-8943-1         coil tape-1 3/8 wide                              0
+1847    ...4     A-22181           small bobbin assy                                 0
+1848    ....5    03-7041-1         bobbin                                            0
+1849    ....5    01-14673          terminal coil                                     0
+1850    ....5    07-6688-17        rivet 5/32X1/8                                    0
+1851    ..3      01-11273          brkt coil mounting                                1
+1852    ..3      H-11835           knocker cable                                     1
+1853    ...4     HW-30018-0        wire 18awg black                                2.5
+1854    ...4     HW-30018-2        wire 18awg red                                  2.5
+1855    ...4     5791-09111-00     3p1396 03-09-2032                                 1
+1856    ...4     5820-09080-00     terminal-pm1190 02-09-2101                        2
+1857    ..3      01-8-508-T        brkt coil retainer                                1
+1858    ..3      03-7067-5         tubing-coil                                       1
+1859    ..3      23-6420           grommet                                           1
+1860    ..3      4008-01017-04     ms 8-32X1/4 p-rh-s                                2
+1861    .2       H-15736           secondary cable                                   1
+1862    ..3      HW-30018-2        wire 18awg red                                  184
+1863    ..3      HW-30018-92       wire 18awg wht/red                              184
+1864    ..3      HW-30018-9        wire 18awg white                                196
+1865    ..3      HW-30018-8        wire 18awg gray                                  92
+1866    ..3      HW-30018-04       wire 18awg blk/yel                              184
+1867    ..3      HW-30018-89       wire 18awg gry/wht                               92
+1868    ..3      HW-30018-95       wire 18awg wht/grn                              184
+1869    ..3      HW-30018-85       wire 18awg gry/grn                               92
+1870    ..3      HW-30018-69       wire 18awg blu/wht                              184
+1871    ..3      HW-30018-7        wire 18awg violet                               196
+1872    ..3      HW-30018-49       wire 18awg yel/wht                               79
+1873    ..3      HW-30018-91       wire 18awg wht/brn                              158
+1874    ..3      HW-30018-1        wire 18awg brown                                158
+1875    ..3      HW-30018-93       wire 18awg wht/org                               79
+1876    ..3      HW-30018-5        wire 18awg green                                 79
+1877    ..3      HW-30018-94       wire 18awg wht/yel                              158
+1878    ..3      HW-30018-3        wire 18awg orange                               158
+1879    ..3      5791-10353-00     15P1375 03-09-2159                                1
+1880    ..3      5820-09080-00     terminal-pm1190 02-09-2101                       24
+1881    ..3      5791-12691-00     9p1292 03-09-2092                                 1
+1882    ..3      5791-12570-00     1545-Z 03-09-2022                                 1
+1883    ..3      5792-10848-09     9r mt/thru 18/156                                 1
+1884    ..3      5792-10848-07     7r mt/thru 18/156                                 2
+1885    ..3      5792-10848-05     5r mt/thru 18/156                                 1
+1886    ..3      5792-10818-05     5R mt/end 18/156                                  1
+1887    ..3      5823-10820-00     "plz key mt .156"""                               6
+1888    ..3      03-7520-2         tie wrap-nylon 3 7/8                             22
+1889    ..3      16-9086           label-cable id                                    1
+1890    ..3      5792-13384-12     12r mt/end 18/156 hi-power                        1
+1891    ..3      RM-32-01          "label-white 3 1/2""x1"""                         1
+1892    .2       H-15476           logic power cable                                 1
+1893    ..3      HW-30018-0        wire 18awg black                                116
+1894    ..3      HW-30018-85       wire 18awg gry/grn                               48
+1895    ..3      HW-30018-96       wire 18awg wht/blu                               80
+1896    ..3      HW-30018-8        wire 18awg gray                                 102
+1897    ..3      5792-10818-07     7R mt/end 18/156                                  2
+1898    ..3      5792-10848-05     5r mt/thru 18/156                                 3
+1899    ..3      5792-10818-05     5R mt/end 18/156                                  1
+1900    ..3      5823-10820-00     "plz key mt .156"""                               6
+1901    ..3      03-7520-2         tie wrap-nylon 3 7/8                             11
+1902    ..3      16-9086           label-cable id                                    1
+1903    ..3      RM-32-01          "label-white 3 1/2""x1"""                         1
+1904    .2       H-14584           dot matrix disply pwr cable                       1
+1905    ..3      HW-30018-84       wire 18awg gry/yel                               80
+1906    ..3      HW-30018-8        wire 18awg gray                                  80
+1907    ..3      HW-30018-0        wire 18awg black                                123
+1908    ..3      HW-30018-1        wire 18awg brown                                 44
+1909    ..3      HW-30018-6        wire 18awg blue                                  44
+1910    ..3      HW-30018-3        wire 18awg orange                                44
+1911    ..3      5792-10848-07     7r mt/thru 18/156                                 1
+1912    ..3      5792-10818-04     4r mt/end 18/156                                  1
+1913    ..3      5792-10818-08     8r mt/end 18/156                                  2
+1914    ..3      5823-10820-00     "plz key mt .156"""                               4
+1915    ..3      03-7520-2         tie wrap-nylon 3 7/8                             10
+1916    ..3      RM-32-01          "label-white 3 1/2""x1"""                         1
+1917    .2       01-6645           screen-vent                                       1
+1918    .2       01-6652           brkt lite box insert stop                         1
+1919    .2       01-7525           plate-knocker                                     1
+1920    .2       01-8397           brkt trunk latch                                  1
+1921    .2       01-8569           brkt lower speaker                                1
+1922    .2       01-9047           brkt stop                                         2
+1923    .2       03-7655-16        "clamp cable 1""dia"                              4
+1924    .2       03-7655-4         "clamp cable 1/4""dia"                            1
+1925    .2       03-7655-8         "clamp cable 1/2""dia"                            5
+1926    .2       03-7655-12        "clamp cable 3/4""dia"                            2
+1927    .2       03-8704           cable tie-mount                                   2
+1928    .2       16-8587-583       label-grd strp wng                                1
+1929    .2       16-8587-825       label-fbi warning                                 1
+1930    .2       16-9182-8         label-wpc dot matrix/fuse list                    1
+1931    .2       20-9223           "1/4"" ground braid"                             90
+1932    .2       4008-01017-08     ms 8-32X1/2 p-rh-s                               30
+1933    .2       4008-01093-12B    tr 8-32X3/4 ph                                    2
+1934    .2       4106-01042-08     sms #6X1/2 p-flh-a                                4
+1935    .2       4106-01114-08     tcs #6X1/2 pl-hwh t-17                           42
+1936    .2       4108-01019-10     sms #8X5/8 p-rh-a                                 2
+1937    .2       4310-01123-20     blt 10-24X1 1/4 cb                                4
+1938    .2       4406-01128-00     nut 6-32 keps                                     1
+1939    .2       4410-01117-00     nut 10-24 hex                                     4
+1940    .2       4506-01103-24     sss 6-32X1 1/2                                    1
+1941    .2       4108-01219-11     sms #8 x 11/16 pin-hd-ab spcl                     2
+1942    .2       4700-00011-00     fw .172X.437X.059                                 1
+1943    .2       4700-00023-00     fw .203X.625X.059                                 4
+1944    .2       4700-00104-00     fw .361X.500X.059                                 4
+1945    .2       5795-10938-14     "ribbon cable-26 pin 14"""                        1
+1946    .2       5795-12653-03     "ribbon cable-34 pin  3"""                        1
+1947    .2       5795-13018-00     ribbon cable-34 pin                               1
+1948    .2       5795-12838-30     ribbon cable-14 pin                               1
+1949    .2       50005-IN          fishtales-insert panel                            1
+1950    ..3      H-15495           insert cable-50005                                1
+1951    ...4     CW-30022-67       wire 22awg blu/vio                               57
+1952    ...4     CW-30022-60       wire 22awg blu/blk                               78
+1953    ...4     CW-30022-65       wire 22awg blu/grn                               96
+1954    ...4     CW-30022-04       wire 22awg blk/yel                               92
+1955    ...4     CW-30022-03       wire 22awg blk/org                               80
+1956    ...4     CW-30022-95       wire 22awg wht/grn                              104
+1957    ...4     CW-30022-93       wire 22awg wht/org                              104
+1958    ...4     CW-30022-91       wire 22awg wht/brn                              116
+1959    ...4     CW-30022-5        wire 22awg green                                104
+1960    ...4     CW-30022-3        wire 22awg orange                               104
+1961    ...4     CW-30022-1        wire 22awg brown                                116
+1962    ...4     CW-30022-29       wire 22awg red/wht                              136
+1963    ...4     CW-30022-61       wire 22awg blu/brn                               77
+1964    ...4     CW-30022-63       wire 22awg blu/org                               56
+1965    ...4     5792-10817-09     9r mt/end 22/156                                  1
+1966    ...4     5792-10817-11     11r mt/end 22/156                                 1
+1967    ...4     5792-10817-05     5r mt/end 22/156                                  2
+1968    ...4     5823-10820-00     "plz key mt .156"""                               4
+1969    ...4     03-7520-2         tie wrap-nylon 3 7/8                             21
+1970    ..3      01-6571           brkt hinge mtg                                    2
+1971    ..3      01-6655           latch-insert                                      1
+1972    ..3      03-7655-8         "clamp cable 1/2""dia"                            1
+1973    ..3      11-50005-IN       fishtales-insert panel                            1
+1974    ..3      16-9212           label-caution hi-volt (insert)                    1
+1975    ..3      23-6534-4         rubber protector 1 1/8                            1
+1976    ..3      24-8768           bulb #555 6.3Volts .25Amps                       46
+1977    ..3      24-8802           bulb #906 13V 0.69                               12
+1978    ..3      24-8817           socket w/o diode-white                           46
+1979    ..3      24-8818           socket-w/o diode black                           12
+1980    ..3      4106-01115-06Y    sms #6x3/8 pl-hwh-yel                             1
+1981    ..3      4308-01123-18     blt 8-32X1-1/8 cb                                 6
+1982    ..3      4408-01119-00     nut 8-32 esn                                      6
+1983    ..3      4700-00023-00     fw .203X.625X.059                                 6
+1984    ..3      4700-00127-01     fw 0.70x1.19x0.09                                12
+1985    1        50105-CAB         usa-specific cabinet assy                         1
+1986    .2       A-15414           interface brd & spacer assy                       1
+1987    ..3      A-14689           coin door interface pcb assy                      1
+1988    ...4     A-14689-AI        wpc c/door interface-auto inst                    1
+1989    ....5    5768-12855-01     pcb-c/dr interface                                1
+1990    ....5    5070-09054-00     diode-1N4004 1.0a                                 7
+1991    ...4     5791-10862-18     18h str sq pin.156                                1
+1992    ...4     5791-10862-08     8h str sq pin .156                                2
+1993    ...4     5791-10862-13     13h str sq pin .156                               1
+1994    ...4     16-8850-355       label-pcb assy id A-14689                         1
+1995    ...4     5791-10862-15     15h str sq pin.156                                1
+1996    ..3      03-8022-5         "spacer .343 L"""                                 4
+1997    ..3      4106-01115-16     sms #6X1 pl-hwh-a                                 4
+1998    .2       A-12359-3         side molding assy-stainless st                    2
+1999    ..3      RM-22-08          double sided tape .032X7/8                       78
+2000    ..3      01-8993-2         molding-side                                      2
+2001    .2       A-15878           double opto assy                                  2
+2002    ..3      A-20209           flipper opto sw assy (metal)                      2
+2003    ...4     A-20209-AI        flipper opto sw assy (metal)                      2
+2004    ....5    5768-14578-00     pcb-flipper opto sw (metal)                       2
+2005    ....5    5010-09061-00     res 680 1/2W 5%                                   4
+2006    ...4     5791-13830-07     7h str sq pin .100 solid tab                      2
+2007    ...4     5490-14575-00     ic opto inter w/schmt 10ma                        4
+2008    ..3      01-11250          interrupter-opto                                  2
+2009    ..3      06-86             blade-back up                                     4
+2010    ..3      A-15893           opto mtg brkt                                     2
+2011    ..3      4006-01003-04     ms 6-32X1/4 p-ph-s                                4
+2012    ..3      4406-01119-00     nut 6-32 esn                                      4
+2013    .2       A-15487           tilt switch assy-w/cable                          1
+2014    ..3      01-1168           brkt bumper switch mounting                       1
+2015    ..3      SW-1A-117         switch-tilt                                       1
+2016    ...4     A-5818            tilt wgt/blde assy                                1
+2017    ....5    A-8391            blade & contact assy                              1
+2018    .....6   06-8A-12          blade-contact                                     1
+2019    .....6   5860-09374-00     cp prec met 7309fs                                1
+2020    ....5    02-2042           weight-tilt                                       1
+2021    ...4     A-8390            blade & contact assy                              1
+2022    ....5    06-7B-20          blade-contact                                     1
+2023    ....5    5860-09374-00     cp prec met 7309fs                                1
+2024    ...4     01-916-H          "spacer- 3/32"""                                  1
+2025    ...4     01-916-L          "spacer-loose 1/16"""                             1
+2026    ...4     01-916-Q          "spacer- 1/64"""                                  1
+2027    ...4     01-916-S          "spacer-tight 1/16"""                             2
+2028    ...4     03-7007-5A        "tubing-11/32"""                                  2
+2029    ...4     06-17             blade-side lug                                    1
+2030    ..3      01-96             brkt switch limit                                 1
+2031    ..3      01-3670-1         plate-switch flat                                 1
+2032    ..3      4005-01003-12     ms 5-40x3/4 p-phs                                 2
+2033    ..3      4405-01117-00     nut 5-40 hex                                      2
+2034    ..3      H-15478           tilt switch cable                                 1
+2035    ...4     5791-10772-00     2P11625 03-06-2023                                1
+2036    ...4     5820-09078-00     pm1560 02-06-2101                                 2
+2037    ...4     CW-30022-5        wire 22awg green                                  4
+2038    ...4     CW-30022-9        wire 22awg white                                  4
+2039    ..3      5070-09054-00     diode-1N4004 1.0a                                 1
+2040    .2       A-15130-1         fish/reel handle assy                             1
+2041    ..3      21-6689-3         handle-fishing reel                               1
+2042    ..3      21-6689-4         handle-fishing reel                               1
+2043    ..3      4010-01097-06B    ms 10-32x 3/8 t-r bttn head                       3
+2044    ..3      02-4547           "fastner-button head 1/2"""                       3
+2045    ..3      03-8829           plate-spacer                                      1
+2046    ..3      01-11126          plate-switch                                      1
+2047    ..3      20-9804           switch button-thumb white                         1
+2048    ..3      H-15528           caster cable                                      1
+2049    ...4     H-15528-C         caster cable-cut wire                             1
+2050    ....5    CW-30022-53       wire 22awg grn/org                                7
+2051    ....5    CW-30022-91       wire 22awg wht/brn                                7
+2052    ...4     03-7520-2         tie wrap-nylon 3 7/8                              1
+2053    ...4     5791-10774-00     4P2004 03 06-2044                                 1
+2054    ...4     5820-09078-00     pm1560 02-06-2101                                 2
+2055    ...4     RM-23-03          heat shrink tubing 3/16 dia                     5.5
+2056    ..3      5070-09054-00     diode-1N4004 1.0a                                 2
+2057    ..3      4702-00014-00B    lw 1/4-20internal tooth-black                     3
+2058    ..3      4700-00129-00B    fw .203x.468x.030 black                           3
+2059    ..3      4702-00013-00B    lw #10 internal tooth-black                       3
+2060    .2       B-12273-4         button no spring assy-red                         2
+2061    .2       A-15707-120V      line filter assy 120  dom                         1
+2062    ..3      A-14810-1         chassis assy                                      1
+2063    ..3      H-13870           black jumper cable                                2
+2064    ...4     5821-09081-00     pf1189 02-09-1101                                 4
+2065    ...4     HW-60018-0        wire 18awg black                                  8
+2066    ..3      H-14790           a.c. cable                                        1
+2067    ...4     5792-10917-00     9R1991 19-09-1092                                 1
+2068    ...4     5821-09081-00     pf1189 02-09-1101                                 2
+2069    ...4     5822-14713-02     term-quik con 22-18 tab .250                      2
+2070    ...4     03-7520-2         tie wrap-nylon 3 7/8                              3
+2071    ...4     HW-60018-0        wire 18awg black                                 20
+2072    ...4     HW-60018-9        wire 18awg white                                 20
+2073    ..3      H-14792-1         a.c. jumper cable                                 1
+2074    ...4     5822-10872-02     term 22-18 tab.250                                2
+2075    ...4     HW-60018-0        wire 18awg black                                  5
+2076    ..3      H-14792-2         a.c. jumper cable                                 1
+2077    ...4     5822-10872-02     term 22-18 tab.250                                2
+2078    ...4     HW-60018-9        wire 18awg white                                  5
+2079    ..3      RM-21-06          #18 vinyl sleeving                                3
+2080    ..3      01-10623          insulator-thermistor                              1
+2081    ..3      03-8591           bushing-strain relief                             1
+2082    ..3      16-8587-926       label-8 amp fuse                                  1
+2083    ..3      16-9244           label-conv receptacle rating                      1
+2084    ..3      4008-01017-08     ms 8-32X1/2 p-rh-s                                2
+2085    ..3      5017-09044-00     varistor metox 10a                                1
+2086    ..3      5016-12978-00     thermistor-8a 2.5R25                              1
+2087    ..3      5102-10310-00     line filter 5VK1                                  1
+2088    ..3      5730-09252-00     fuse 8A 250V                                      1
+2089    ..3      5733-12869-00     fuse holder panel                                 1
+2090    ..3      5851-09184-00     ser outlet snap-in                                1
+2091    ..3      A-15473           iec power input box assy                          1
+2092    ...4     01-10715          box-IEC 300 power inlet                           1
+2093    ...4     5852-13249-00     inlet-power                                       1
+2094    ...4     4004-01041-06     ms 4-40X3/8 p-flh                                 2
+2095    ...4     20-9682-1         protective cap                                    1
+2096    ...4     03-7520-2         tie wrap-nylon 3 7/8                              1
+2097    ...4     5797-13850-00     power interface cable                             1
+2098    ..3      03-8712           bushing-strain relf-heyco 1161                    1
+2099    ..3      5640-13250-00     switch-toggle dpst                                1
+2100    .2       D-9174-3          lever guide assy                                  1
+2101    ..3      D-9163-3          latch guide assy                                  1
+2102    ...4     01-8406-2         brkt latch guide                                  1
+2103    ..3      A-16163           lever slide assy                                  1
+2104    ...4     01-11134          slide-latch                                       1
+2105    ..3      01-7431           latch support                                     1
+2106    ..3      4006-01017-04     ms 6-32X1/4 p-rh-s                                2
+2107    ..3      4010-01062-10     ms 10-32X5/8 sl-bndr-hd brass                     2
+2108    .2       H-15496           50005-cabinet cable                               1
+2109    ..3      H-15496-C         cabinet cable-cut wire                            1
+2110    ...4     CW-30022-7        wire 22awg violet                               111
+2111    ...4     CW-30022-97       wire 22awg wht/vio                              111
+2112    ...4     CW-30022-04       wire 22awg blk/yel                              231
+2113    ...4     CW-30022-0        wire 22awg black                                237
+2114    ...4     CW-30022-51       wire 22awg grn/brn                            230.5
+2115    ...4     CW-30022-52       wire 22awg grn/red                              141
+2116    ...4     CW-30022-91       wire 22awg wht/brn                            192.5
+2117    ...4     CW-30022-92       wire 22awg wht/red                              129
+2118    ...4     CW-30022-93       wire 22awg wht/org                              136
+2119    ...4     CW-30022-94       wire 22awg wht/yel                            127.5
+2120    ...4     CW-30022-31       wire 22awg org/brn                              113
+2121    ...4     CW-30022-32       wire 22awg org/red                              132
+2122    ...4     CW-30022-30       wire 22awg org/blk                              113
+2123    ...4     CW-30022-39       wire 22awg org/wht                              113
+2124    ...4     CW-30022-34       wire 22awg org/yel                              113
+2125    ...4     CW-30022-35       wire 22awg org/grn                              113
+2126    ...4     CW-30022-36       wire 22awg org/blu                              113
+2127    ...4     CW-30022-37       wire 22awg org/vio                              113
+2128    ...4     CW-30022-38       wire 22awg org/gry                              113
+2129    ...4     CW-30022-84       wire 22awg gry/yel                              109
+2130    ...4     CW-30022-48       wire 22awg yel/gry                            192.5
+2131    ...4     CW-30022-28       wire 22awg red/gry                              135
+2132    ...4     CW-30022-68       wire 22awg blu/gry                              122
+2133    ...4     CW-30022-67       wire 22awg blu/vio                              134
+2134    ...4     CW-30022-06       wire 22awg blk/blu                              122
+2135    ...4     CW-30022-3        wire 22awg orange                               231
+2136    ...4     CW-30022-27       wire 22awg red/vio                              134
+2137    ...4     CW-30022-53       wire 22awg grn/org                              123
+2138    ..3      5792-10817-03     3r mt end 22/156                                  2
+2139    ..3      5792-10817-04     4r mt/end 22/156                                  2
+2140    ..3      5792-12116-08     8r mt/end 22/.100                                 1
+2141    ..3      5792-12116-12     12r mt/end 22/.100                                1
+2142    ..3      5792-12116-09     9r mt/end 22/.100                                 1
+2143    ..3      5792-10817-18     18r mt/end 22/156                                 1
+2144    ..3      5792-10817-08     8r mt/end 22/156                                  1
+2145    ..3      5822-10872-01     term 22-18 tab.187                                4
+2146    ..3      5822-10879-01     ring term- #8 22-18                               2
+2147    ..3      5823-10820-00     "plz key mt .156"""                               6
+2148    ..3      5823-12119-00     plz key-mt .100                                   3
+2149    ..3      03-7520-2         tie wrap-nylon 3 7/8                             37
+2150    ..3      5792-09125-00     1R1625 03-06-1011                                 1
+2151    ..3      5821-09079-00     pf1561 02-06-1101                                13
+2152    ..3      20-9223           "1/4"" ground braid"                             72
+2153    ..3      5825-06523-00     solder lug #8 flat                                1
+2154    ..3      RM-21-09          "3/8""id pvc tubing"                          13.75
+2155    ..3      5792-10771-00     3R11625 03-06-1032                                3
+2156    ..3      5792-10775-00     4R2004 03-06-1044                                 1
+2157    ..3      5792-10773-00     2R11625 03-06-1023                                1
+2158    ..3      5792-12116-07     7r mt/end 22/.100                                 2
+2159    ..3      5792-10847-08     8r mt/thru 22/156                                 1
+2160    ..3      5792-12116-06     6r mt/end 22/.100                                 1
+2161    .2       01-3444           brkt tilt  upper                                  1
+2162    .2       01-3445           brkt tilt lower                                   1
+2163    .2       01-10030          brkt cashbox lock                                 1
+2164    .2       01-9011-L         brkt b/box mtg                                    1
+2165    .2       01-9011-R         brkt b/box mtg                                    1
+2166    .2       01-6389-1         brkt nest                                         1
+2167    .2       03-8603-1         screen-vent speaker                               1
+2168    .2       03-8603-2         screen-vent 2-1/2 square                          2
+2169    .2       01-8169           screen-vent hole                                  1
+2170    .2       02-4329-1         "pivot nut-7/8"""                                 4
+2171    .2       02-4352           bushing pivot-cabinet                             2
+2172    .2       03-7135-1         plfd molding                                      2
+2173    .2       03-7655-16        "clamp cable 1""dia"                              5
+2174    .2       03-7655-8         "clamp cable 1/2""dia"                           12
+2175    .2       03-8794           spacer                                            1
+2176    .2       03-8091           rear molding                                      1
+2177    .2       09-23002-USA      coin dr-25cent/25cent                             1
+2178    ..3      09-23002-1        coin dr-25/25 cent usa                            1
+2179    ..3      09-8803           acceptor-usa 25cent                               2
+2180    ..3      16-9271-01        label-coin dr bar code-usa                        1
+2181    ..3      12-6801           clip-coin mech retainer                           2
+2182    .2       11-1067-50005     cabinet-pinball                                   1
+2183    .2       12-6231           wire-plumb bob                                    1
+2184    .2       16-9306           label-fcc warning domestic                        1
+2185    .2       16-9211           label-caution hi-vlt(l/guide)                     1
+2186    .2       16-9358-2         sheet-lamp/switch matrix                          1
+2187    .2       20-9222           palnut 5/8                                        2
+2188    .2       20-9223           "1/4"" ground braid"                            180
+2189    .2       20-9347           toggle latch                                      1
+2190    .2       20-9663-1         p/button-w/swtch clr start                        1
+2191    .2       4020-01070-12     ms 1/4-20X3/4 hh                                  4
+2192    .2       4106-01114-08     tcs #6X1/2 pl-hwh t-17                           54
+2193    .2       4106-01115-12     sms #6X3/4 pl-hwh                                 4
+2194    .2       4308-01123-18     blt 8-32X1-1/8 cb                                 2
+2195    .2       4320-01123-20B    blt 1/4-20X1-1/4 cb                               6
+2196    .2       4322-01139-12B    blt 3/8-16X3/4 sh-n                               2
+2197    .2       4322-01123-20B    blt 3/8-16X1 1/4 cb                               4
+2198    .2       4406-01117-00     nut 6-32 hex                                      4
+2199    .2       4408-01128-00     nut 8-32 keps                                     2
+2200    .2       4420-01141-00     nut 1/4-20 flangrip                               6
+2201    .2       4608-01081-11     h-f #8X11/16 pl-hwh                               9
+2202    .2       4700-00023-00     fw .203X.625X.059                                 2
+2203    .2       4700-00005-00     fw .141X.437X.032                                 4
+2204    .2       4700-00095-00B    fw .437X1.00X.093                                 4
+2205    .2       4701-00005-00     lw 1/4 split                                      4
+2206    .2       4008-01003-14     ms 8-32x 7/8 p-ph-s                               2
+2207    .2       5610-12835-00     xfmr-wpc 3 115/230v                               1
+2208    .2       5555-12929-00     "speaker-4 ohm 6"" 25w"                           1
+2209    .2       5850-13271-00     line cordset-North America                        1
