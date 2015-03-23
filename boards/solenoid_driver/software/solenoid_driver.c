@@ -59,7 +59,7 @@ void run_selftest(void) {
 
 		FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN);
 		
-		_delay_ms(10);
+		/*_delay_ms(100);*/
 
 		FLIPPER_LEFT_HOLD_PORT &= ~(1 << FLIPPER_LEFT_HOLD_PIN);
 
