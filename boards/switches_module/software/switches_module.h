@@ -3,19 +3,19 @@
 #define SOLENOID_DRIVER_H
 
 #define SWITCHES_COLUMNS 8
-
+#define SWITCHES_ROWS 8
 
 // shift register pins
 #define SR_DDR DDRD
 #define SR_PORT PORTD
 // data input
-#define SR_DS PD2
+#define SR_DS (1 << PD2)
 // storage register clock
-#define SR_STCP PD3
+#define SR_STCP (1 << PD3)
 // shift register clock
-#define SR_SHCP PD4
+#define SR_SHCP (1 << PD4)
 // reset shift register (active low)
-#define SR_MR PD5
+#define SR_MR (1 << PD5)
 
 
 #define BAUD 9600UL
@@ -39,12 +39,23 @@ enum {
 // 8 bit switch state for each column of switches
 uint8_t switches_states[SWITCHES_COLUMNS];
 
+uint8_t debounce_state[SWITCHES_COLUMNS][SWITCHES_ROWS];
+uint8_t debounce_alpha[SWITCHES_COLUMNS][SWITCHES_ROWS];
+
 int main(void);
 void run_selftest(void);
+
 void setup_spi(void);
 void setup_uart(void);
+void setup_switches(void);
+
 void uart_putc(char);
 void uart_puts(char*);
+void uart_puthex(uint8_t);
+void uart_putnibble(uint8_t);
+
+void advance_sr(uint8_t);
+void scan_switches(void);
 
 
 #endif // SOLENOID_DRIVER_H

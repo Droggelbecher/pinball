@@ -1,13 +1,13 @@
 
-USE_DEBUG_DISPLAY = 1
-USE_DEBUG_SPI = 1
-USE_DEBUG_GPIO = 1
+USE_DEBUG_DISPLAY = 0
+USE_DEBUG_SPI = 0
+USE_DEBUG_GPIO = 0
 
 TARGET = pinball_controller
 OBJDIR = obj
 
 SOURCES_CONTROLLER = main.c spi_ss.c render.c
-SOURCES_SPI_DEBUG = gpio.c spi_debug.c spi.c spi_ss.c display.c 
+SOURCES_SPI_DEBUG = linux_spi.c raspberry_gpio.c spi_debug.c spi_ss.c spi_display.c render.c
 #HEADERS = config.h gpio.h spi.h spi_ss.h
 
 CFLAGS = -Wall -Wundef -Wstrict-prototypes

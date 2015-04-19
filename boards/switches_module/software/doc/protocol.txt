@@ -1,0 +1,10 @@
+
+(Illustration is byte-wise)
+
+MOSI:  colidx 1    | colidx 2      | ...
+MISO:  (undefined) | states col 1  | states col 2 | ...
+
+states col X are defined like this:
+
+LSB Bit 0: 
+

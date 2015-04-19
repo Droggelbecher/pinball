@@ -1,5 +1,5 @@
 
-#include "gpio.h"
+#include "raspberry_gpio.h"
 
 int gpio_mem_fd;
 volatile unsigned *gpio_map;

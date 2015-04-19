@@ -1,4 +1,6 @@
 
+#include <stdint.h>
+
 #include "gpio.h"
 #include "spi.h"
 #include "display.h"
@@ -10,7 +12,7 @@ int main(int argc, char **argv) {
 
 	printf("sizeof(unsigned)=%d\n", sizeof(unsigned));
 
-	char line[1024];
+	/*char line[1024];*/
 
 	gpio_set_output(SPI_SS_PIN_LAMPS);
 	gpio_set_output(SPI_SS_PIN_BUTTONS);
@@ -31,34 +33,34 @@ int main(int argc, char **argv) {
 				display_refresh();
 				break;
 
-			case 'g':
-				puts("rendering gradient\n");
-				display_render_gradient();
-				break;
+			/*case 'g':*/
+				/*puts("rendering gradient\n");*/
+				/*render_gradient();*/
+				/*break;*/
 
-			case 'f':
-				puts("rendering frame\n");
-				display_render_frame();
-				break;
+			/*case 'f':*/
+				/*puts("rendering frame\n");*/
+				/*render_frame();*/
+				/*break;*/
 
 			case 'C':
 				puts("clearing screen\n");
-				display_render_clear();
+				render_clear();
 				break;
 
 			case 'R':
 				puts("rendering red\n");
-				display_render_fill(0xff, 0x00);
+				render_fill(0xff, 0x00);
 				break;
 
 			case 'G':
 				puts("rendering green\n");
-				display_render_fill(0x00, 0xff);
+				render_fill(0x00, 0xff);
 				break;
 
 			case 'Y':
 				puts("rendering yellow\n");
-				display_render_fill(0x80, 0xff);
+				render_fill(0x80, 0xff);
 				break;
 
 
@@ -99,21 +101,27 @@ int main(int argc, char **argv) {
 				/*break;*/
 
 			case '2':
-				puts("activating display SS\n");
-				GPIO_CLR = SPI_SS_SLAVES_MASK;
-				GPIO_SET = SPI_SS_SLAVES_MASK;
-				GPIO_CLR = (1 << 24);
-				/*spi_ss_activate_only(SPI_SS_PIN_DISPLAY);*/
-				printf("GPIO_CLR=%x\n", (unsigned)GPIO_CLR);
-				printf("GPIO_SET=%x\n", (unsigned)GPIO_SET);
-				printf("GPIO_GET=%x\n", (unsigned)GPIO_GET);
+				puts("activating buttons SS\n");
+				spi_ss_activate_only(SPI_SS_PIN_BUTTONS);
 				break;
 
+			case 'b': {
+					puts("polling buttons\n");
+
+					uint8_t request[] = { 0, 1, 2, 3, 0 };
+					uint8_t answer[] = { 0x55, 0x55, 0x55, 0x55, 0x55 };
+
+					spi_readwrite(5, request, answer);
+					printf("%02x %02x %02x %02x %02x\n", answer[0], answer[1], answer[2], answer[3], answer[4]);
+				}
+				break;
+
+				
 			case '1':
 				puts("activating display SS\n");
 				GPIO_CLR = SPI_SS_SLAVES_MASK;
-				GPIO_SET = 0;
-				GPIO_CLR = SPI_SS_SLAVES_MASK;
+				GPIO_SET = SPI_SS_SLAVES_MASK;
+				GPIO_CLR = (1 << SPI_SS_PIN_DISPLAY);
 				/*spi_ss_activate_only(SPI_SS_PIN_DISPLAY);*/
 				printf("GPIO_CLR=%x\n", (unsigned)GPIO_CLR);
 				printf("GPIO_SET=%x\n", (unsigned)GPIO_SET);
