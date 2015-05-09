@@ -21,9 +21,12 @@ int main(int argc, char **argv) {
 		render_selftest_colorstripes();
 		
 		/*display_render_fill(g ? 0xff : 0, g ? 0 : 0xff);*/
-		g = !g;
-
+		/*g = !g;*/
 		display_refresh();
+
+
+
+
 		display_end_frame();
 		display_debug_fps();
 	}

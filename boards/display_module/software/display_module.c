@@ -24,6 +24,7 @@ volatile unsigned int screen_index = 0;
 
 
 int selftest = 1;
+unsigned long phase = 0;
 
 unsigned int palette[][COLORS] = {
 	// -- RED CHANNEL
@@ -46,17 +47,18 @@ int main(void) {
 
 	PORTB |= (1 << PINB0);
 	while(1) {
+		if(selftest) {
+			render_selftest(phase++ >> 6);
+		}
 		output_screen();
 	}
 }
-
-unsigned frame = 0;
 
 void setup_spi(void) {
 	// MISO = output,
 	// PB1 = output (SS for next module)
 	// others input
-	DDRB = PB1 | PB4;
+	DDRB = (1 << PB1) | (1 << PB4);
 	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 1
 	// http://maxembedded.com/2013/11/the-spi-of-the-avr/
 	SPCR = (1<<SPE)|(1<<SPIE); //|(1<<CPHA);
@@ -116,22 +118,6 @@ ISR(SPI_STC_vect) {
 	((unsigned char*)(screen[1]))[screen_index] = palette[1][(int)ch];
 	++screen_index;
 
-#if 0
-	char ch = SPDR;
-	if(ch == C_EOT) {
-		screen_index = 0;
-	}
-	else if(screen_index < PIXELS) {
-		/*((unsigned int*)(screen[0]))[screen_index] = palette[0][(int)ch];*/
-		/*((unsigned int*)(screen[1]))[screen_index] = palette[1][(int)ch];*/
-		((unsigned char*)(screen[0]))[screen_index] = palette[0][(int)ch];
-		((unsigned char*)(screen[1]))[screen_index] = palette[1][(int)ch];
-		++screen_index;
-		if(screen_index >= PIXELS) {
-			enable_next();
-		}
-	}
-#endif
 }
 
 void uart_putc(char x) {
@@ -221,5 +207,63 @@ void output_screen(void) {
 
 void clear_screen(void) {
 	memset(screen, 0, sizeof(screen));
+}
+
+
+void render_selftest(unsigned long phase) {
+	clear_screen();
+
+	const int subphases = 64;
+	const int modes = 6;
+
+
+	int mode = (phase / subphases) % modes;
+	int subphase = phase % subphases;
+
+	switch(mode) {
+		case 0: {
+			int row = subphase % 16;
+			for(int i = 0; i < 8; i++) {
+				screen[IDX_GREEN][row][i] = 0xff;
+			}
+			break;
+		}
+
+		case 1: {
+			int row = subphase % 16;
+			for(int i = 0; i < 8; i++) {
+				screen[IDX_RED][row][i] = 0xff;
+			}
+			break;
+		}
+
+		case 2: {
+			int col = subphase % 8;
+			for(int i = 0; i < 16; i++) {
+				screen[IDX_GREEN][i][col] = 0xff;
+			}
+			break;
+		}
+
+		case 3: {
+			int col = subphase % 8;
+			for(int i = 0; i < 16; i++) {
+				screen[IDX_RED][i][col] = 0xff;
+			}
+			break;
+		}
+
+		case 4: {
+			if(subphase % 2) {
+				memset(screen, 0xff, sizeof(screen));
+			}
+			break;
+		}
+
+		case 5: {
+			memset(screen, 0xff, sizeof(screen));
+			break;
+		}
+	}
 }
 

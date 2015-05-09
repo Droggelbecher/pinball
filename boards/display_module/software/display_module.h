@@ -49,7 +49,7 @@ void setup_display(void);
 void uart_putc(char);
 void uart_puts(char*);
 void output_screen(void);
-void render_selftest(void);
+void render_selftest(unsigned long);
 void clear_screen(void);
 
 

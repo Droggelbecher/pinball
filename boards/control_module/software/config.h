@@ -18,10 +18,12 @@
 #define SPI_MODE 0
 #define SPI_BITS_PER_WORD 8
 
+// slowest possible speed?
+//#define SPI_BUS_SPEED  4 * 1000
+
+//#define SPI_BUS_SPEED 4 *  1000
 // 1 MHz seems to be what our display module can handle
-//#define SPI_BUS_SPEED  100 * 1000
-#define SPI_BUS_SPEED  500 * 1000
-//#define SPI_BUS_SPEED 1000 * 1000
+#define SPI_BUS_SPEED 4 * 1000
 
 //
 // SPI Slave-Select GPIO pin numbers on pi

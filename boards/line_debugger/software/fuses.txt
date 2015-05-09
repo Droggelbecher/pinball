@@ -1,0 +1,5 @@
+
+Mit arduino (2. atmega) als ISP:
+
+ avrdude -p atmega328p -P /dev/ttyACM0  -c stk500v1 -n -b 19200 -v
+

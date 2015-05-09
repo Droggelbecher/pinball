@@ -9,15 +9,80 @@
 #include "line_debugger.h"
 
 #define SAMPLE_START_PIN 1
-#define SAMPLE_PINS 4
-#define SAMPLES 16
+#define SAMPLE_PINS 3
+#define SAMPLES 1
 
 volatile uint16_t samples[SAMPLE_PINS];
 volatile uint8_t pin_idx = 0;
 volatile uint8_t adc_done = 0;
 volatile uint8_t sample_idx = 0;
 
+
+volatile uint8_t buf[1024];
+/*
 int main(void) {
+	setup_uart();
+	memset((uint8_t*)samples, 0x00, sizeof(samples));
+
+	uart_puts("LINE_DEBUGGER v0.2\r\n");
+	
+	ADCSRA = _BV(ADEN) | _BV(ADPS0) | _BV(ADPS1) | _BV(ADPS2);
+
+	// disable digital inputs for adcs 0...3
+	DIDR0 = 0x0f;
+
+	uint8_t idx = 0;
+	uint8_t dat = 0;
+
+	while(1) {
+		ADMUX = _BV(REFS0) | idx;
+		ADCSRA |= _BV(ADSC);
+
+		uart_putc(dat);
+		while(ADCSRA & _BV(ADSC)) ;
+		dat = ADCW >> 2;
+		idx++;
+		if(idx == SAMPLE_PINS) { idx = 0; }
+	}
+}
+*/
+
+int main(void) {
+	setup_uart();
+	memset((uint8_t*)samples, 0x00, sizeof(samples));
+
+	uart_puts("LINE_DEBUGGER v0.2\r\n");
+	
+	ADCSRA = _BV(ADEN) | _BV(ADPS2);
+	// disable digital inputs for adcs 0...3
+	DIDR0 = 0x0f;
+
+	/*uint8_t pin = 0;*/
+	uint16_t idx = 0;
+
+	cli();
+
+	while(1) {
+		idx = 0;
+		while(idx < sizeof(buf))  {
+			/*ADMUX = _BV(REFS0) | (idx % SAMPLE_PINS);*/
+			ADMUX = _BV(REFS0) | (idx & 0x03);
+			ADCSRA |= _BV(ADSC);
+
+			while(ADCSRA & _BV(ADSC)) ;
+			buf[idx++] = ADCW >> 2;
+		}
+
+		for(idx = 0; idx < sizeof(buf); idx++) {
+			uart_putc(buf[idx]);
+		}
+	}
+}
+
+
+
+
+int _main(void) {
 	int i;
 	
 	setup_uart();
@@ -40,14 +105,16 @@ int main(void) {
 			for(i = 0; i< SAMPLE_PINS; i++) {
 				/*samples[i] /= SAMPLES;*/
 
-				uart_puthex16(samples[i]);
-				uart_putc(' ');
+				/*uart_puthex16(samples[i]);*/
+				uart_putc(samples[i] >> 2);
 			}
-			uart_puts("\r\n");
+			/*uart_puts("\r\n");*/
+			/*_delay_ms(5);*/
 
+			#if SAMPLES > 1
 			memset((uint8_t*)samples, 0x00, sizeof(samples));
+			#endif
 
-			_delay_ms(5);
 			adc_done = 0;
 			started = 0;
 		}
@@ -57,10 +124,10 @@ int main(void) {
 			// ADSC=start conversion, this bit will drop to 0 when done
 			// ADIE=enable interrupt on measurement complete
 			// ADEN=enable adc
-			ADCSRA = _BV(ADIE) | _BV(ADEN) | _BV(ADPS0) | _BV(ADPS2);
-			sei();
+			ADCSRA = _BV(ADIE) | _BV(ADEN) | _BV(ADPS0) | _BV(ADPS1) | _BV(ADPS2);
 
 			/*set_sleep_mode(SLEEP_MODE_ADC);*/
+			sei();
 			ADCSRA |= _BV(ADSC);
 			/*sleep_mode();*/
 		}
@@ -122,23 +189,20 @@ ISR(ADC_vect) {
 	
 	if(pin_idx >= SAMPLE_PINS) {
 		pin_idx = 0;
-		sample_idx++;
-		if(sample_idx >= SAMPLES) {
+		/*sample_idx++;*/
+		/*if(sample_idx >= SAMPLES) {*/
 			ADCSRA &= ~_BV( ADIE );  // turn off ADC interrupt
 		
 			sample_idx = 0;
 			adc_done = 1;
 			return;
-		}
+		/*}*/
 	}
 
 	ADMUX = _BV(REFS0) | ((pin_idx + SAMPLE_START_PIN) & 0x07);
 
-	/*ADCSRA |= _BV(ADIE) | _BV(ADEN);*/
-	/*ADCSRA = _BV(ADIE) | _BV(ADEN) | _BV(ADPS0) | _BV(ADPS2);*/
-	/*sei();*/
 	/*set_sleep_mode(SLEEP_MODE_ADC);*/
-
+	/*sei();*/
 	ADCSRA |= _BV(ADSC);
 	/*sleep_mode();*/
 }

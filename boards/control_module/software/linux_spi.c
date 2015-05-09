@@ -51,22 +51,42 @@ int spi_setup(void) {
 }
 
 int spi_readwrite(size_t size, unsigned char *wr, unsigned char *rd) {
-	struct spi_ioc_transfer msg = {
-		.tx_buf = (unsigned long)wr,
-		.rx_buf = (unsigned long)rd,
-		.len = size,
-		.delay_usecs = 0,
-		.speed_hz = SPI_BUS_SPEED,
-		.bits_per_word = 8,
-	};
+	/*struct spi_ioc_transfer msg = {*/
+		/*.tx_buf = (unsigned long)wr,*/
+		/*.rx_buf = (unsigned long)rd,*/
+		/*.len = size,*/
+		/*.delay_usecs = 0,*/
+		/*.speed_hz = SPI_BUS_SPEED,*/
+		/*.bits_per_word = 8,*/
+		/*.cs_change = 0,*/
+	/*};*/
 
-	int r = ioctl(spi_cs_fd, SPI_IOC_MESSAGE(1), &msg);
-	if(r == 1) {
-		perror("couldnt send spi msg");
-		exit(1);
+	/*int r = ioctl(spi_cs_fd, SPI_IOC_MESSAGE(1), &msg);*/
+	/*if(r == 1) {*/
+		/*perror("couldnt send spi msg");*/
+		/*exit(1);*/
+	/*}*/
+
+	int i = 0;
+	for( ; i < size; i++) {
+		struct spi_ioc_transfer msg = {
+			.tx_buf = (unsigned long)wr + i,
+			.rx_buf = (unsigned long)rd + i,
+			.len = 1,
+			.delay_usecs = 0,
+			.speed_hz = SPI_BUS_SPEED,
+			.bits_per_word = 8,
+			.cs_change = 0,
+		};
+		int r = ioctl(spi_cs_fd, SPI_IOC_MESSAGE(1), &msg);
+		if(r == -1) {
+			perror("couldnt send spi msg");
+			exit(1);
+		}
+		usleep(100UL);
 	}
 
-	usleep(100);
+	/*usleep(1000000UL);*/
 
 	return 0;
 }

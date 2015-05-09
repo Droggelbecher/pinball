@@ -9,10 +9,14 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 
 #include <string.h> // memset & co
 
 #include "switches_module.h"
+
+#define ENABLE_UART 0
+#define ENABLE_DEBUG 0
 
 
 uint8_t spi_current_column = 0;
@@ -22,11 +26,13 @@ int main(void) {
 
 	memset(debounce_state, 0, sizeof(debounce_state) * sizeof(debounce_state[0]));
 	memset(debounce_alpha, 63, sizeof(debounce_alpha) * sizeof(debounce_alpha[0]));
+	/*memset(debounce_alpha, 0xff, sizeof(debounce_alpha) * sizeof(debounce_alpha[0]));*/
 
-	setup_switches();
 
 	setup_spi();
 	setup_uart();
+
+	setup_switches();
 
 	uart_puts("\aSWITCHES MODULE 0.1\r\n");
 
@@ -41,9 +47,34 @@ int main(void) {
 	/*}*/
 
 	
+	char ch;
 	while(1) {
-		scan_switches();
+		/*PORTD |= (1 << PD7);*/
+		/*_delay_ms(1);*/
+		/*PORTD &= ~(1 << PD7);*/
+		/*_delay_ms(1);*/
+	
 
+
+		/*PORTD &= ~(1 << PD5);*/
+		// got this idea from arduino spi code
+		/*ch = SPDR;*/
+		/*if(ch < SWITCHES_COLUMNS) {*/
+
+			/*SPDR = switches_states[ch];*/
+		/*}*/
+		/*asm volatile("nop");*/
+		/*while(!(SPSR & _BV(SPIF))) {*/
+			scan_switches();
+		/*}*/
+
+		/*PORTD ^= (1 << PD5);*/
+		/*SPDR = ch * ch;*/
+		/*ch = SPDR;*/
+		/*uart_puthex(ch);*/
+		/*uart_putc(' ');*/
+
+		/*
 		if(spi_update) {
 			spi_update = 0;
 			
@@ -52,19 +83,27 @@ int main(void) {
 			}
 			SPDR = switches_states[spi_current_column];
 		}
+		*/
 	}
 	
 }
 
 void setup_spi(void) {
 
-
 	// MISO = output,
 	DDRB |= (1 << PB4);
 
-	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 1
+	// ERROR LED
+	DDRD |= (1 << PD7) | (1 << PD5);
+	PORTD &= ~((1 << PD7) | (1 << PD5));
+
+	// MOSI, SS, SCK = input
+	/*DDRB &= ~((1 << PB2) | (1 << PB3) | (1 << PB5));*/
+
+	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 0
 	// http://maxembedded.com/2013/11/the-spi-of-the-avr/
 	SPCR = (1<<SPE)|(1<<SPIE); //|(1<<CPHA);
+	/*SPCR |= (1<<SPE); //|(1<<CPHA);*/
 
 	// INT0 is wired to SS to inform us when a SPI transmission starts
 	// so generate an interrupt on falling edge (SS low = transmission
@@ -79,16 +118,28 @@ void setup_spi(void) {
 	// Generate interrupt on SS pin change
 	/*PCMSK0 |= (1 << PCINT2);*/
 
+
+	/*SPDR = 0;*/
+	char c;
+	c = SPSR;
+	c = SPDR;
+
+	/*if(SPSR & (1 << WCOL)) { PORTD |= (1 << PD7); } else { PORTD &= ~(1 << PD7); }*/
+
+	/*SREG |= 0x80; // same as sei() */
 	sei();
+	/*cli();*/
 }
 
 void setup_uart(void) {
+#if ENABLE_UART
 	UBRR0H = UBRR_VAL >> 8;
 	UBRR0L = UBRR_VAL & 0xFF;
 
 	UCSR0B |= (1<<TXEN0);                           // UART TX einschalten
 	UCSR0A = (1 << UDRE0);
 	UCSR0C = (1<<UCSZ01)|(1 << UCSZ00); // Asynchron 8N1
+#endif
 }
 
 void setup_switches(void) {
@@ -97,7 +148,7 @@ void setup_switches(void) {
 	/*DDRD = PD2 | PD3 | PD4;*/
 	SR_DDR = SR_DS | SR_STCP | SR_SHCP | SR_MR;
 
-	DDRC &= ~0x1f; // PC0..5 = input for rows 0..5
+	DDRC &= ~0x3f; // PC0..5 = input for rows 0..5
 	DDRB &= ~0x03; // PB0,1 = input for rows 6,7
 }
 
@@ -183,10 +234,12 @@ void scan_switches(void) {
 
 		/*_delay_ms(100);*/
 
-		uint8_t col_state = (PINC & 0x1f) | ((PINB & 0x03) << 6);
+		uint8_t col_state = (PINC & 0x3f) | ((PINB & 0x03) << 6);
 		int j;
 		for(j = 0; j < 8; j++) {
 			uint8_t bit = ((col_state >> j) & 1);
+
+			/*debounce_state[i][j] = bit ? 0xff : 0x00;*/
 
 			debounce_state[i][j] =
 				// bit*255 * alpha/255
@@ -210,11 +263,15 @@ void scan_switches(void) {
 			(debounce_state[i][5] >= 0x80) << 5 |
 			(debounce_state[i][6] >= 0x80) << 6 |
 			(debounce_state[i][7] >= 0x80) << 7;
+#if ENABLE_UART && ENABLE_DEBUG
 		/*uart_puthex(switches_states[i]);*/
 		uart_puthex(switches_states[i]);
 		uart_putc(' ');
+#endif
 	}
+#if ENABLE_UART && ENABLE_DEBUG
 	uart_puts("\r\n");
+#endif
 }
 
 
@@ -222,8 +279,48 @@ void scan_switches(void) {
 
 
 ISR(SPI_STC_vect) {
-	spi_update = 1;
-	spi_current_column = SPDR;
+	
+	/*static char ch = 0;*/
+	char ch;
+
+	/*ch = SPSR;*/
+	/*ch = SPDR;*/
+
+	// got this idea from arduino spi code
+	/*asm volatile("nop");*/
+	/*while(!(SPSR & _BV(SPIF))) ;*/
+
+		/*PORTD |= (1 << PD5);*/
+
+
+	/*spi_update = 1;*/
+	/*spi_current_column = SPDR;*/
+	ch = SPDR;
+
+	/*SPDR = 0x55;*/
+	/*SPDR = spi_current_column * spi_current_column;*/
+	/*SPDR = 0x55;*/
+	/*if(SPSR & (1 << WCOL)) {*/
+		/*[>PORTD |= (1 << PD7);<]*/
+		/*ch = SPSR;*/
+		/*ch = SPDR;*/
+		/*SPDR = 0xff;*/
+	/*}*/
+	/*else {*/
+		/*[>PORTD &= ~(1 << PD7);<]*/
+	/*}*/
+
+		/*_delay_us(50);	*/
+		/*PORTD &= ~(1 << PD5);*/
+
+	/*uart_puthex((uint8_t)ch);*/
+	/*uart_putc(' ');*/
+
+	if(ch < SWITCHES_COLUMNS) {
+
+		SPDR = switches_states[ch];
+	}
+
 	/*char ch = SPDR;*/
 	/*if(ch == C_EOT) {*/
 		/*return;*/
@@ -231,24 +328,32 @@ ISR(SPI_STC_vect) {
 }
 
 void uart_putc(char x) {
+#if ENABLE_UART
 	// bei neueren AVRs steht der Status in UCSRA/UCSR0A/UCSR1A, hier z.B. fuer ATmega16:
 	while (!(UCSR0A & (1<<UDRE0)))  /* warten bis Senden moeglich                   */
 	{
 	}
 	UDR0 = x;
+#endif
 }
 
 void uart_puts(char *s) {
+#if ENABLE_UART
 	while(*s) { uart_putc(*(s++)); }
+#endif
 }
 
 void uart_puthex(uint8_t x) {
+#if ENABLE_UART
 	uart_putnibble(x >> 4);
 	uart_putnibble(x & 0x0f);
+#endif
 }
 
 void uart_putnibble(uint8_t x) {
+#if ENABLE_UART
 	uart_putc(x < 10 ? '0' + x : 'a' + x - 10);
+#endif
 }
 
 

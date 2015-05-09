@@ -106,13 +106,26 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'b': {
-					puts("polling buttons\n");
+					while(1) {
+						puts("activating buttons SS\n");
+						spi_ss_activate_only(SPI_SS_PIN_BUTTONS);
 
-					uint8_t request[] = { 0, 1, 2, 3, 0 };
-					uint8_t answer[] = { 0x55, 0x55, 0x55, 0x55, 0x55 };
+						puts("polling buttons\n");
 
-					spi_readwrite(5, request, answer);
-					printf("%02x %02x %02x %02x %02x\n", answer[0], answer[1], answer[2], answer[3], answer[4]);
+						uint8_t request[] = { 0, 1, 2, 3, 4, 5, 6, 7, 0 };
+						uint8_t answer[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+						spi_readwrite(9, request, answer);
+						printf("%02x %02x %02x %02x %02x\n", answer[0], answer[1], answer[2], answer[3], answer[4]);
+						printf("%02x %02x %02x %02x\n", answer[5], answer[6], answer[7], answer[8]);
+						fflush(stdout);
+						/*usleep(100UL);*/
+
+						puts("deactivating all SS\n");
+						spi_ss_deactivate_all();
+
+						usleep(1000000UL);
+					}
 				}
 				break;
 
