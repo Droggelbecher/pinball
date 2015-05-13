@@ -2,6 +2,7 @@
 #ifndef SOLENOID_DRIVER_H
 #define SOLENOID_DRIVER_H
 
+// Pins
 
 #define FLIPPER_LEFT_POWER_PORT PORTC
 #define FLIPPER_LEFT_POWER_DDR DDRC
@@ -19,6 +20,23 @@
 #define FLIPPER_RIGHT_HOLD_DDR DDRC
 #define FLIPPER_RIGHT_HOLD_PIN PINC3
 
+// SPI protocol indices
+
+#define FLIPPER_LEFT_IDX   0
+#define FLIPPER_RIGHT_IDX  1
+
+// how long do coils need to "cool down" (in 1/1024 secodns)?
+#define FLIPPER_LEFT_COOLDOWN_TIME 1
+#define FLIPPER_RIGHT_COLLDOWN_TIME 1
+
+// how long can coils be active before cooldown must start?
+#define FLIPPER_LEFT_ACTIVE_TIME 10
+#define FLIPPER_RIGHT_ACTIVE_TIME 10
+
+#define FLIPPER_LEFT_CYCLE_TIME (FLIPPER_LEFT_COOLDOWN_TIME + FLIPPER_LEFT_ACTIVE_TIME)
+#define FLIPPER_RIGHT_CYCLE_TIME (FLIPPER_RIGHT_COOLDOWN_TIME + FLIPPER_RIGHT_ACTIVE_TIME)
+
+
 #define BAUD 9600UL
 // Berechnungen
 #define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1)   // clever runden
@@ -32,13 +50,10 @@
 #include <unistd.h> // usleep
 #include <util/delay.h>
 
-enum {
-
-	C_EOT = 0xff
-};
-
 int main(void);
 void run_selftest(void);
+void run_main(void);
+void setup_timer(void);
 void setup_spi(void);
 void setup_uart(void);
 void uart_putc(char);

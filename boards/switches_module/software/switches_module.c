@@ -20,14 +20,13 @@
 
 
 uint8_t spi_current_column = 0;
-uint8_t spi_update = 0;
+volatile uint8_t spi_xfer = 0;
 
 int main(void) {
 
 	memset(debounce_state, 0, sizeof(debounce_state) * sizeof(debounce_state[0]));
 	memset(debounce_alpha, 63, sizeof(debounce_alpha) * sizeof(debounce_alpha[0]));
 	/*memset(debounce_alpha, 0xff, sizeof(debounce_alpha) * sizeof(debounce_alpha[0]));*/
-
 
 	setup_spi();
 	setup_uart();
@@ -36,99 +35,120 @@ int main(void) {
 
 	uart_puts("\aSWITCHES MODULE 0.1\r\n");
 
-	/*DDRB |= (1 << PB0);*/
-	/*uint8_t blink = 0;*/
-	/*while(1) {*/
-		/*PORTB ^= (1 << PB0);*/
-		/*advance_sr(0);*/
-		/*_delay_ms(1000);*/
-		/*advance_sr(1);*/
-		/*_delay_ms(1000);*/
-	/*}*/
-
-	
-	char ch;
-	while(1) {
-		/*PORTD |= (1 << PD7);*/
-		/*_delay_ms(1);*/
-		/*PORTD &= ~(1 << PD7);*/
-		/*_delay_ms(1);*/
-	
-
-
-		/*PORTD &= ~(1 << PD5);*/
-		// got this idea from arduino spi code
-		/*ch = SPDR;*/
-		/*if(ch < SWITCHES_COLUMNS) {*/
-
-			/*SPDR = switches_states[ch];*/
-		/*}*/
-		/*asm volatile("nop");*/
-		/*while(!(SPSR & _BV(SPIF))) {*/
-			scan_switches();
-		/*}*/
-
-		/*PORTD ^= (1 << PD5);*/
-		/*SPDR = ch * ch;*/
-		/*ch = SPDR;*/
-		/*uart_puthex(ch);*/
-		/*uart_putc(' ');*/
-
-		/*
-		if(spi_update) {
-			spi_update = 0;
-			
-			if(spi_current_column >= SWITCHES_COLUMNS) {
-				spi_current_column = 0;
-			}
-			SPDR = switches_states[spi_current_column];
-		}
-		*/
-	}
-	
+	mainloop();
+	return 0;
 }
+
+inline void xfer_spi(void) {
+	if(spi_xfer) {
+
+		PORTD |= (1 << PD5);
+		while(spi_xfer) {
+			char c = SPDR;
+			while(!(SPSR & (1 << SPIF))) {
+				if(!spi_xfer) {
+					// SS high -> abort, abort!
+					PORTD &= ~(1 << PD5);
+					return;
+				}
+			}
+			SPDR = switches_states[c];
+		}
+	} // if
+}
+
+void mainloop() {
+	int i;
+
+	while(1) {
+		xfer_spi();
+
+		reset_sr();
+
+		// rows 0...5 = PC0...PC5
+		// PC0 | .. | PC5 = 0b11111 = 0x1f
+		// rows 6,7 = PB0,PB1
+
+		for(i = 0; i < 8; i++) {
+
+			xfer_spi();
+
+			uint8_t col_state = (PINC & 0x3f) | ((PINB & 0x03) << 6);
+			int j;
+			for(j = 0; j < 8; j++) {
+				xfer_spi();
+
+				uint8_t bit = ((col_state >> j) & 1);
+
+				debounce_state[i][j] =
+					// bit*255 * alpha/255
+					// = bit * alpha
+					bit * debounce_alpha[i][j] + 
+
+					// oldval * (1 - alpha/255)
+					// ~= oldval * (255 - alpha)/256
+					((uint16_t)debounce_state[i][j] * (uint16_t)(0xff - debounce_alpha[i][j])) / 256;
+			}
+			advance_sr(1);
+
+			xfer_spi();
+
+			switches_states[i] =
+				(debounce_state[i][0] >= 0x80) << 0 |
+				(debounce_state[i][1] >= 0x80) << 1 |
+				(debounce_state[i][2] >= 0x80) << 2 |
+				(debounce_state[i][3] >= 0x80) << 3 |
+				(debounce_state[i][4] >= 0x80) << 4 |
+				(debounce_state[i][5] >= 0x80) << 5 |
+				(debounce_state[i][6] >= 0x80) << 6 |
+				(debounce_state[i][7] >= 0x80) << 7;
+
+			xfer_spi();
+		}
+
+	} // while
+}
+
+
+/**
+ * SS interrupt.
+ * Activated when SS flanks (low<->high), i.e. at beginning and end of
+ * SPI transmission.
+ * If called on transmission start will handle the complete SPI communication
+ * (blockingly), will just return if called at end of transmission.
+ */
+ISR(PCINT0_vect) {
+	spi_xfer = !(PINB & (1 << PB2)); // SS pin high -> end of transmission
+}
+
 
 void setup_spi(void) {
 
 	// MISO = output,
 	DDRB |= (1 << PB4);
 
+	// SS = input
+	DDRB &= ~(1 << PB2);
+
 	// ERROR LED
 	DDRD |= (1 << PD7) | (1 << PD5);
 	PORTD &= ~((1 << PD7) | (1 << PD5));
 
-	// MOSI, SS, SCK = input
-	/*DDRB &= ~((1 << PB2) | (1 << PB3) | (1 << PB5));*/
-
 	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 0
 	// http://maxembedded.com/2013/11/the-spi-of-the-avr/
-	SPCR = (1<<SPE)|(1<<SPIE); //|(1<<CPHA);
-	/*SPCR |= (1<<SPE); //|(1<<CPHA);*/
+	/*SPCR = (1<<SPE)|(1<<SPIE); //|(1<<CPHA);*/
+	SPCR = (1<<SPE); //|(1<<CPHA);
 
-	// INT0 is wired to SS to inform us when a SPI transmission starts
-	// so generate an interrupt on falling edge (SS low = transmission
-	// running)
-	/*MCUR = (1 << ISC01);*/
-	/*GICR = (1 << INT0);*/
-
-
-
-	// https://sites.google.com/site/qeewiki/books/avr-guide/external-interrupts-on-the-atmega328
-	/*PCICR |= (1 << PCIE0);    // set PCIE0 to enable PCMSK0 scan*/
-	// Generate interrupt on SS pin change
-	/*PCMSK0 |= (1 << PCINT2);*/
-
-
-	/*SPDR = 0;*/
 	char c;
 	c = SPSR;
 	c = SPDR;
 
-	/*if(SPSR & (1 << WCOL)) { PORTD |= (1 << PD7); } else { PORTD &= ~(1 << PD7); }*/
+	// https://sites.google.com/site/qeewiki/books/avr-guide/external-interrupts-on-the-atmega328
+	PCICR |= (1 << PCIE0);    // set PCIE0 to enable PCMSK0 scan
+	// Generate interrupt on SS pin change
+	PCMSK0 |= (1 << PCINT2);
 
-	/*SREG |= 0x80; // same as sei() */
 	sei();
-	/*cli();*/
 }
 
 void setup_uart(void) {
@@ -146,7 +166,7 @@ void setup_switches(void) {
 	// PD2..PD4 output (column control via shift register)
 	// PD5, PD6 input (rows 6,7)
 	/*DDRD = PD2 | PD3 | PD4;*/
-	SR_DDR = SR_DS | SR_STCP | SR_SHCP | SR_MR;
+	SR_DDR |= SR_DS | SR_STCP | SR_SHCP;
 
 	DDRC &= ~0x3f; // PC0..5 = input for rows 0..5
 	DDRB &= ~0x03; // PB0,1 = input for rows 6,7
@@ -158,7 +178,7 @@ void setup_switches(void) {
  * in a state where the first bit is HIGH and all other bits LOW.
  */
 void reset_sr(void) {
-	uint8_t oldstate = SR_PORT & ~(SR_DS | SR_STCP | SR_SHCP | SR_MR);
+	uint8_t oldstate = SR_PORT & ~(SR_DS | SR_STCP | SR_SHCP);
 
 	// SR_MR low -> reset shift register
 	/*SR_PORT = oldstate;*/
@@ -171,27 +191,21 @@ void reset_sr(void) {
 
 	int i;
 	for(i = 0; i < 7; i++) {
-		SR_PORT = oldstate | SR_DS | SR_MR ;
-		SR_PORT = oldstate | SR_DS | SR_MR  | SR_SHCP;
-		SR_PORT = oldstate | SR_DS | SR_MR ;
+		SR_PORT = oldstate | SR_DS;
+		SR_PORT = oldstate | SR_DS | SR_SHCP;
+		SR_PORT = oldstate | SR_DS;
 	}
 
 	// ... and one low
 
 	// load LOW into first register
-	SR_PORT = oldstate | SR_MR ;
-	SR_PORT = oldstate | SR_MR | SR_SHCP;
-	SR_PORT = oldstate | SR_MR ;
-
-	// load LOW into first register
-	/*SR_PORT = oldstate | SR_MR ;*/
-	/*SR_PORT = oldstate | SR_MR | SR_SHCP;*/
-	/*SR_PORT = oldstate | SR_MR ;*/
+	SR_PORT = oldstate ;
+	SR_PORT = oldstate | SR_SHCP;
+	SR_PORT = oldstate ;
 
 	// shift register -> output register
-	SR_PORT = oldstate | SR_MR;
-	SR_PORT = oldstate | SR_MR | SR_STCP;
-	/*SR_PORT = oldstate | SR_MR;*/
+	SR_PORT = oldstate ;
+	SR_PORT = oldstate | SR_STCP;
 }
 
 
@@ -208,16 +222,6 @@ void advance_sr(uint8_t colbit) {
 	SR_PORT = oldstate | x;
 
 	SR_PORT = oldstate | SR_STCP;
-
-	/*
-
-	SR_PORT = oldstate | x;
-	SR_PORT = oldstate | x | SR_SHCP;
-	SR_PORT = oldstate | x;
-
-	// shift register -> output register
-	SR_PORT |= SR_STCP;
-	*/
 }
 
 
@@ -272,59 +276,6 @@ void scan_switches(void) {
 #if ENABLE_UART && ENABLE_DEBUG
 	uart_puts("\r\n");
 #endif
-}
-
-
-
-
-
-ISR(SPI_STC_vect) {
-	
-	/*static char ch = 0;*/
-	char ch;
-
-	/*ch = SPSR;*/
-	/*ch = SPDR;*/
-
-	// got this idea from arduino spi code
-	/*asm volatile("nop");*/
-	/*while(!(SPSR & _BV(SPIF))) ;*/
-
-		/*PORTD |= (1 << PD5);*/
-
-
-	/*spi_update = 1;*/
-	/*spi_current_column = SPDR;*/
-	ch = SPDR;
-
-	/*SPDR = 0x55;*/
-	/*SPDR = spi_current_column * spi_current_column;*/
-	/*SPDR = 0x55;*/
-	/*if(SPSR & (1 << WCOL)) {*/
-		/*[>PORTD |= (1 << PD7);<]*/
-		/*ch = SPSR;*/
-		/*ch = SPDR;*/
-		/*SPDR = 0xff;*/
-	/*}*/
-	/*else {*/
-		/*[>PORTD &= ~(1 << PD7);<]*/
-	/*}*/
-
-		/*_delay_us(50);	*/
-		/*PORTD &= ~(1 << PD5);*/
-
-	/*uart_puthex((uint8_t)ch);*/
-	/*uart_putc(' ');*/
-
-	if(ch < SWITCHES_COLUMNS) {
-
-		SPDR = switches_states[ch];
-	}
-
-	/*char ch = SPDR;*/
-	/*if(ch == C_EOT) {*/
-		/*return;*/
-	/*}*/
 }
 
 void uart_putc(char x) {

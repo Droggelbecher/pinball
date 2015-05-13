@@ -23,7 +23,7 @@
 
 //#define SPI_BUS_SPEED 4 *  1000
 // 1 MHz seems to be what our display module can handle
-#define SPI_BUS_SPEED 4 * 1000
+#define SPI_BUS_SPEED 1000 * 1000
 
 //
 // SPI Slave-Select GPIO pin numbers on pi

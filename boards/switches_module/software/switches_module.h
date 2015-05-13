@@ -15,7 +15,7 @@
 // shift register clock
 #define SR_SHCP (1 << PD4)
 // reset shift register (active low)
-#define SR_MR (1 << PD5)
+//#define SR_MR (1 << PD5)
 
 
 #define BAUD 9600UL
