@@ -3,12 +3,13 @@
 #define SOLENOIDS_H
 
 #include <stdint.h>
+#include <checksum.h>
 
 // These should match the ..._IDX values in ../../solenoid_driver/solenoid_driver.h
 #define SOLENOIDS_FLIPPER_LEFT_IDX 0
 #define SOLENOIDS_FLIPPER_RIGHT_IDX 1
 
-uint8_t solenoids_state[2];
+uint8_t solenoids_state[3];
 
 
 void solenoids_write(void);

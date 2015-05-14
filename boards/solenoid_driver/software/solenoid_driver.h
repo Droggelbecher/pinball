@@ -27,7 +27,7 @@
 
 // how long do coils need to "cool down" (in 1/1024 secodns)?
 #define FLIPPER_LEFT_COOLDOWN_TIME 1
-#define FLIPPER_RIGHT_COLLDOWN_TIME 1
+#define FLIPPER_RIGHT_COOLDOWN_TIME 1
 
 // how long can coils be active before cooldown must start?
 #define FLIPPER_LEFT_ACTIVE_TIME 10

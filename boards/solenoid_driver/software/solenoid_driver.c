@@ -12,12 +12,11 @@
 
 #include <string.h> // memset & co
 
+#include <checksum.h>
 #include "solenoid_driver.h"
 
 #define ENABLE_UART 1
-
-
-int selftest = 0;
+#define SELFTEST    0
 
 
 // [0] = LSB (bits 0..7), [1] = MSB
@@ -53,12 +52,11 @@ int main(void) {
 	cooldown_time[FLIPPER_RIGHT_IDX] = 0;
 
 
-	if(selftest) {
+#if SELFTEST
 		run_selftest();
-	}
-	else {
+#else
 		run_main();
-	}
+#endif
 	
 }
 
@@ -98,31 +96,14 @@ void run_main(void) {
 		uint8_t fl_right_active_before = (FLIPPER_RIGHT_POWER_PORT & ((1 << FLIPPER_RIGHT_POWER_PIN) | (1 << FLIPPER_RIGHT_HOLD_PIN))) != ((1 << FLIPPER_RIGHT_POWER_PIN) | (1 << FLIPPER_RIGHT_HOLD_PIN));
 
 
-		// clear coil flags so they default to being turned off
-		// (might be re-set immediatly causing a short gap,
-		// saves us a lot of making sure we properly clear these)
-		//
-		// Note: logical HIGH means OFF!
-		//
-		/*FLIPPER_LEFT_POWER_DDR |= (1 << FLIPPER_LEFT_POWER_PIN);*/
-		/*FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN);*/
-		/*FLIPPER_LEFT_HOLD_DDR |= (1 << FLIPPER_LEFT_HOLD_PIN);*/
-		/*FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN);*/
-		/*FLIPPER_RIGHT_POWER_DDR |= (1 << FLIPPER_RIGHT_POWER_PIN);*/
-		/*FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN);*/
-		/*FLIPPER_RIGHT_HOLD_DDR |= (1 << FLIPPER_RIGHT_HOLD_PIN);*/
-		/*FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN);*/
-
 		uint8_t fl_left_power = 0,
 				fl_left_hold = 0,
 				fl_right_power = 0,
 				fl_right_hold = 0;
 
-		if(solenoid_spi_state[0] != 0x03) {
-			uart_puthex(solenoid_spi_state[0]);
-			/*uart_puts("\r\n");*/
-		}
-		/*uart_putc('0' + fl_left_active_before);*/
+		/*uart_puthex(solenoid_spi_state[0]);*/
+		/*uart_puthex(solenoid_spi_state[1]);*/
+		/*uart_puts("\r\n");*/
 
 		// activity of this solenoid requested
 		if(!(solenoid_spi_state[FLIPPER_LEFT_IDX / 8] & (1 << (FLIPPER_LEFT_IDX % 8)))) {
@@ -141,7 +122,23 @@ void run_main(void) {
 			else if(fl_left_active_before) {
 				fl_left_hold = 1;
 			}
-			else {
+		}
+
+		if(!(solenoid_spi_state[FLIPPER_RIGHT_IDX / 8] & (1 << (FLIPPER_RIGHT_IDX % 8)))) {
+			if(
+					!fl_right_active_before &&
+					(cooldown_time[FLIPPER_RIGHT_IDX] == 0)
+			) {
+				fl_right_power = 1;
+				cooldown_time[FLIPPER_RIGHT_IDX] = FLIPPER_RIGHT_CYCLE_TIME;
+			}
+
+			else if(cooldown_time[FLIPPER_RIGHT_IDX] > FLIPPER_RIGHT_COOLDOWN_TIME) {
+				fl_right_power = 1;
+			}
+
+			else if(fl_right_active_before) {
+				fl_right_hold = 1;
 			}
 		}
 
@@ -231,15 +228,7 @@ void setup_uart(void) {
 	UCSR0C = (1<<UCSZ01)|(1 << UCSZ00); // Asynchron 8N1
 }
 
-/*int xxx = 0;*/
-
 ISR(TIMER0_COMPA_vect) {
-	/*xxx++;*/
-	/*if(xxx == 1000) {*/
-		/*uart_putc('t');*/
-		/*xxx = 0;*/
-	/*}*/
-
 	int i = 0;
 	for(i = 0; i < sizeof(cooldown_time); i++) {
 		if(cooldown_time[i] > 0) { cooldown_time[i]--; }
@@ -248,33 +237,35 @@ ISR(TIMER0_COMPA_vect) {
 
 ISR(PCINT0_vect) {
 	solenoid_spi_state_idx = 0;
-	
-	/*if(PINB & (1 << PB2)) {*/
-		/*uart_putc('^');*/
-	/*}*/
-	/*else {*/
-		/*uart_putc('v');*/
-	/*}*/
+	/*uart_putc('|');*/
 }
 
 ISR(SPI_STC_vect) {
-	/*uart_putc('!');*/
+	static uint8_t spi_buf[] = { 0xff, 0xff, 0xff };
+
 	char ch = SPDR;
 
-	/*uart_puthex(solenoid_spi_state_idx);*/
-	/*uart_putc('=');*/
-	/*uart_puthex(ch);*/
-	/*uart_putc(' ');*/
-	/*uart_puts("\r\n");*/
+	/*uart_putc('s');*/
 
+	if(solenoid_spi_state_idx > 2) { return; }
 
-	solenoid_spi_state[solenoid_spi_state_idx] = ch;
-
-	// start at index1 (high bits), then go to index 0
-	if(solenoid_spi_state_idx == 0) {
-		solenoid_spi_state_idx = 1;
-		/*uart_putc('0');*/
+	spi_buf[solenoid_spi_state_idx] = ch;
+	if(solenoid_spi_state_idx == 2) {
+		if(checksum(spi_buf, 2) == spi_buf[2]) {
+			solenoid_spi_state[0] = spi_buf[0];
+			solenoid_spi_state[1] = spi_buf[1];
+			/*uart_puts(":-)\r\n");*/
+		}
+		else {
+			uart_putc('!');
+			uart_puthex(checksum(spi_buf, 2));
+			uart_putc(' ');
+			uart_puthex(spi_buf[2]);
+			uart_puts("\r\n");
+		}
 	}
+
+	++solenoid_spi_state_idx;
 }
 
 void uart_putc(char x) {

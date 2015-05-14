@@ -1,0 +1,18 @@
+
+
+Byte   0                 1                   2
+
+MOSI:  [status bits 0-7] [status bits 8-15]  [crc8sum]
+
+MISO:  [undef]           [undef]             [undef]
+
+
+Bit
+
+  0  Flipper left
+  1  Flipper right
+  
+
+Bit == 0 -> solenoid requested to be active
+Bit == 1 -> solenoid requested to be inactive
+

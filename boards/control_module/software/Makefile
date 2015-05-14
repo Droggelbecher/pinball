@@ -6,12 +6,13 @@ USE_DEBUG_GPIO = 0
 TARGET = pinball_controller
 OBJDIR = obj
 
-SOURCES_CONTROLLER = main.c spi_ss.c render.c gamelogic.c solenoids.c buttons.c
+SOURCES_CONTROLLER = main.c spi_ss.c render.c gamelogic.c solenoids.c buttons.c checksum.c
 SOURCES_SPI_DEBUG = linux_spi.c raspberry_gpio.c spi_debug.c spi_ss.c spi_display.c render.c
 #HEADERS = config.h gpio.h spi.h spi_ss.h
 
 CFLAGS = -Wall -Wundef -Wstrict-prototypes
 CFLAGS += -I.
+#CFLAGS += -I../../../common_software/include/
 #CFLAGS += -g
 CFLAGS += -O3
 CFLAGS += -DUSE_DEBUG_DISPLAY=$(USE_DEBUG_DISPLAY)
@@ -66,6 +67,8 @@ deploy: clean
 	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall $(TARGET); mkdir -p $(DEPLOY_DIR)"
 	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall spi_debug; mkdir -p $(DEPLOY_DIR)"
 	rsync -ChaPx ./ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
+	rsync -ChaPx ../../../common_software/include/ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
+	rsync -ChaPx ../../../common_software/src/ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
 	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "cd $(DEPLOY_DIR); make; sudo ./$(TARGET)"
 
 deploy_debug: clean
