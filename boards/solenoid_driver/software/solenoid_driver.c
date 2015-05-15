@@ -21,7 +21,7 @@
 
 // [0] = LSB (bits 0..7), [1] = MSB
 // 1 -> solenoid active, 0 -> inactive
-uint8_t solenoid_spi_state[2];
+uint8_t solenoid_spi_state[2] = { 0xff, 0xff };
 uint8_t solenoid_spi_state_idx = 0;
 
 uint8_t cooldown_time[16];
