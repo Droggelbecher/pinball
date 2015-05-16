@@ -6,17 +6,25 @@
 
 void gamelogic_compute(void) {
 
-	printf("%d %d\n",buttons_get(BUTTONS_FLIPPER_LEFT_IDX),buttons_get(BUTTONS_FLIPPER_RIGHT_IDX));
-	/*printf("%02x %02x %02x %02x ",buttons_state[0], buttons_state[1], buttons_state[2], buttons_state[3]);*/
-	/*printf("%02x %02x %02x %02x %02x\n",buttons_state[4], buttons_state[5], buttons_state[6], buttons_state[7], buttons_state[8]);*/
+	// Have flipper buttons directly control the flipper state
 
-	solenoids_set(SOLENOIDS_FLIPPER_LEFT_IDX, buttons_get(BUTTONS_FLIPPER_LEFT_IDX));
-	solenoids_set(SOLENOIDS_FLIPPER_RIGHT_IDX, buttons_get(BUTTONS_FLIPPER_RIGHT_IDX));
-	/*solenoids_set(SOLENOIDS_FLIPPER_LEFT_IDX, 1);*/
-	/*solenoids_set(SOLENOIDS_FLIPPER_RIGHT_IDX, 0);*/
+	uint8_t fl_left = buttons_get(SPI_BUTTONS_FLIPPER_LEFT_IDX);
+	uint8_t fl_right = buttons_get(SPI_BUTTONS_FLIPPER_RIGHT_IDX);
 
-	/*printf("%02x %02x\n", solenoids_state[0], solenoids_state[1]);*/
+	if(fl_left) { printf("LEFT "); }
+	if(fl_right) { printf("RIGHT "); }
+	if(fl_left || fl_right) { printf("\n"); fflush(stdout); } 
 
-	fflush(stdout);
+	solenoids_set(SPI_SOLENOIDS_FLIPPER_LEFT_IDX, fl_left);
+	solenoids_set(SPI_SOLENOIDS_FLIPPER_RIGHT_IDX, fl_right);
+
+	// If all targets are dropped down, move them right up
+
+	uint8_t bank0 = buttons_get_range(SPI_BUTTONS_DROP_TARGET_BANK_0_IDX, 4);
+	if(bank0 == 0x0f) {
+		solenoids_set(SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX, 1);
+	}
+
+	/*fflush(stdout);*/
 }
 

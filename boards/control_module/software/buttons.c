@@ -10,11 +10,13 @@ void buttons_read(void) {
 	spi_ss_deactivate_all();
 }
 
-/**
- * Return state of button with given index.
- * @return 1 iff button is pressed.
- */
 uint8_t buttons_get(uint8_t idx) {
 	return !(buttons_state[idx / 8 + 1] & (1 << (idx % 8)));
 }
+
+uint8_t buttons_get_range(uint8_t idx, uint8_t len) {
+	const uint8_t mask = (1 << len) - 1;
+	return (buttons_state[idx / 8 + 1] & (mask << (idx % 8))) ^ mask;
+}
+
 

@@ -19,14 +19,6 @@
 #define SELFTEST    0
 
 
-// [0] = LSB (bits 0..7), [1] = MSB
-// 1 -> solenoid active, 0 -> inactive
-uint8_t solenoid_spi_state[2] = { 0xff, 0xff };
-uint8_t solenoid_spi_state_idx = 0;
-
-uint8_t cooldown_time[16];
-
-
 int main(void) {
 	setup_spi();
 	setup_uart();
@@ -48,8 +40,15 @@ int main(void) {
 	FLIPPER_RIGHT_HOLD_DDR |= (1 << FLIPPER_RIGHT_HOLD_PIN);
 	FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN);
 
-	cooldown_time[FLIPPER_LEFT_IDX] = 0;
-	cooldown_time[FLIPPER_RIGHT_IDX] = 0;
+	DROP_TARGET_BANK_0_DDR |= (1 << DROP_TARGET_BANK_0_PIN);
+	DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
+
+
+
+	/*cooldown_time[SPI_SOLENOIDS_FLIPPER_LEFT_IDX] = 0;*/
+	/*cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] = 0;*/
+	/*cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0] = 0;*/
+	memset(cooldown_time, 0, sizeof(cooldown_time));
 
 
 #if SELFTEST
@@ -92,66 +91,83 @@ void run_main(void) {
 		// }
 		//
 
-		uint8_t fl_left_active_before = (FLIPPER_LEFT_POWER_PORT & ((1 << FLIPPER_LEFT_POWER_PIN) | (1 << FLIPPER_LEFT_HOLD_PIN))) != ((1 << FLIPPER_LEFT_POWER_PIN) | (1 << FLIPPER_LEFT_HOLD_PIN));
-		uint8_t fl_right_active_before = (FLIPPER_RIGHT_POWER_PORT & ((1 << FLIPPER_RIGHT_POWER_PIN) | (1 << FLIPPER_RIGHT_HOLD_PIN))) != ((1 << FLIPPER_RIGHT_POWER_PIN) | (1 << FLIPPER_RIGHT_HOLD_PIN));
 
+		//
+		// FLIPPERS
+		//
 
-		uint8_t fl_left_power = 0,
-				fl_left_hold = 0,
-				fl_right_power = 0,
-				fl_right_hold = 0;
+		{
+			uint8_t fl_left_active_before = (FLIPPER_LEFT_POWER_PORT & ((1 << FLIPPER_LEFT_POWER_PIN) | (1 << FLIPPER_LEFT_HOLD_PIN))) != ((1 << FLIPPER_LEFT_POWER_PIN) | (1 << FLIPPER_LEFT_HOLD_PIN));
+			uint8_t fl_right_active_before = (FLIPPER_RIGHT_POWER_PORT & ((1 << FLIPPER_RIGHT_POWER_PIN) | (1 << FLIPPER_RIGHT_HOLD_PIN))) != ((1 << FLIPPER_RIGHT_POWER_PIN) | (1 << FLIPPER_RIGHT_HOLD_PIN));
 
-		/*uart_puthex(solenoid_spi_state[0]);*/
-		/*uart_puthex(solenoid_spi_state[1]);*/
-		/*uart_puts("\r\n");*/
+			uint8_t fl_left_power = 0,
+					fl_left_hold = 0,
+					fl_right_power = 0,
+					fl_right_hold = 0;
 
-		// activity of this solenoid requested
-		if(!(solenoid_spi_state[FLIPPER_LEFT_IDX / 8] & (1 << (FLIPPER_LEFT_IDX % 8)))) {
-			if(
-					!fl_left_active_before &&
-					(cooldown_time[FLIPPER_LEFT_IDX] == 0)
-			) {
-				fl_left_power = 1;
-				cooldown_time[FLIPPER_LEFT_IDX] = FLIPPER_LEFT_CYCLE_TIME;
+			// activity of this solenoid requested
+			if(get_state(SPI_SOLENOIDS_FLIPPER_LEFT_IDX)) {
+				if(
+						!fl_left_active_before &&
+						(cooldown_time[SPI_SOLENOIDS_FLIPPER_LEFT_IDX] == 0)
+				) {
+					fl_left_power = 1;
+					cooldown_time[SPI_SOLENOIDS_FLIPPER_LEFT_IDX] = FLIPPER_LEFT_CYCLE_TIME;
+				}
+				else if(cooldown_time[SPI_SOLENOIDS_FLIPPER_LEFT_IDX] > FLIPPER_LEFT_COOLDOWN_TIME) { fl_left_power = 1; }
+				else if(fl_left_active_before) { fl_left_hold = 1; }
 			}
 
-			else if(cooldown_time[FLIPPER_LEFT_IDX] > FLIPPER_LEFT_COOLDOWN_TIME) {
-				fl_left_power = 1;
+			if(get_state(SPI_SOLENOIDS_FLIPPER_RIGHT_IDX)) {
+				if(
+						!fl_right_active_before &&
+						(cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] == 0)
+				) {
+					fl_right_power = 1;
+					cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] = FLIPPER_RIGHT_CYCLE_TIME;
+				}
+				else if(cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] > FLIPPER_RIGHT_COOLDOWN_TIME) { fl_right_power = 1; }
+				else if(fl_right_active_before) { fl_right_hold = 1; }
 			}
 
-			else if(fl_left_active_before) {
-				fl_left_hold = 1;
+			if(fl_left_power) { FLIPPER_LEFT_POWER_PORT &= ~(1 << FLIPPER_LEFT_POWER_PIN); }
+			else { FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN); }
+			if(fl_left_hold) { FLIPPER_LEFT_HOLD_PORT &= ~(1 << FLIPPER_LEFT_HOLD_PIN); }
+			else { FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN); }
+
+			if(fl_right_power) { FLIPPER_RIGHT_POWER_PORT &= ~(1 << FLIPPER_RIGHT_POWER_PIN); }
+			else { FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN); }
+			if(fl_right_hold) { FLIPPER_RIGHT_HOLD_PORT &= ~(1 << FLIPPER_RIGHT_HOLD_PIN); }
+			else { FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN); }
+		}
+
+		//
+		// DROP TARGET BANKS
+		//
+		{
+			uint8_t bank_0_active_before = (DROP_TARGET_BANK_0_PORT & (1 << DROP_TARGET_BANK_0_PIN));
+			uint8_t bank_0_power = 0;
+
+			if(get_state(SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX)) {
+				if(!bank_0_active_before && (cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX] == 0)) {
+					bank_0_power = 1;
+					cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX] = DROP_TARGET_BANK_0_CYCLE_TIME;
+				}
+				else if(cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX] > DROP_TARGET_BANK_0_COOLDOWN_TIME) {
+					bank_0_power = 1;
+				}
+			}
+
+			if(bank_0_power) {
+				DROP_TARGET_BANK_0_PORT &= ~(1 << DROP_TARGET_BANK_0_PIN);
+			}
+			else {
+				DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
 			}
 		}
 
-		if(!(solenoid_spi_state[FLIPPER_RIGHT_IDX / 8] & (1 << (FLIPPER_RIGHT_IDX % 8)))) {
-			if(
-					!fl_right_active_before &&
-					(cooldown_time[FLIPPER_RIGHT_IDX] == 0)
-			) {
-				fl_right_power = 1;
-				cooldown_time[FLIPPER_RIGHT_IDX] = FLIPPER_RIGHT_CYCLE_TIME;
-			}
 
-			else if(cooldown_time[FLIPPER_RIGHT_IDX] > FLIPPER_RIGHT_COOLDOWN_TIME) {
-				fl_right_power = 1;
-			}
-
-			else if(fl_right_active_before) {
-				fl_right_hold = 1;
-			}
-		}
-
-		if(fl_left_power) { FLIPPER_LEFT_POWER_PORT &= ~(1 << FLIPPER_LEFT_POWER_PIN); }
-		else { FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN); }
-		if(fl_left_hold) { FLIPPER_LEFT_HOLD_PORT &= ~(1 << FLIPPER_LEFT_HOLD_PIN); }
-		else { FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN); }
-
-		if(fl_right_power) { FLIPPER_RIGHT_POWER_PORT &= ~(1 << FLIPPER_RIGHT_POWER_PIN); }
-		else { FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN); }
-		if(fl_right_hold) { FLIPPER_RIGHT_HOLD_PORT &= ~(1 << FLIPPER_RIGHT_HOLD_PIN); }
-		else { FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN); }
-	}
+	} // while
 }
 
 void run_selftest(void) {
