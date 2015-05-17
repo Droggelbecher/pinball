@@ -68,19 +68,19 @@ void display_debug_fps(void) {
 }
 
 void display_refresh(void) {
-	/*spi_ss_activate_only(SPI_SS_PIN_DISPLAY);*/
-	/*display_screen_[DISPLAY_SCREEN_BYTES] = C_EOT;*/
-	/*spi_readwrite(sizeof(display_screen_), display_screen_, 0);*/
-	/*spi_ss_deactivate_all();*/
+	static const char palette[] = " .:~*0&#";
+
 	unsigned row;
 	unsigned col;
 	for(row = 0; row < DISPLAY_MODULE_ROWS; row++) {
 		for(col = 0; col < DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_COUNT; col++) {
-			putchar('0' + *display_screen(row, col));
+			/*putchar('0' + *display_screen(row, col));*/
+			putchar(palette[*display_screen(row, col)]);
 		}
 		puts("");
 	}
 	puts("");
+	usleep(1000);
 }
 
 
