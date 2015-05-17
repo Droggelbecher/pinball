@@ -7,6 +7,8 @@
 #include <checksum.h>
 #include <spi_protocols/solenoids.h>
 
+#include "spi_ss.h"
+
 uint8_t solenoids_state[3];
 
 void solenoids_write(void);

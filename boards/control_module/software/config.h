@@ -33,14 +33,14 @@
 //
 
 #define SPI_SS_PIN_LAMPS 22
-#define SPI_SS_PIN_BUTTONS 23
+#define SPI_SS_PIN_SWITCHES 23
 #define SPI_SS_PIN_DISPLAY 24
 #define SPI_SS_PIN_SOLENOIDS 25
 
 #define SPI_SS_SLAVES_MASK (\
 		(1 << SPI_SS_PIN_LAMPS) | \
 		(1 << SPI_SS_PIN_DISPLAY) | \
-		(1 << SPI_SS_PIN_BUTTONS) | \
+		(1 << SPI_SS_PIN_SWITCHES) | \
 		(1 << SPI_SS_PIN_SOLENOIDS) \
 	)
 

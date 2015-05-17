@@ -21,7 +21,7 @@
 
 // GPIO setup macros. Always use INP_GPIO(x) before using OUT_GPIO(x) or SET_GPIO_ALT(x,y)
 #define GPIO_SET_INPUT(g) *(gpio_map+((g)/10)) &= ~(7<<(((g)%10)*3))
-#define GPIO_SET_OUTPUT(g) *(gpio_map+((g)/10)) |=  (1<<(((g)%10)*3))
+//#define GPIO_SET_OUTPUT(g) *(gpio_map+((g)/10)) |=  (1<<(((g)%10)*3))
 //#define SET_GPIO_ALT(g,a) *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
 
 #define GPIO_SET *(gpio_map+7)  // sets   bits which are 1 ignores bits which are 0
@@ -35,5 +35,6 @@ extern int gpio_mem_fd;
 extern volatile unsigned *gpio_map;
 
 void gpio_setup(void);
+void gpio_set_output(int n);
 
 #endif // __RASPBERRY_GPIO_H__

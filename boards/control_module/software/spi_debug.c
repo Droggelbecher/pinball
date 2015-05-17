@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 	/*char line[1024];*/
 
 	gpio_set_output(SPI_SS_PIN_LAMPS);
-	gpio_set_output(SPI_SS_PIN_BUTTONS);
+	gpio_set_output(SPI_SS_PIN_SWITCHES);
 	gpio_set_output(SPI_SS_PIN_DISPLAY);
 	gpio_set_output(SPI_SS_PIN_SOLENOIDS);
 
@@ -101,16 +101,16 @@ int main(int argc, char **argv) {
 				/*break;*/
 
 			case '2':
-				puts("activating buttons SS\n");
-				spi_ss_activate_only(SPI_SS_PIN_BUTTONS);
+				puts("activating switches SS\n");
+				spi_ss_activate_only(SPI_SS_PIN_SWITCHES);
 				break;
 
 			case 'b': {
 					while(1) {
-						puts("activating buttons SS\n");
-						spi_ss_activate_only(SPI_SS_PIN_BUTTONS);
+						puts("activating switches SS\n");
+						spi_ss_activate_only(SPI_SS_PIN_SWITCHES);
 
-						puts("polling buttons\n");
+						puts("polling switches\n");
 
 						uint8_t request[] = { 0, 1, 2, 3, 4, 5, 6, 7, 0 };
 						uint8_t answer[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };

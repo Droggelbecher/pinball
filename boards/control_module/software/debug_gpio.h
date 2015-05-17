@@ -18,6 +18,7 @@
 #define GPIO_GET _gpio_dummy
 
 void gpio_setup(void);
+void gpio_set_output(int n);
 
 extern unsigned long _gpio_dummy;
 
