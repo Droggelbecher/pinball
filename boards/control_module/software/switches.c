@@ -6,6 +6,8 @@
 #include "config.h"
 #include "switches.h"
 
+uint8_t switches_state_[8] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+
 void switches_read(void) {
 	static uint8_t request[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	uint8_t answer[9];
@@ -15,8 +17,8 @@ void switches_read(void) {
 	spi_readwrite(sizeof(answer), request, answer);
 
 	if(checksum(answer, sizeof(answer) - 1) == answer[sizeof(answer) - 1]) {
-		assert(sizeof(answer) == sizeof(switches_state_));
-		memcpy(switches_state_, answer, sizeof(switches_state_));
+		assert(sizeof(answer) - 1 == sizeof(switches_state_));
+		memcpy(switches_state_, answer, sizeof(answer) - 1);
 	}
 
 	spi_ss_deactivate_all();

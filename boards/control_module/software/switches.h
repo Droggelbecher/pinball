@@ -9,8 +9,11 @@
 #include "spi.h"
 #include "spi_ss.h"
 
-uint8_t switches_state_[9];
+uint8_t switches_state_[8];
 
+/**
+ * Read switches states from SPI.
+ */
 void switches_read(void);
 
 /**
