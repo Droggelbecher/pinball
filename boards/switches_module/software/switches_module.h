@@ -38,25 +38,25 @@ enum {
 
 // 8 bit switch state for each column of switches
 uint8_t switches_states[SWITCHES_COLUMNS];
-
 uint8_t debounce_state[SWITCHES_COLUMNS][SWITCHES_ROWS];
 uint8_t debounce_alpha[SWITCHES_COLUMNS][SWITCHES_ROWS];
 
 int main(void);
-void run_selftest(void);
+void mainloop(void);
+
+inline void xfer_spi(void);
 
 void setup_spi(void);
 void setup_uart(void);
 void setup_switches(void);
 
+void reset_sr(void);
+void advance_sr(uint8_t);
+
 void uart_putc(char);
 void uart_puts(char*);
 void uart_puthex(uint8_t);
 void uart_putnibble(uint8_t);
-
-void advance_sr(uint8_t);
-void scan_switches(void);
-
 
 #endif // SOLENOID_DRIVER_H
 

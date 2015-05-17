@@ -65,6 +65,8 @@ OBJDIR = obj
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = $(TARGET).c
+EXTSRCDIR = ../../../common_software/src
+EXTSRC = ../../../common_software/src/checksum.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -99,7 +101,7 @@ DEBUG = dwarf-2
 #     Each directory must be seperated by a space.
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
-EXTRAINCDIRS =
+EXTRAINCDIRS = ../../../common_software/include/
 
 
 # Compiler flag to set the C Standard level.
@@ -143,12 +145,13 @@ CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wundef
 #CFLAGS += -Wunreachable-code
 #CFLAGS += -Wsign-compare
-CFLAGS += -Wa,-adhlns=$(<:%.c=$(OBJDIR)/%.lst)
+CFLAGS += -Wa,-adhlns=$(@:$(OBJDIR)/%.o=$(OBJDIR)/%.lst)
+#CFLAGS += -Wa,-adhlns=$(EXTSRC:$(EXTSRCDIR)/%.c=$(OBJDIR)/%.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 
 #CFLAGS+= --combine -fwhole-program
-CFLAGS+=-fwhole-program
+#CFLAGS+=-fwhole-program
 
 
 #---------------- Compiler Options C++ ----------------
@@ -352,10 +355,10 @@ MSG_CREATING_LIBRARY = Creating library:
 
 
 # Define all object files.
-OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o)
+OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o) $(EXTSRC:$(EXTSRCDIR)/%.c=$(OBJDIR)/%.o)
 
 # Define all listing files.
-LST = $(SRC:%.c=$(OBJDIR)/%.lst) $(CPPSRC:%.cpp=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst)
+LST = $(SRC:%.c=$(OBJDIR)/%.lst) $(CPPSRC:%.cpp=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst) $(EXTSRC:$(EXTSRCDIR)/%.c=$(OBJDIR)/%.lst)
 
 
 # Compiler flags to generate dependency files.
@@ -529,6 +532,11 @@ extcoff: $(TARGET).elf
 
 # Compile: create object files from C source files.
 $(OBJDIR)/%.o : %.c
+	@echo
+	@echo $(MSG_COMPILING) $<
+	$(CC) -c $(ALL_CFLAGS) $< -o $@
+
+$(OBJDIR)/%.o : $(EXTSRCDIR)/%.c
 	@echo
 	@echo $(MSG_COMPILING) $<
 	$(CC) -c $(ALL_CFLAGS) $< -o $@

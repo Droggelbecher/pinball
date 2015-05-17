@@ -9,7 +9,7 @@
 #include "spi.h"
 #include "spi_ss.h"
 
-uint8_t switches_state[9];
+uint8_t switches_state_[9];
 
 void switches_read(void);
 

@@ -7,11 +7,13 @@
 // UART:
 //https://www.mikrocontroller.net/articles/AVR-GCC-Tutorial/Der_UART
 
+#include <string.h> // memset & co
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include <string.h> // memset & co
+#include <checksum.h>
 
 #include "switches_module.h"
 
@@ -23,27 +25,27 @@ uint8_t spi_current_column = 0;
 volatile uint8_t spi_xfer = 0;
 
 int main(void) {
-
 	memset(debounce_state, 0, sizeof(debounce_state) * sizeof(debounce_state[0]));
 	memset(debounce_alpha, 63, sizeof(debounce_alpha) * sizeof(debounce_alpha[0]));
-	/*memset(debounce_alpha, 0xff, sizeof(debounce_alpha) * sizeof(debounce_alpha[0]));*/
 
 	setup_spi();
 	setup_uart();
-
 	setup_switches();
-
 	uart_puts("\aSWITCHES MODULE 0.1\r\n");
-
 	mainloop();
 	return 0;
 }
 
+/**
+ * If spi_xfer is set (SS low), transfer state of all switches.
+ */
 inline void xfer_spi(void) {
-	if(spi_xfer) {
+	int i;
 
+	if(spi_xfer) {
 		PORTD |= (1 << PD5);
-		while(spi_xfer) {
+
+		for(i = 0; spi_xfer; i++) {
 			char c = SPDR;
 			while(!(SPSR & (1 << SPIF))) {
 				if(!spi_xfer) {
@@ -52,17 +54,25 @@ inline void xfer_spi(void) {
 					return;
 				}
 			}
-			SPDR = switches_states[c];
-		}
+			if(i < sizeof(switches_states)) {
+				SPDR = switches_states[i];
+			}
+			else if(i == sizeof(switches_states)) {
+				SPDR = checksum(switches_states, sizeof(switches_states));
+			}
+			else {
+				// Master requests  too many bytes from us?!
+				SPDR = 0x55;
+			}
+		} // for
 	} // if
-}
+} // xfer_spi()
 
-void mainloop() {
+void mainloop(void) {
 	int i;
 
 	while(1) {
 		xfer_spi();
-
 		reset_sr();
 
 		// rows 0...5 = PC0...PC5
@@ -70,9 +80,7 @@ void mainloop() {
 		// rows 6,7 = PB0,PB1
 
 		for(i = 0; i < 8; i++) {
-
 			xfer_spi();
-
 			uint8_t col_state = (PINC & 0x3f) | ((PINB & 0x03) << 6);
 			int j;
 			for(j = 0; j < 8; j++) {
@@ -142,6 +150,7 @@ void setup_spi(void) {
 	char c;
 	c = SPSR;
 	c = SPDR;
+	SPDR = c;
 
 	// https://sites.google.com/site/qeewiki/books/avr-guide/external-interrupts-on-the-atmega328
 	PCICR |= (1 << PCIE0);    // set PCIE0 to enable PCMSK0 scan
@@ -179,16 +188,9 @@ void setup_switches(void) {
  */
 void reset_sr(void) {
 	uint8_t oldstate = SR_PORT & ~(SR_DS | SR_STCP | SR_SHCP);
-
-	// SR_MR low -> reset shift register
-	/*SR_PORT = oldstate;*/
-	// shift register -> output register (all low)
-	/*SR_PORT = oldstate | SR_STCP;*/
 	SR_PORT = oldstate;
 
-
 	// 7 high bits
-
 	int i;
 	for(i = 0; i < 7; i++) {
 		SR_PORT = oldstate | SR_DS;
@@ -222,60 +224,6 @@ void advance_sr(uint8_t colbit) {
 	SR_PORT = oldstate | x;
 
 	SR_PORT = oldstate | SR_STCP;
-}
-
-
-void scan_switches(void) {
-	int i;
-
-	reset_sr();
-
-	// rows 0...5 = PC0...PC5
-	// PC0 | .. | PC5 = 0b11111 = 0x1f
-	// rows 6,7 = PB0,PB1
-
-	for(i = 0; i < 8; i++) {
-
-		/*_delay_ms(100);*/
-
-		uint8_t col_state = (PINC & 0x3f) | ((PINB & 0x03) << 6);
-		int j;
-		for(j = 0; j < 8; j++) {
-			uint8_t bit = ((col_state >> j) & 1);
-
-			/*debounce_state[i][j] = bit ? 0xff : 0x00;*/
-
-			debounce_state[i][j] =
-				// bit*255 * alpha/255
-				// = bit * alpha
-				bit * debounce_alpha[i][j] + 
-
-				// oldval * (1 - alpha/255)
-				// ~= oldval * (255 - alpha)/256
-				((uint16_t)debounce_state[i][j] * (uint16_t)(0xff - debounce_alpha[i][j])) / 256;
-		}
-		advance_sr(1);
-	}
-
-	for(i = 0; i < 8; i++) {
-		switches_states[i] =
-			(debounce_state[i][0] >= 0x80) << 0 |
-			(debounce_state[i][1] >= 0x80) << 1 |
-			(debounce_state[i][2] >= 0x80) << 2 |
-			(debounce_state[i][3] >= 0x80) << 3 |
-			(debounce_state[i][4] >= 0x80) << 4 |
-			(debounce_state[i][5] >= 0x80) << 5 |
-			(debounce_state[i][6] >= 0x80) << 6 |
-			(debounce_state[i][7] >= 0x80) << 7;
-#if ENABLE_UART && ENABLE_DEBUG
-		/*uart_puthex(switches_states[i]);*/
-		uart_puthex(switches_states[i]);
-		uart_putc(' ');
-#endif
-	}
-#if ENABLE_UART && ENABLE_DEBUG
-	uart_puts("\r\n");
-#endif
 }
 
 void uart_putc(char x) {
