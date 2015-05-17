@@ -1,10 +1,19 @@
 
-USE_DEBUG_DISPLAY = 1
-USE_DEBUG_SPI = 1
-USE_DEBUG_GPIO = 1
+TARGET_PLATFORM = pi
+
+ifeq ($(TARGET_PLATFORM),pi)
+ USE_DEBUG_DISPLAY = 0
+ USE_DEBUG_SPI = 0
+ USE_DEBUG_GPIO = 0
+else
+ USE_DEBUG_DISPLAY = 1
+ USE_DEBUG_SPI = 1
+ USE_DEBUG_GPIO = 1
+endif
 
 TARGET = pinball_controller
 OBJDIR = obj
+ADDSRCDIR = ../../../common_software/src
 
 SOURCES_CONTROLLER = main.c spi_ss.c render.c gamelogic.c solenoids.c switches.c checksum.c
 SOURCES_SPI_DEBUG = spi_debug.c spi_ss.c render.c linux_spi.c raspberry_gpio.c spi_display.c 
@@ -87,6 +96,8 @@ spi_debug: $(OBJECTS_SPI_DEBUG)
 $(OBJDIR)/%.o :%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
+$(OBJDIR)/%.o :$(ADDSRCDIR)/%.c
+	$(CC) -c $(CFLAGS) $< -o $@
 
 # Create object files directory
 $(shell mkdir $(OBJDIR) 2>/dev/null)
