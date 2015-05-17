@@ -46,7 +46,8 @@ void display_end_frame(void);
 void display_refresh(void);
 void display_debug_fps(void);
 
-unsigned char* display_screen(unsigned char row, unsigned char column);
+uint8_t display_sane(uint8_t row, uint8_t column);
+unsigned char* display_screen(uint8_t row, uint8_t column);
 
 #endif // __SPI_DISPLAY_H__
 

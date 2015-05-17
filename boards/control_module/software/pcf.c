@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h> /* memset */
 
+#include "display.h"
 #include "pcf.h"
 
 
@@ -296,43 +297,43 @@ void pcf_print_font(struct pcf_font *font) {
 	} // i
 }
 
-void pcf_render_string(struct pcf_font *font, char *s, uint8_t *buffer, uint16_t buffer_cols, uint16_t buffer_rows, uint16_t start_row, uint16_t start_col, uint8_t color) {
+uint8_t pcf_render_char(struct pcf_font *font, char c, uint16_t row, uint16_t column, uint8_t color) {
+	uint16_t offs = font->offsets[(uint8_t)c];
+	uint8_t r = 0;
+	if(offs == 0xffff) { return r; }
 
-	uint16_t padding_left = 8;
-	uint16_t width = 8;
-
-	for( ; *s != '\0'; s++) {
-		if(font->offsets[c] == 0xffff) {
-			continue;
-		}
-
-		int row = 0;
-		for( ; font_offsets[c] + 2 * row < font_offsets[c + 1] && start_row + row < buffer_rows; row++) {
-
-			int col = 0; // col is relative column for font
-			for(col = padding_left; col < width && start_col + col < 8 && col < buffer_cols; col++) {
-				if(font->bitmap_data[font_offsets[c] + 2 * row] & (1 << col)) {
-					buffer[(start_row + row) * buffer_cols + start_col + col] = color;
-				}
+	for( ; offs < font->offsets[(uint8_t)c + 1]; offs += 2, row++) {
+		int bit;
+		for(bit = 0; bit < 8; bit++) {
+			if(display_sane(row, column + bit) && (font->bitmap_data[offs] & (1 << bit))) {
+				*display_screen(row, column + bit) = color;
+				r = 1;
 			}
-			for(col = 8; col < width && col < 16 && start_col + col < buffer_cols; col++) {
-				if(font->bitmap_data[font_offsets[c] + 2 * row + 1] & (1 << (col-8))) {
-					buffer[(start_row + row) * buffer_cols + start_col + col] = color;
-				}
+			if(display_sane(row + 1, column + bit) && (font->bitmap_data[offs + 1] & (1 << bit))) {
+				*display_screen(row + 1, column + bit) = color;
+				r = 1;
 			}
-
-			start_col += width;
 		}
 	}
+	return r;
 }
 
 
-void main(int argc, char **argv) {
-	printf("reading %s\n", argv[1]);
+uint8_t pcf_render_string(struct pcf_font *font, char *s,  uint16_t start_row, uint16_t start_col, uint8_t color) {
 
-	struct pcf_font gohufont;
+	uint16_t width = 8;
+	uint8_t r;
 
-	pcf_read_font(argv[1], &gohufont);
-	/*pcf_print_font(&gohufont);*/
+	for( ; *s != '\0'; s++) {
+		r = pcf_render_char(font, *s, start_row, start_col, color) || r;
+		start_col += width;
+	}
+	return r;
 }
+
+/*uint8_t pcf_render_marquee(struct pcf_font *font, char *s, int16_t start_row, int16_t *start_col, uint8_t color, int16_t cols_per_1000ms) {*/
+	/*uint8_t r = pcf_render_string(font, s, start_row, *start_col, color);*/
+
+
+
 

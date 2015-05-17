@@ -37,7 +37,8 @@ void display_end_frame(void) {
 	long delta = (now.tv_sec - display_frame_start_.tv_sec) * 1000
 		+ (now.tv_usec - display_frame_start_.tv_usec) / 1000;
 
-	if(delta >= 0) {
+	/*if(delta >= 0) {*/
+	if(1000.0 * ((1000.0 / DISPLAY_TARGET_FPS) - delta - display_avg_error_per_frame_) >= 0) {
 		usleep(1000.0 * ((1000.0 / DISPLAY_TARGET_FPS) - delta - display_avg_error_per_frame_));
 	}
 	display_frame++;
@@ -71,8 +72,18 @@ void display_refresh(void) {
 	spi_ss_deactivate_all();
 }
 
+uint8_t display_sane(uint8_t row, uint8_t column) {
+	const unsigned char module = column / DISPLAY_MODULE_COLUMNS;
+	const unsigned char col = column % DISPLAY_MODULE_COLUMNS;
 
-unsigned char* display_screen(unsigned char row, unsigned char column) {
+	return (
+		(0 <= row && row < DISPLAY_MODULE_ROWS) &&
+		(0 <= col && col < DISPLAY_MODULE_COLUMNS) &&
+		(0 <= module && module < DISPLAY_MODULE_COUNT)
+	);
+}
+
+unsigned char* display_screen(uint8_t row, uint8_t column) {
 	const unsigned char module = column / DISPLAY_MODULE_COLUMNS;
 	const unsigned char col = column % DISPLAY_MODULE_COLUMNS;
 

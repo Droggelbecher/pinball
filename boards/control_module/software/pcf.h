@@ -88,6 +88,18 @@ void transform_bytes(uint8_t *source_start, uint8_t *source_end, uint8_t *target
 uint8_t reverse_byte(uint8_t b);
 void swap_bytes(uint8_t *p, size_t sz);
 
+//void pcf_render_string(struct pcf_font *font, char *s, uint8_t *buffer, uint16_t buffer_cols, uint16_t buffer_rows, uint16_t start_row, uint16_t start_col, uint8_t color);
+
+/**
+ * @return 1 iff at least one pixel of the font was rendered.
+ */
+uint8_t pcf_render_char(struct pcf_font *font, char c, uint16_t row, uint16_t col, uint8_t color);
+
+/**
+ * @return 1 iff at least one pixel of the font was rendered.
+ */
+uint8_t pcf_render_string(struct pcf_font *font, char *s,  uint16_t start_row, uint16_t start_col, uint8_t color);
+
 static uint32_t _is_big_endian;
 #define is_msb_first() ( (*(char*)&_is_big_endian) == 0 )
 

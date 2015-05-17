@@ -5,17 +5,19 @@ ifeq ($(TARGET_PLATFORM),pi)
  USE_DEBUG_DISPLAY = 0
  USE_DEBUG_SPI = 0
  USE_DEBUG_GPIO = 0
+ DEBUGGING = 0
 else
  USE_DEBUG_DISPLAY = 1
  USE_DEBUG_SPI = 1
  USE_DEBUG_GPIO = 1
+ DEBUGGING = 1
 endif
 
 TARGET = pinball_controller
 OBJDIR = obj
 ADDSRCDIR = ../../../common_software/src
 
-SOURCES_CONTROLLER = main.c spi_ss.c render.c gamelogic.c solenoids.c switches.c checksum.c
+SOURCES_CONTROLLER = main.c spi_ss.c render.c gamelogic.c solenoids.c switches.c checksum.c pcf.c scroll.c
 SOURCES_SPI_DEBUG = spi_debug.c spi_ss.c render.c linux_spi.c raspberry_gpio.c spi_display.c 
 
 #HEADERS = config.h gpio.h spi.h spi_ss.h
@@ -23,8 +25,13 @@ SOURCES_SPI_DEBUG = spi_debug.c spi_ss.c render.c linux_spi.c raspberry_gpio.c s
 CFLAGS = -Wall -Wundef -Wstrict-prototypes
 CFLAGS += -I.
 CFLAGS += -I../../../common_software/include/
-#CFLAGS += -g
-CFLAGS += -O3
+
+ifeq ($(DEBUGGING),1)
+ CFLAGS += -g
+else
+ CFLAGS += -O3
+endif
+
 CFLAGS += -DUSE_DEBUG_DISPLAY=$(USE_DEBUG_DISPLAY)
 CFLAGS += -DUSE_DEBUG_SPI=$(USE_DEBUG_SPI)
 CFLAGS += -DUSE_DEBUG_GPIO=$(USE_DEBUG_GPIO)
