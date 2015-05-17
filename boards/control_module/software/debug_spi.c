@@ -7,7 +7,7 @@ int spi_setup(void) {
 }
 
 int spi_readwrite(size_t size, unsigned char *wr, unsigned char *rd) {
-	return 0;
+	return 0xff;
 }
 
 

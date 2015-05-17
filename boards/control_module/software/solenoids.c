@@ -1,6 +1,7 @@
 
 #include "config.h"
 #include "solenoids.h"
+#include "spi.h"
 
 void solenoids_write(void) {
 	solenoids_state[2] = checksum(solenoids_state, 2);

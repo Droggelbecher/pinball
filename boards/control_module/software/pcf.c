@@ -7,6 +7,7 @@
 
 #include "display.h"
 #include "pcf.h"
+#include "utils.h"
 
 
 uint16_t pcf_read_lsbint16(FILE *fp) {
@@ -88,8 +89,8 @@ void pcf_read_encoding(FILE *fp, struct pcf_encoding *r) {
 	uint32_t sz = 2 * (r->max_char_or_byte2 - r->min_char_or_byte2 + 1) * (r->max_byte1 - r->min_byte1 + 1);
 	r->glyphindeces = malloc(sz);
 	fread(r->glyphindeces, sz, 1, fp);
-	if(!!(r->format & PCF_BYTE_MASK) == is_msb_first()) {
-		printf("swapping\n");
+	if(!!(r->format & PCF_BYTE_MASK) == is_big_endian()) {
+		/*printf("swapping\n");*/
 		swap_bytes((uint8_t*)r->glyphindeces, sz);
 	}
 }
@@ -175,32 +176,25 @@ void pcf_read_font(char *filename, struct pcf_font *font) {
 
 	// Bitmap data
 
-	/*int sz = bitmap.format & PCF_GLYPH_PAD_MASK;*/
 	font->bitmap_size = bitmap.bitmap_sizes[1];
 	font->bitmap_data = malloc(font->bitmap_size);
-
 
 	int target_offset = 0;
 	const int bytes_per_row = 1 << (bitmap.format & PCF_GLYPH_PAD_MASK);
 	const float size_factor = 2.0 / bytes_per_row;
-	/*printf("size factor %f\n", size_factor);*/
 
 	int glyph;
-	int offset_idx = 0;
 
 	for(glyph = 0; glyph < bitmap.glyph_count; glyph++) {
 		int offset_start = bitmap.offsets[glyph];
 		int offset_end = bitmap.offsets[glyph + 1]; // TODO
 
-		/*printf("src=%d target offset= %d\n", offset_start, target_offset);*/
-		
 		transform_bytes(bitmap.bitmap_data + offset_start, bitmap.bitmap_data + offset_end, font->bitmap_data + target_offset, bitmap.format);
 		target_offset += (offset_end - offset_start) * size_factor;
 	}
 
 	int j;
 	for(j = encoding.min_char_or_byte2; j <= encoding.max_char_or_byte2; j++) {
-		/*printf("j=%d enc.gi[j-..]=%d\n", j,encoding.glyphindeces[j-encoding.min_char_or_byte2]);*/
 		uint16_t glyph_idx = encoding.glyphindeces[j-encoding.min_char_or_byte2];
 		uint16_t offs = 0xffff;
 		if(glyph_idx != 0xffff) {
@@ -211,9 +205,7 @@ void pcf_read_font(char *filename, struct pcf_font *font) {
 		}
 
 		font->offsets[j] = offs;
-		/*printf("offsets[%d] = (%d) %d\n", j, encoding.glyphindeces[j-encoding.min_char_or_byte2], font->offsets[j]);*/
 	}
-
 }
 
 void transform_bytes(uint8_t *source_start, uint8_t *source_end, uint8_t *target_start, uint32_t format) {
@@ -251,31 +243,6 @@ void transform_bytes(uint8_t *source_start, uint8_t *source_end, uint8_t *target
 
 void pcf_destroy_font(struct pcf_font *font) {
 	// TODO
-}
-
-uint8_t reverse_byte(uint8_t b) {
-	// source: https://graphics.stanford.edu/~seander/bithacks.html#ReverseByteWith64BitsDiv
-	return (uint8_t)((b * 0x0202020202ULL & 0x010884422010ULL) % 1023);
-}
-
-void swap_bytes(uint8_t *p, size_t sz) {
-	int i = 0;
-	for( ; i < sz; i+=2) {
-		p[i] ^= p[i+1]; // p'[i] = p[i] ^ p[i+1]
-		p[i+1] ^= p[i];  // p1[i+1= p[i+1] ^ p[i] ^ p[i+1] = p[i]
-		p[i] ^= p[i+1];
-	}
-}
-
-
-
-int is_big_endian(void) {
-	union {
-		uint32_t i;
-		char c[4];
-	} bint = {0x01020304};
-
-	return bint.c[0] == 1; 
 }
 
 void pcf_print_font(struct pcf_font *font) {

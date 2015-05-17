@@ -1,13 +1,11 @@
 
 #include <stdio.h>
+#include <stdlib.h> // abs()
 #include <assert.h>
 
 #include "display.h"
 #include "scroll.h"
-
-int sgn(int16_t x) {
-	return (x < 0) ? -1 : (x > 0);
-}
+#include "utils.h" // sgn()
 
 void scroll_compute(struct scroll_state *ss) {
 	if(ss->speed_columns && display_frame >= ss->next_column_frame_) {
