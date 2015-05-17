@@ -89,7 +89,7 @@ void pcf_read_encoding(FILE *fp, struct pcf_encoding *r) {
 	uint32_t sz = 2 * (r->max_char_or_byte2 - r->min_char_or_byte2 + 1) * (r->max_byte1 - r->min_byte1 + 1);
 	r->glyphindeces = malloc(sz);
 	fread(r->glyphindeces, sz, 1, fp);
-	if(!!(r->format & PCF_BYTE_MASK) == is_big_endian()) {
+	if(!!(r->format & PCF_BYTE_MASK) != is_big_endian()) {
 		/*printf("swapping\n");*/
 		swap_bytes((uint8_t*)r->glyphindeces, sz);
 	}
