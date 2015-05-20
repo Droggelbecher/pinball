@@ -43,28 +43,20 @@ inline void xfer_spi(void) {
 	int i;
 
 	if(spi_xfer) {
-		PORTD |= (1 << PD5);
+		uint8_t chksum = checksum(switches_states, sizeof(switches_states));
 
-		for(i = 0; spi_xfer; i++) {
-			char c = SPDR;
-			while(!(SPSR & (1 << SPIF))) {
-				if(!spi_xfer) {
-					// SS high -> abort, abort!
-					PORTD &= ~(1 << PD5);
-					return;
-				}
-			}
-			if(i < sizeof(switches_states)) {
-				SPDR = switches_states[i];
-			}
-			else if(i == sizeof(switches_states)) {
-				SPDR = checksum(switches_states, sizeof(switches_states));
-			}
-			else {
-				// Master requests  too many bytes from us?!
-				SPDR = 0x55;
-			}
-		} // for
+		SPDR = switches_states[0]; while(!(SPSR & (1 << SPIF))) { }
+		SPDR = switches_states[1]; while(!(SPSR & (1 << SPIF))) { }
+		SPDR = switches_states[2]; while(!(SPSR & (1 << SPIF))) { }
+		SPDR = switches_states[3]; while(!(SPSR & (1 << SPIF))) { }
+		SPDR = switches_states[4]; while(!(SPSR & (1 << SPIF))) { }
+		SPDR = switches_states[5]; while(!(SPSR & (1 << SPIF))) { }
+		SPDR = switches_states[6]; while(!(SPSR & (1 << SPIF))) { }
+		SPDR = switches_states[7]; while(!(SPSR & (1 << SPIF))) { }
+		SPDR = chksum;
+		while(!(SPSR & (1 << SPIF))) { }
+
+		spi_xfer = 0;
 	} // if
 } // xfer_spi()
 
@@ -101,7 +93,7 @@ void mainloop(void) {
 
 			xfer_spi();
 
-			switches_states[i] =
+			switches_states[i] = 
 				(debounce_state[i][0] >= 0x80) << 0 |
 				(debounce_state[i][1] >= 0x80) << 1 |
 				(debounce_state[i][2] >= 0x80) << 2 |

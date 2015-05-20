@@ -15,7 +15,7 @@
 #include <checksum.h>
 #include "solenoid_driver.h"
 
-#define ENABLE_UART 1
+#define ENABLE_UART 0
 #define SELFTEST    0
 
 
@@ -145,8 +145,9 @@ void run_main(void) {
 		// DROP TARGET BANKS
 		//
 		{
-			uint8_t bank_0_active_before = (DROP_TARGET_BANK_0_PORT & (1 << DROP_TARGET_BANK_0_PIN));
+			uint8_t bank_0_active_before = (DROP_TARGET_BANK_0_PORT & (1 << DROP_TARGET_BANK_0_PIN)) != (1 << DROP_TARGET_BANK_0_PIN);
 			uint8_t bank_0_power = 0;
+
 
 			if(get_state(SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX)) {
 				if(!bank_0_active_before && (cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX] == 0)) {
@@ -157,6 +158,15 @@ void run_main(void) {
 					bank_0_power = 1;
 				}
 			}
+
+			/*uart_puthex(bank_0_active_before);*/
+			/*uart_putc(' ');*/
+			/*uart_puthex(get_state(SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX));*/
+			/*uart_putc(' ');*/
+			/*uart_puthex(cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX]);*/
+			/*uart_putc(' ');*/
+			/*uart_puthex(bank_0_power);*/
+			/*uart_puts("\r\n");*/
 
 			if(bank_0_power) {
 				DROP_TARGET_BANK_0_PORT &= ~(1 << DROP_TARGET_BANK_0_PIN);
@@ -175,25 +185,33 @@ void run_selftest(void) {
 		/*usleep(5UL * 1000000UL);*/
 		_delay_ms(5000);
 
-		// Power coil on
-
+		// Power coil 
 		FLIPPER_LEFT_POWER_PORT &= ~(1 << FLIPPER_LEFT_POWER_PIN);
 		_delay_ms(10);
-
-		// Power coil off
-		// Hold coil on
-
 		FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN);
 		
-		/*_delay_ms(100);*/
-
+		// Hold coil
 		FLIPPER_LEFT_HOLD_PORT &= ~(1 << FLIPPER_LEFT_HOLD_PIN);
+		_delay_ms(1000);
+		FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN);
 
 		_delay_ms(1000);
 
-		// Hold coil off
+		// Power coil 
+		FLIPPER_RIGHT_POWER_PORT &= ~(1 << FLIPPER_RIGHT_POWER_PIN);
+		_delay_ms(10);
+		FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN);
+		
+		// Hold coil
+		FLIPPER_RIGHT_HOLD_PORT &= ~(1 << FLIPPER_RIGHT_HOLD_PIN);
+		_delay_ms(1000);
+		FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN);
 
-		FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN);
+		_delay_ms(1000);
+
+		DROP_TARGET_BANK_0_PORT &= ~(1 << DROP_TARGET_BANK_0_PIN);
+		_delay_ms(100);
+		DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
 	}
 }
 

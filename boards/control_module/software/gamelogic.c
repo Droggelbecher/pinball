@@ -20,11 +20,16 @@ void gamelogic_compute(void) {
 
 	// If all targets are dropped down, move them right up
 
-	uint8_t bank0 = switches_get_range(SPI_SWITCHES_DROP_TARGET_BANK_0_IDX, 4);
-	if(bank0 == 0x0f) {
+	uint8_t bank0 = switches_get_range(SPI_SWITCHES_DROP_TARGET_BANK_0_IDX, 5);
+	/*printf("%02x\n", bank0);*/
+	if(bank0 == 0x1f) {
+		printf("BANK0\n");
+		fflush(stdout);
 		solenoids_set(SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX, 1);
 	}
+	else {
+		solenoids_set(SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX, 0);
+	}
 
-	/*fflush(stdout);*/
 }
 

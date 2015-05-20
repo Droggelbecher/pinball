@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/types.h>
+#include <stdint.h>
 
 #include "config.h"
 #include "spi.h"

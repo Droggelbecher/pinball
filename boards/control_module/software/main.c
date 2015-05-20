@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 
 	struct pcf_font font;
 	pcf_read_font("gohufont-11.pcf", &font);
-	pcf_print_font(&font);
+	/*pcf_print_font(&font);*/
 
 	struct scroll_state marquee;
 
