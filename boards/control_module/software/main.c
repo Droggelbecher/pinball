@@ -9,11 +9,13 @@
 #include "spi_ss.h"
 #include "switches.h"
 #include "scroll.h"
+#include "audio.h"
 
 int main(int argc, char **argv) {
 	gpio_setup();
 	spi_setup();
 	display_setup();
+	audio_setup();
 
 	gpio_set_output(SPI_SS_PIN_LAMPS);
 	gpio_set_output(SPI_SS_PIN_SWITCHES);
@@ -31,6 +33,10 @@ int main(int argc, char **argv) {
 	marquee.speed_columns = -10;
 	marquee.speed_rows = 0;
 	scroll_reset(&marquee);
+
+	struct audio_track music;
+	audio_load(&music, "resources/01_main_theme.mp3");
+	audio_play(&music);
 
 	while(1) {
 		display_start_frame();
