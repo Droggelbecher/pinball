@@ -7,35 +7,61 @@ void audio_setup(void) {
 	ALCsizei count;
 	int i;
 	const ALCchar** device_names = alureGetDeviceNames(1, &count);
+	puts("Audio devices found:\n");
 	for(i = 0; i < count; i++) {
-		printf("Found audio device: %s\n", device_names[i]);
+		printf("  %s\n", device_names[i]);
 	}
 #endif
 
 	if(!alureInitDevice(0, 0)) {
 		perror("Couldnt init default audio device.");
 	}
+
+	alGenSources(1, &audio_source_music_);
+	alSourcei(audio_source_music_, AL_LOOPING, 1);
 }
 
-void audio_load(struct audio_track *track, const char *filename) {
-	alGenSources(1, &(track->source));
+audio_source_t audio_sound_load(const char *filename) {
+	audio_source_t src;
+	ALuint buffer_id;
+
+	alGenSources(1, &src);
 	if(alGetError() != AL_NO_ERROR) {
 		perror("Failed to create OpenAL source.");
 	}
 
-	track->buffer_id = alureCreateBufferFromFile(filename);
-	/*assert(track->buffer_id != AL_NONE);*/
+	buffer_id = alureCreateBufferFromFile(filename);
 
 	// Set source parameters
-	alSourcei(track->source, AL_BUFFER, track->buffer_id);
+	alSourcei(src, AL_BUFFER, buffer_id);
+	return src;
 }
 
-void audio_play(struct audio_track *track) { //, audio_callback_t callback) {
-	alSourcePlay(track->source);
-	/*alurePlaySource(track->source, callback, (void*)track);*/
+void audio_music_play() {
+	alSourcePlay(audio_source_music_);
 }
 
-void audio_stop(struct audio_track *track) {
-	alSourceStop(track->source);
+void audio_music_stop() {
+	alSourceStop(audio_source_music_);
+}
+
+void audio_sound_play(audio_source_t src) {
+	alSourcePlay(src);
+}
+
+void audio_sound_stop(audio_source_t src) {
+	alSourceStop(src);
+}
+
+void audio_music_append(const char *filename) {
+	ALuint buffer_id = alureCreateBufferFromFile(filename);
+	/*assert(track->buffer_id != AL_NONE);*/
+	alSourceQueueBuffers(audio_source_music_, 1, &buffer_id);
+}
+
+void audio_music_clear() {
+	alSourceStop(audio_source_music_);
+	alDeleteSources(1, &audio_source_music_);
+	alGenSources(1, &audio_source_music_);
 }
 

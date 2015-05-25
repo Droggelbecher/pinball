@@ -34,9 +34,8 @@ int main(int argc, char **argv) {
 	marquee.speed_rows = 0;
 	scroll_reset(&marquee);
 
-	struct audio_track music;
-	audio_load(&music, "resources/01_main_theme.mp3");
-	audio_play(&music);
+	audio_music_append("resources/01_main_theme.mp3");
+	audio_music_play();
 
 	while(1) {
 		display_start_frame();

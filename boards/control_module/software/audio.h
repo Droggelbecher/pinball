@@ -7,23 +7,20 @@
 
 #define AUDIO_DEBUG 1
 
-typedef ALuint audio_handle_t;
+typedef ALuint audio_source_t;
 
-struct audio_track {
-	ALuint source;
-	ALuint buffer_id;
-	size_t buffer_size;
-	const ALubyte *buffer;
-};
-
-//typedef (*audio_callback_t)(void*, ALuint);
+audio_source_t audio_source_music_;
 
 void audio_setup(void);
 
-void audio_load(struct audio_track*, const char*);
-void audio_play(struct audio_track *track);
-void audio_stop(struct audio_track *track);
+void audio_music_append(const char *filename);
+void audio_music_clear(void);
+void audio_music_play(void);
+void audio_music_stop(void);
 
+audio_source_t audio_sound_load(const char *filename);
+void audio_sound_play(audio_source_t);
+void audio_sound_stop(audio_source_t);
 
 #endif // AUDIO_H
 
