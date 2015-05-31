@@ -82,19 +82,19 @@ all: $(TARGET)
 clean:
 	rm $(OBJDIR)/* || :
 
-#deploy: clean
-	#ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall $(TARGET); mkdir -p $(DEPLOY_DIR)"
-	#ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall spi_debug; mkdir -p $(DEPLOY_DIR)"
-	#rsync -ChaPx ./ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
-	#rsync -ChaPx ../../../common_software/include/ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
-	#rsync -ChaPx ../../../common_software/src/ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
-	#ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "cd $(DEPLOY_DIR); make; sudo ./$(TARGET)"
+deploy: clean
+	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall $(TARGET); mkdir -p $(DEPLOY_DIR)"
+	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall spi_debug; mkdir -p $(DEPLOY_DIR)"
+	rsync -ChaPx ./ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
+	rsync -ChaPx ../../../common_software/include/ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
+	rsync -ChaPx ../../../common_software/src/ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
+	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "cd $(DEPLOY_DIR); make; sudo ./$(TARGET)"
 
-#deploy_debug: clean
-	#ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall $(TARGET); mkdir -p $(DEPLOY_DIR)"
-	#ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall spi_debug; mkdir -p $(DEPLOY_DIR)"
-	#rsync -ChaPx ./ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
-	#ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "cd $(DEPLOY_DIR); make spi_debug; sudo ./spi_debug"
+deploy_debug: clean
+	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall $(TARGET); mkdir -p $(DEPLOY_DIR)"
+	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall spi_debug; mkdir -p $(DEPLOY_DIR)"
+	rsync -ChaPx ./ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
+	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "cd $(DEPLOY_DIR); make spi_debug; sudo ./spi_debug"
 
 $(TARGET): $(OBJECTS_CONTROLLER)
 	$(CC) $(LDFLAGS) $(OBJECTS_CONTROLLER) -o $@
