@@ -55,6 +55,9 @@ void audio_sound_stop(audio_source_t src) {
 
 void audio_music_append(const char *filename) {
 	ALuint buffer_id = alureCreateBufferFromFile(filename);
+	if(buffer_id == AL_NONE) {
+		perror("could not create sound buffer");
+	}
 	/*assert(track->buffer_id != AL_NONE);*/
 	alSourceQueueBuffers(audio_source_music_, 1, &buffer_id);
 }

@@ -185,7 +185,7 @@ void pcf_read_font(char *filename, struct pcf_font *font) {
 
 	int glyph;
 
-	for(glyph = 0; glyph < bitmap.glyph_count; glyph++) {
+	for(glyph = 0; glyph < bitmap.glyph_count - 1; glyph++) {
 		int offset_start = bitmap.offsets[glyph];
 		int offset_end = bitmap.offsets[glyph + 1]; // TODO
 

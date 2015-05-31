@@ -29,9 +29,11 @@ CFLAGS += -I../../../common_software/include/
 #CFLAGS += -lopenal -lalure
 
 ifeq ($(DEBUGGING),1)
- CFLAGS += -g
+ CFLAGS += -g -O0
+ LDFLAGS += -g -O0
 else
  CFLAGS += -O3
+ LDFLAGS += -O3
 endif
 
 CFLAGS += -DUSE_DEBUG_DISPLAY=$(USE_DEBUG_DISPLAY)
@@ -57,11 +59,11 @@ else
 endif
 
 
-LDFLAGS = -lopenal -lalure
+LDFLAGS += -lopenal -lalure
 
-#DEPLOY_HOST = pinball
-#DEPLOY_USER = pinball
-#DEPLOY_DIR = /home/pinball
+DEPLOY_HOST = raspberrypi
+DEPLOY_USER = pinball
+DEPLOY_DIR = /home/pinball/pinball
 
 
 CC = gcc
@@ -83,12 +85,14 @@ clean:
 	rm $(OBJDIR)/* || :
 
 deploy: clean
-	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall $(TARGET); mkdir -p $(DEPLOY_DIR)"
-	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall spi_debug; mkdir -p $(DEPLOY_DIR)"
-	rsync -ChaPx ./ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
-	rsync -ChaPx ../../../common_software/include/ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
-	rsync -ChaPx ../../../common_software/src/ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
-	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "cd $(DEPLOY_DIR); make; sudo ./$(TARGET)"
+	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo -n killall $(TARGET); mkdir -p $(DEPLOY_DIR)"
+	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo -n killall spi_debug; mkdir -p $(DEPLOY_DIR)"
+	rsync -CHaPx ../../../ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)/ --exclude datasheets/ --exclude casing/ --exclude resources/ --delete --exclude obj/ --exclude pinball_controller
+	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "cd $(DEPLOY_DIR)/boards/control_module/software/"
+
+	#rsync -ChaPx ./ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
+	#rsync -ChaPx ../../../common_software/include/ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
+	#rsync -ChaPx ../../../common_software/src/ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
 
 deploy_debug: clean
 	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall $(TARGET); mkdir -p $(DEPLOY_DIR)"
@@ -98,6 +102,9 @@ deploy_debug: clean
 
 $(TARGET): $(OBJECTS_CONTROLLER)
 	$(CC) $(LDFLAGS) $(OBJECTS_CONTROLLER) -o $@
+
+test_alure: test_alure.o audio.o
+	$(CC) $(LDFLAGS) test_alure.o audio.o -o $@
 
 spi_debug: $(OBJECTS_SPI_DEBUG)
 	$(CC) $(LDFLAGS) $(OBJECTS_SPI_DEBUG) -o $@

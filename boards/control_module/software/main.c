@@ -14,6 +14,7 @@
 #include "audio.h"
 
 void fill_playlist(void);
+int main(int, char **);
 
 
 void fill_playlist(void) {
@@ -24,7 +25,8 @@ void fill_playlist(void) {
 		perror("glob error on looking for music tracks.");
 	}
 
-	for(int i = 0; i < pglob.gl_pathc; i++) {
+	int i;
+	for(i = 0; i < pglob.gl_pathc; i++) {
 		audio_music_append(pglob.gl_pathv[i]);
 	}
 
@@ -55,7 +57,6 @@ int main(int argc, char **argv) {
 	marquee.speed_rows = 0;
 	scroll_reset(&marquee);
 
-	/*audio_music_append("resources/01_main_theme.mp3");*/
 	fill_playlist();
 
 
@@ -71,7 +72,6 @@ int main(int argc, char **argv) {
 		solenoids_write();
 
 		render_selftest_colorstripes();
-		/*render_clear();*/
 
 		scroll_compute(&marquee);
 		uint8_t r = pcf_render_string(&font, "Hello, World!", marquee.current_row, marquee.current_column, 4);
