@@ -64,6 +64,7 @@ LDFLAGS += -lopenal -lalure
 DEPLOY_HOST = raspberrypi
 DEPLOY_USER = pinball
 DEPLOY_DIR = /home/pinball/pinball
+DEPLOY_SCRIPT_DIR = /home/pinball
 
 
 CC = gcc
@@ -88,6 +89,7 @@ deploy: clean
 	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo -n killall $(TARGET); mkdir -p $(DEPLOY_DIR)"
 	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo -n killall spi_debug; mkdir -p $(DEPLOY_DIR)"
 	rsync -CHaPx ../../../ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)/ --exclude datasheets/ --exclude casing/ --exclude resources/ --delete --exclude obj/ --exclude pinball_controller
+	rsync -CHaPx ./system/check_compile.sh $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_SCRIPT_DIR)/check_compile.sh
 	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "cd $(DEPLOY_DIR)/boards/control_module/software/"
 
 	#rsync -ChaPx ./ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)
