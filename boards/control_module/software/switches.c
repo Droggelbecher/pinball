@@ -23,8 +23,10 @@ void switches_read(void) {
 		fflush(stdout);
 	}
 	else {
+#if SWITCHES_PRINT_ERRORS
 		printf("err sw %02x %02x %02x %02x %02x %02x %02x %02x %02x != %02x\n", answer[0], answer[1], answer[2], answer[3], answer[4], answer[5], answer[6], answer[7], answer[8], checksum(answer, 8));
 		fflush(stdout);
+#endif
 	}
 
 	spi_ss_deactivate_all();

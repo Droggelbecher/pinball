@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 	marquee.speed_rows = 0;
 	scroll_reset(&marquee);
 
-	fill_playlist();
+	/*fill_playlist();*/
 
 
 	audio_music_play();
@@ -80,6 +80,8 @@ int main(int argc, char **argv) {
 		}
 
 		display_refresh();
+
+		audio_update();
 
 		display_end_frame();
 		display_debug_fps();
