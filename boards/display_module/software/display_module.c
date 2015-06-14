@@ -115,17 +115,20 @@ void setup_uart(void) {
  */
 ISR(PCINT0_vect) {
 	int spi_xfer = !(PINB & (1 << PB2)); // SS pin high -> end of transmission
-	if(!spi_xfer) {
+	if(spi_xfer) {
+		screen_index = 0;
+	}
+	else {
 		disable_next();
 	}
 }
 
 ISR(SPI_STC_vect) {
 	char ch = SPDR;
-	if(ch == C_EOT) {
-		screen_index = 0;
-		return;
-	}
+	/*if(ch == C_EOT) {*/
+		/*screen_index = 0;*/
+		/*return;*/
+	/*}*/
 
 	if(screen_index >= PIXELS) {
 		enable_next();
