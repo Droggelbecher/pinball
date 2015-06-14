@@ -59,8 +59,10 @@ void display_debug_fps(void) {
 
 	if(delta >= 10000) {
 
+#if DEBUG_DISPLAY_PRINT_FPS
 		printf("fps_avg %lf fr# %lu err %lf\n", fps, (unsigned long)display_frame, display_avg_error_per_frame_);
 		fflush(stdout);
+#endif
 
 		gettimeofday(&display_debug_start_, 0);
 		display_debug_start_frame_ = display_frame;
@@ -68,6 +70,7 @@ void display_debug_fps(void) {
 }
 
 void display_refresh(void) {
+#if DEBUG_DISPLAY_PRINT_DISPLAY
 	static const char palette[] = " .:~*0&#";
 
 	unsigned row;
@@ -83,6 +86,7 @@ void display_refresh(void) {
 		puts("");
 	}
 	puts("");
+#endif
 }
 
 uint8_t display_sane(uint8_t row, uint8_t column) {
