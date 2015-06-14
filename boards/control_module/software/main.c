@@ -73,7 +73,10 @@ int main(int argc, char **argv) {
 
 		/*render_selftest_colorstripes();*/
 		render_clear();
+		/*render_selftest_module_colors();*/
 
+
+		/*pcf_render_string(&font, "Hello, World!", 0, 0, 4);*/
 		scroll_compute(&marquee);
 		uint8_t r = pcf_render_string(&font, "Hello, World!", marquee.current_row, marquee.current_column, 4);
 		if(marquee.current_column < 0 && !r) {

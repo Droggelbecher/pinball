@@ -25,7 +25,7 @@ enum {
 
 	COLORS = 8,
 
-	C_EOT = 0xff
+	//C_EOT = 0xff
 };
 
 
@@ -37,7 +37,7 @@ enum {
 
 #define DISPLAY_PHASE(T, n, frame) ((frame % (unsigned long)((T) * DISPLAY_TARGET_FPS)) / (unsigned long)((T) * DISPLAY_TARGET_FPS / (n)))
 
-extern unsigned char display_screen_[DISPLAY_SCREEN_BYTES + 1];
+extern unsigned char display_screen_[DISPLAY_SCREEN_BYTES];
 extern unsigned long display_frame;
 
 void display_setup(void);

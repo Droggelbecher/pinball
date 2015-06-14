@@ -14,6 +14,7 @@ Allow the pinball user to run the pinball_controller software as root
 Put into /etc/sudoers:
 
 	pinball ALL=(ALL) NOPASSWD: /home/pinball/pinball/boards/control_module/software/pinball_controller
+	pinball ALL=(ALL) NOPASSWD: /usr/bin/killall pinball_controller
 
 
 Put into /etc/rc.local:

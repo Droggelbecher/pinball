@@ -51,21 +51,21 @@ touch $LOCKFILE
 if not running; then
 	log "Controller doesnt seem to be running."
 
-	if online; then
-		log "It seems we are online :-)"
+	#if online; then
+		#log "It seems we are online :-)"
 
-		if [ -e $REPO_DIR ]; then
-			log "Repo exists, pulling for news..."
+		#if [ -e $REPO_DIR ]; then
+			#log "Repo exists, pulling for news..."
 
-			cd $REPO_DIR
-			git pull
+			#cd $REPO_DIR
+			#git pull
 
-		else
-			log "No repo found, cloning..."
-			mkdir -p $REPO_DIR
-			git clone $REPO_URL $REPO_DIR
-		fi
-	fi
+		#else
+			#log "No repo found, cloning..."
+			#mkdir -p $REPO_DIR
+			#git clone $REPO_URL $REPO_DIR
+		#fi
+	#fi
 
 	cd $REPO_DIR/boards/control_module/software
 

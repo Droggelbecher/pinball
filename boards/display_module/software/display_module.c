@@ -15,16 +15,16 @@
 
 #include "display_module.h"
 
+inline void xfer_spi(void);
+
 unsigned char row = 0;
 int demo_state = 1;
 int demo_frame = 0;
 unsigned char pwm_phase = 0;
 
-volatile unsigned int screen_index = 0;
-
 #define ENABLE_UART 0
 
-
+int spi_xfer = 0;
 int selftest = 0;
 unsigned long phase = 0;
 
@@ -53,10 +53,57 @@ int main(void) {
 
 	PORTB |= (1 << PINB0);
 	while(1) {
-		if(selftest) {
-			render_selftest(phase++ >> 6);
-		}
 		output_screen();
+		/*if(selftest) {*/
+			/*render_selftest(phase++ >> 6);*/
+		/*}*/
+		/*else {*/
+			xfer_spi();
+		/*}*/
+	}
+}
+
+inline void xfer_spi(void) {
+	if(spi_xfer) {
+		int screen_index = 0;
+
+		while(!(SPSR & (1 << SPIF))) { }
+		char chx = SPDR;
+
+		// read in all but the last byte
+		// after the last byte we need to quickly activate the next display
+		// module (by pulling its SS pin low), so 
+		// we want to avoid the loop overhead there
+
+		for( ; screen_index != PIXELS - 1; ++screen_index) {
+
+			// the nop is for timing optimization
+			asm volatile ("nop");
+			while(!(SPSR & (1 << SPIF))) { }
+
+			/*PORTD &= ~(1 << PD4);*/
+
+			char ch = SPDR;
+			((unsigned char*)(screen[0]))[screen_index] = palette[0][(int)ch];
+			((unsigned char*)(screen[1]))[screen_index] = palette[1][(int)ch];
+		}
+
+		// the nop is for timing optimization
+		asm volatile ("nop");
+		while(!(SPSR & (1 << SPIF))) { }
+
+
+		char ch = SPDR;
+
+		// enable_next(), pull SS pin of next module low
+		// so following bytes will be passed through to it
+		PORTB &= ~0x02;
+
+		((unsigned char*)(screen[0]))[screen_index] = palette[0][(int)ch];
+		((unsigned char*)(screen[1]))[screen_index] = palette[1][(int)ch];
+
+
+		spi_xfer = 0;
 	}
 }
 
@@ -65,9 +112,15 @@ void setup_spi(void) {
 	// PB1 = output (SS for next module)
 	// others input
 	DDRB = (1 << PB1) | (1 << PB4);
+
+	// debug pins
+	DDRD |= (1 << PD7) | (1 << PD5) | (1 << PD4);
+	PORTD &= ~((1 << PD7) | (1 << PD5) | (1 << PD4));
+
+
 	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 1
 	// http://maxembedded.com/2013/11/the-spi-of-the-avr/
-	SPCR = (1<<SPE)|(1<<SPIE); //|(1<<CPHA);
+	SPCR = (1<<SPE); //|(1<<SPIE); //|(1<<CPHA);
 
 	// INT0 is wired to SS to inform us when a SPI transmission starts
 	// so generate an interrupt on falling edge (SS low = transmission
@@ -114,15 +167,14 @@ void setup_uart(void) {
  * (blockingly), will just return if called at end of transmission.
  */
 ISR(PCINT0_vect) {
-	int spi_xfer = !(PINB & (1 << PB2)); // SS pin high -> end of transmission
-	if(spi_xfer) {
-		screen_index = 0;
-	}
-	else {
-		disable_next();
+	spi_xfer = !(PINB & (1 << PB2)); // SS pin high -> end of transmission
+	if(!spi_xfer) {
+		/*disable_next();*/
+		PORTB |= 0x02;
 	}
 }
 
+#if 0
 ISR(SPI_STC_vect) {
 	char ch = SPDR;
 	/*if(ch == C_EOT) {*/
@@ -140,6 +192,7 @@ ISR(SPI_STC_vect) {
 	++screen_index;
 
 }
+#endif
 
 void uart_putc(char x) {
 	// bei neueren AVRs steht der Status in UCSRA/UCSR0A/UCSR1A, hier z.B. fuer ATmega16:
@@ -162,7 +215,7 @@ void shift(unsigned char x) {
 	PORTC = 0b000 | x;
 }
 
-void shift_row(void) {
+int shift_row(void) {
 	// the comments give the order of pins from QA...QH
 	// note that we have to shift them in in the *reverse* order of that
 	
@@ -172,35 +225,42 @@ void shift_row(void) {
 		// what we name row is a column for the display (brainfuck!)
 		shift(screen[IDX_GREEN][i + (row & 8)][row & 7] & pwm_phase);
 	}
+
+		/*if(spi_xfer) { return 0; }*/
 	
 	// row 3 | green col 3 | ... | row 0 | green col 0
 	for(int i = 0; i < 4; i++) {
 		shift(screen[IDX_GREEN][i + (row & 8)][row & 7] & pwm_phase);
 		shift(row == i);
 	}
+		/*if(spi_xfer) { return 0; }*/
 	
 	// red col 4 | row 12 | ... | red col 7 | row 15
 	for(int i = 7; i >= 4; i--) {
 		shift(row == i + 8);
 		shift(screen[IDX_RED][i + (row & 8)][row & 7] & pwm_phase);
 	}
-	
 	// row 11 | red col 3 | ... | row 8 | red col 0
 	for(int i = 0; i < 4; i++) {
 		shift(screen[IDX_RED][i + (row & 8)][row & 7] & pwm_phase);
 		shift(row == i + 8);
 	}
+
+	return 1;
 }
 
 
-void output_row(void) {
+int output_row(void) {
 	if(row >= ROWS) { row = 0; }
-	shift_row();
+	if(shift_row()) {
 	
-	// flank RCK --> write to status registers
-	PORTC = 0b010;
-	PORTC = 0b000;
-	row++;
+		// flank RCK --> write to status registers
+		PORTC = 0b010;
+		PORTC = 0b000;
+		row++;
+	}
+	
+	return 1;
 }
 
 void output_blank_row(void) {
@@ -218,6 +278,11 @@ void output_blank_row(void) {
 void output_screen(void) {
 	for(int i = 0; i<16; i++) {
 		output_row();
+		/*if(!r) { return; }*/
+		if(spi_xfer) {
+			output_blank_row();
+			return;
+		}
 	}
 	output_blank_row();
 	pwm_phase <<= 1;

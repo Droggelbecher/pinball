@@ -25,3 +25,12 @@ void render_selftest_colorstripes() {
 	}
 }
 
+void render_selftest_module_colors() {
+
+	int i;
+	for(i = 0; i < DISPLAY_MODULE_COUNT; i++) {
+		memset(display_screen_ + i * (DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_ROWS), i + 1, DISPLAY_MODULE_COLUMNS * DISPLAY_MODULE_ROWS);
+	}
+}
+
+
