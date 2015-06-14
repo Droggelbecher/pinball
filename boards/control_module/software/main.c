@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 
 		solenoids_write();
 
-		render_selftest_colorstripes();
+		/*render_selftest_colorstripes();*/
 
 		scroll_compute(&marquee);
 		uint8_t r = pcf_render_string(&font, "Hello, World!", marquee.current_row, marquee.current_column, 4);

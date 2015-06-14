@@ -22,8 +22,10 @@ unsigned char pwm_phase = 0;
 
 volatile unsigned int screen_index = 0;
 
+#define ENABLE_UART 0
 
-int selftest = 1;
+
+int selftest = 0;
 unsigned long phase = 0;
 
 unsigned int palette[][COLORS] = {
@@ -37,13 +39,17 @@ unsigned int palette[][COLORS] = {
 
 int main(void) {
 	setup_spi();
+#if ENABLE_UART
 	setup_uart();
+#endif
 
 	setup_display();
 	clear_screen();
 	output_screen();
 
+#if ENABLE_UART
 	uart_puts("\aDISPLAY MODULE 0.1\r\n");
+#endif
 
 	PORTB |= (1 << PINB0);
 	while(1) {
@@ -69,12 +75,10 @@ void setup_spi(void) {
 	/*MCUR = (1 << ISC01);*/
 	/*GICR = (1 << INT0);*/
 
-
-
 	// https://sites.google.com/site/qeewiki/books/avr-guide/external-interrupts-on-the-atmega328
-	/*PCICR |= (1 << PCIE0);    // set PCIE0 to enable PCMSK0 scan*/
+	PCICR |= (1 << PCIE0);    // set PCIE0 to enable PCMSK0 scan
 	// Generate interrupt on SS pin change
-	/*PCMSK0 |= (1 << PCINT2);*/
+	PCMSK0 |= (1 << PCINT2);
 
 	sei();
 }
@@ -100,6 +104,20 @@ void setup_uart(void) {
 	UCSR0B |= (1<<TXEN0);                           // UART TX einschalten
 	UCSR0A = (1 << UDRE0);
 	UCSR0C = (1<<UCSZ01)|(1 << UCSZ00); // Asynchron 8N1
+}
+
+/**
+ * SS interrupt.
+ * Activated when SS flanks (low<->high), i.e. at beginning and end of
+ * SPI transmission.
+ * If called on transmission start will handle the complete SPI communication
+ * (blockingly), will just return if called at end of transmission.
+ */
+ISR(PCINT0_vect) {
+	int spi_xfer = !(PINB & (1 << PB2)); // SS pin high -> end of transmission
+	if(!spi_xfer) {
+		disable_next();
+	}
 }
 
 ISR(SPI_STC_vect) {

@@ -16,7 +16,6 @@
 #include "solenoid_driver.h"
 
 #define ENABLE_UART 0
-#define SELFTEST    0
 
 
 int main(void) {
@@ -43,24 +42,26 @@ int main(void) {
 	DROP_TARGET_BANK_0_DDR |= (1 << DROP_TARGET_BANK_0_PIN);
 	DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
 
-
+	// PB1 low --> selftest
+	PORTB |= (1 << PB0);
+	DDRB &= ~(1 << PB0);
+	PORTB |= (1 << PB0);
 
 	/*cooldown_time[SPI_SOLENOIDS_FLIPPER_LEFT_IDX] = 0;*/
 	/*cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] = 0;*/
 	/*cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0] = 0;*/
 	memset(cooldown_time, 0, sizeof(cooldown_time));
 
-
-#if SELFTEST
-		run_selftest();
-#else
-		run_main();
-#endif
+	run_main();
 	
 }
 
 void run_main(void) {
 	while(1) {
+		if((PINB & (1 << PB0)) == 0) {
+			uart_puts("starting selftest\r\n");
+			run_selftest();
+		}
 
 		// if (
 		// 		activity requested &&
@@ -97,6 +98,7 @@ void run_main(void) {
 		//
 
 		{
+			// true if either power or hold coil is currently active (low)
 			uint8_t fl_left_active_before = (FLIPPER_LEFT_POWER_PORT & ((1 << FLIPPER_LEFT_POWER_PIN) | (1 << FLIPPER_LEFT_HOLD_PIN))) != ((1 << FLIPPER_LEFT_POWER_PIN) | (1 << FLIPPER_LEFT_HOLD_PIN));
 			uint8_t fl_right_active_before = (FLIPPER_RIGHT_POWER_PORT & ((1 << FLIPPER_RIGHT_POWER_PIN) | (1 << FLIPPER_RIGHT_HOLD_PIN))) != ((1 << FLIPPER_RIGHT_POWER_PIN) | (1 << FLIPPER_RIGHT_HOLD_PIN));
 
@@ -119,15 +121,24 @@ void run_main(void) {
 			}
 
 			if(get_state(SPI_SOLENOIDS_FLIPPER_RIGHT_IDX)) {
+				/*uart_puthex(cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX]);*/
+				/*uart_putc(' ');*/
+				/*uart_putc(fl_right_active_before + '0');*/
+				/*uart_putc(' ');*/
+
 				if(
 						!fl_right_active_before &&
 						(cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] == 0)
 				) {
+					/*uart_putc('R');*/
+					
 					fl_right_power = 1;
 					cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] = FLIPPER_RIGHT_CYCLE_TIME;
 				}
-				else if(cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] > FLIPPER_RIGHT_COOLDOWN_TIME) { fl_right_power = 1; }
-				else if(fl_right_active_before) { fl_right_hold = 1; }
+				else if(cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] > FLIPPER_RIGHT_COOLDOWN_TIME) { /*uart_putc('r');*/ fl_right_power = 1; }
+				else if(fl_right_active_before) { /*uart_putc('~');*/ fl_right_hold = 1; }
+
+				/*uart_puts("\r\n");*/
 			}
 
 			if(fl_left_power) { FLIPPER_LEFT_POWER_PORT &= ~(1 << FLIPPER_LEFT_POWER_PIN); }
@@ -181,6 +192,12 @@ void run_main(void) {
 }
 
 void run_selftest(void) {
+	FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN);
+	FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN);
+	FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN);
+	FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN);
+	DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
+
 	while(1) {
 		/*usleep(5UL * 1000000UL);*/
 		_delay_ms(5000);
