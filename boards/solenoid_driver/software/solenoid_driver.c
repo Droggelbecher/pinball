@@ -42,7 +42,19 @@ int main(void) {
 	DROP_TARGET_BANK_0_DDR |= (1 << DROP_TARGET_BANK_0_PIN);
 	DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
 
-	// PB1 low --> selftest
+	SLINGSHOT_LEFT_DDR |= (1 << SLINGSHOT_LEFT_PIN);
+	SLINGSHOT_LEFT_PORT |= (1 << SLINGSHOT_LEFT_PIN);
+	SLINGSHOT_RIGHT_DDR |= (1 << SLINGSHOT_RIGHT_PIN);
+	SLINGSHOT_RIGHT_PORT |= (1 << SLINGSHOT_RIGHT_PIN);
+	BUMPER_0_DDR |= (1 << BUMPER_0_PIN);
+	BUMPER_0_PORT |= (1 << BUMPER_0_PIN);
+	BUMPER_1_DDR |= (1 << BUMPER_1_PIN);
+	BUMPER_1_PORT |= (1 << BUMPER_1_PIN);
+	BUMPER_2_DDR |= (1 << BUMPER_2_PIN);
+	BUMPER_2_PORT |= (1 << BUMPER_2_PIN);
+
+
+	// PB0 low --> selftest
 	PORTB |= (1 << PB0);
 	DDRB &= ~(1 << PB0);
 	PORTB |= (1 << PB0);
@@ -201,34 +213,52 @@ void run_selftest(void) {
 	while(1) {
 		/*usleep(5UL * 1000000UL);*/
 		_delay_ms(5000);
-
 		// Power coil 
 		FLIPPER_LEFT_POWER_PORT &= ~(1 << FLIPPER_LEFT_POWER_PIN);
 		_delay_ms(10);
 		FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN);
-		
 		// Hold coil
 		FLIPPER_LEFT_HOLD_PORT &= ~(1 << FLIPPER_LEFT_HOLD_PIN);
 		_delay_ms(1000);
 		FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN);
 
 		_delay_ms(1000);
-
 		// Power coil 
 		FLIPPER_RIGHT_POWER_PORT &= ~(1 << FLIPPER_RIGHT_POWER_PIN);
 		_delay_ms(10);
 		FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN);
-		
 		// Hold coil
 		FLIPPER_RIGHT_HOLD_PORT &= ~(1 << FLIPPER_RIGHT_HOLD_PIN);
 		_delay_ms(1000);
 		FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN);
 
 		_delay_ms(1000);
-
 		DROP_TARGET_BANK_0_PORT &= ~(1 << DROP_TARGET_BANK_0_PIN);
 		_delay_ms(100);
 		DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
+
+		_delay_ms(1000);
+		SLINGSHOT_LEFT_PORT &= ~(1 << SLINGSHOT_LEFT_PIN);
+		_delay_ms(100);
+		SLINGSHOT_LEFT_PORT |= (1 << SLINGSHOT_LEFT_PIN);
+
+		_delay_ms(1000);
+		SLINGSHOT_RIGHT_PORT &= ~(1 << SLINGSHOT_RIGHT_PIN);
+		_delay_ms(100);
+		SLINGSHOT_RIGHT_PORT |= (1 << SLINGSHOT_RIGHT_PIN);
+
+		_delay_ms(1000);
+		BUMPER_0_PORT &= ~(1 << BUMPER_0_PIN);
+		_delay_ms(100);
+		BUMPER_0_PORT |= (1 << BUMPER_0_PIN);
+		_delay_ms(1000);
+		BUMPER_1_PORT &= ~(1 << BUMPER_1_PIN);
+		_delay_ms(100);
+		BUMPER_1_PORT |= (1 << BUMPER_1_PIN);
+		_delay_ms(1000);
+		BUMPER_2_PORT &= ~(1 << BUMPER_2_PIN);
+		_delay_ms(100);
+		BUMPER_2_PORT |= (1 << BUMPER_2_PIN);
 	}
 }
 
