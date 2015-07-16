@@ -13,10 +13,10 @@ void solenoids_write(void) {
 
 void solenoids_set(uint8_t idx, uint8_t v) {
 	if(v) {
-		solenoids_state[idx / 8] &= ~(1 << idx);
+		solenoids_state[idx / 8] &= ~(1 << (idx % 8));
 	}
 	else {
-		solenoids_state[idx / 8] |= 1 << idx;
+		solenoids_state[idx / 8] |= 1 << (idx % 8);
 	}
 }
 

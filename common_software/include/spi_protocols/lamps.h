@@ -1,0 +1,12 @@
+
+#ifndef SPI_PROTOCOLS_LAMPS_H
+#define SPI_PROTOCOLS_LAMPS_H
+
+// SPI protocol indices
+//#define SPI_LAMPS_FLIPPER_LEFT_IDX       0
+//#define SPI_LAMPS_FLIPPER_RIGHT_IDX      1
+
+//#define SPI_LAMPS_DROP_TARGET_BANK_0_IDX 2
+
+#endif // SPI_PROTOCOLS_LAMPS_H
+

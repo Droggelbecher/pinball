@@ -17,7 +17,7 @@ TARGET = pinball_controller
 OBJDIR = obj
 ADDSRCDIR = ../../../common_software/src
 
-SOURCES_CONTROLLER = main.c spi_ss.c render.c gamelogic.c solenoids.c switches.c checksum.c pcf.c scroll.c utils.c audio.c
+SOURCES_CONTROLLER = main.c spi_ss.c render.c gamelogic.c solenoids.c switches.c checksum.c pcf.c scroll.c utils.c audio.c timer.c lamps.c
 SOURCES_SPI_DEBUG = spi_debug.c spi_ss.c render.c linux_spi.c raspberry_gpio.c spi_display.c 
 
 #HEADERS = config.h gpio.h spi.h spi_ss.h

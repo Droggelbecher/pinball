@@ -3,8 +3,13 @@
 
 #include "switches.h"
 #include "solenoids.h"
+#include "timer.h"
 
 void gamelogic_compute(void) {
+
+	static struct timer_state lamp_timer = { 0 };
+	static int current_lamp = 0;
+
 
 	// Have flipper switches directly control the flipper state
 
@@ -29,6 +34,29 @@ void gamelogic_compute(void) {
 	}
 	else {
 		solenoids_set(SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX, 0);
+	}
+
+
+
+	// Lamps
+
+	/*printf("frame %ld\n", (long)display_frame);*/
+	/*fflush(stdout);*/
+	
+	if(timer_fired(&lamp_timer)) {
+		timer_set(&lamp_timer, 1.1);
+		lamps_clear();
+
+		/*printf("lamp=%d\n", current_lamp);*/
+		/*fflush(stdout);*/
+
+		lamps_set(current_lamp, 1);
+		lamps_write();
+
+		++current_lamp;
+		if(current_lamp > 64) {
+			current_lamp = 0;
+		}
 	}
 
 }

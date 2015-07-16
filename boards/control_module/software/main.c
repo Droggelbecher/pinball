@@ -70,6 +70,7 @@ int main(int argc, char **argv) {
 		gamelogic_compute();
 
 		solenoids_write();
+		/*lamps_write();*/
 
 		/*render_selftest_colorstripes();*/
 		render_clear();
