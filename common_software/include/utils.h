@@ -17,5 +17,18 @@ uint8_t is_big_endian(void);
 
 int sgn(int16_t x);
 
+
+// Rising edge
+
+struct edgerising_state {
+	uint8_t value_;
+};
+
+uint8_t edgerising_compute(struct edgerising_state *, uint8_t);
+void edgerising_init(struct edgerising_state *, uint8_t);
+
+uint8_t limit(uint8_t v, uint8_t min, uint8_t max);
+
+
 #endif // UTILS_H
 

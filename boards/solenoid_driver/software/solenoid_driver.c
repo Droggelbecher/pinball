@@ -212,10 +212,15 @@ void run_selftest(void) {
 
 	while(1) {
 		/*usleep(5UL * 1000000UL);*/
-		_delay_ms(5000);
+		_delay_ms(1000);
+		if((PINB & (1 << PB0)) == 0) {
+			uart_puts("exiting selftest\r\n");
+			return;
+		}
+
 		// Power coil 
 		FLIPPER_LEFT_POWER_PORT &= ~(1 << FLIPPER_LEFT_POWER_PIN);
-		_delay_ms(10);
+		_delay_ms(100);
 		FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN);
 		// Hold coil
 		FLIPPER_LEFT_HOLD_PORT &= ~(1 << FLIPPER_LEFT_HOLD_PIN);
@@ -225,7 +230,7 @@ void run_selftest(void) {
 		_delay_ms(1000);
 		// Power coil 
 		FLIPPER_RIGHT_POWER_PORT &= ~(1 << FLIPPER_RIGHT_POWER_PIN);
-		_delay_ms(10);
+		_delay_ms(100);
 		FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN);
 		// Hold coil
 		FLIPPER_RIGHT_HOLD_PORT &= ~(1 << FLIPPER_RIGHT_HOLD_PIN);
