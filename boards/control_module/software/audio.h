@@ -2,34 +2,48 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-#include <stdint.h>
+#include <cstdint>
+#include <vector>
+#include <string>
+
 #include <AL/alure.h>
 
-#define AUDIO_DEBUG 1
+class Audio {
+		static const int MUSIC_BUFFERS = 2;
+		static const int MUSIC_CHUNK_SIZE = (512 * 1024);
 
-#define AUDIO_MUSIC_CHUNK_SIZE (512 * 1024)
-#define AUDIO_MUSIC_BUFFERS 2
+	public:
+		typedef ALuint audio_source_t;
 
-typedef ALuint audio_source_t;
+		static Audio& instance() {
+			static Audio instance_;
+			return instance_;
+		}
 
-audio_source_t audio_music_source_;
-alureStream *audio_music_stream_;
-char *audio_music_playlist_[7];
-int audio_music_playlist_index_;
-int audio_music_playlist_length_;
-ALuint audio_music_buffers_[AUDIO_MUSIC_BUFFERS];
+		void playlist_append(const char *filename);
+		void playlist_clear();
+		void playlist_play();
+		void playlist_stop();
 
-void audio_setup(void);
-void audio_eos_callback_(void *userdata, ALuint source);
+		audio_source_t sound_load(const char *filename);
+		void sound_play(audio_source_t);
+		void sound_stop(audio_source_t);
 
-void audio_music_append(const char *filename);
-void audio_music_clear(void);
-void audio_music_play(void);
-void audio_music_stop(void);
+		void update();
 
-audio_source_t audio_sound_load(const char *filename);
-void audio_sound_play(audio_source_t);
-void audio_sound_stop(audio_source_t);
+	private:
+
+		Audio();
+
+		static void eos_callback(void *userdata, ALuint source);
+
+		audio_source_t music_source_ = 0;
+		alureStream *music_stream_ = 0;
+		ALuint music_buffers_[MUSIC_BUFFERS];
+		std::size_t playlist_index_ = 0;
+		std::vector<std::string> playlist_;
+};
+
 
 #endif // AUDIO_H
 

@@ -3,7 +3,6 @@
 #include <iostream>
 
 GameLogic::GameLogic() {
-
 }
 
 void GameLogic::next_frame() {
@@ -12,9 +11,18 @@ void GameLogic::next_frame() {
 	using std::cout;
 	using std::endl;
 
+	//
+	// Trigger various sub-components
+	//
+
 	switches_delta.next_frame();
 	solenoids.next_frame();
 	//marquee.next_frame();
+	audio.update();
+
+	//
+	// Playfield logic
+	//
 
 	// Flipper switches control flippers
 
@@ -47,6 +55,9 @@ void GameLogic::next_frame() {
 		!switches.get(Sw::DTB0_3) &&
 		!switches.get(Sw::DTB0_4));
 
+	//
+	// Display
+	//
 
 	//display.clear();
 

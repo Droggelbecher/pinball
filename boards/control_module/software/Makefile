@@ -10,6 +10,7 @@ DEPLOY_SCRIPT_DIR = /home/pinball
 OBJDIR = $(abspath obj)
 CXX_SOURCES = \
 	game_logic.cc \
+	audio.cc \
 	main.cc \
 	spi.cc \
 	switches.cc \
@@ -47,7 +48,7 @@ all: $(TARGET)
 deploy: clean
 	ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "sudo killall $(TARGET); mkdir -p $(DEPLOY_DIR)"
 	#ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "killall spi_debug; mkdir -p $(DEPLOY_DIR)"
-	rsync -CHaPx ../../../ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)/ --exclude datasheets/ --exclude casing/ --exclude resources/ --delete --exclude obj/ --exclude pinball_controller
+	rsync -CHaPx ../../../ $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_DIR)/ --exclude datasheets/ --exclude casing/ --delete --exclude obj/ --exclude pinball_controller
 	rsync -CHaPx ./system/check_compile.sh $(DEPLOY_USER)@$(DEPLOY_HOST):$(DEPLOY_SCRIPT_DIR)/check_compile.sh
 	#ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "cd $(DEPLOY_DIR)/boards/control_module/software/"
 	#ssh $(DEPLOY_USER)@$(DEPLOY_HOST) "$(DEPLOY_SCRIPT_DIR)/check_compile.sh"
@@ -67,6 +68,9 @@ $(OBJDIR)/%.o: %.cc
 	$(CXXC) -c $(CXXFLAGS) $< -o $@
 
 $(OBJDIR)/%.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@
+
+$(OBJDIR)/checksum.o: ../../../common_software/src/checksum.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
 # Create object files directory
