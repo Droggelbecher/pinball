@@ -4,29 +4,32 @@
 
 #include "switches.h"
 #include "solenoids.h"
-#include "pcf_font.h"
+//#include "pcf_font.h"
 #include "state_buffer.h"
-#include "display.h"
-#include "canvas.h"
+//#include "display.h"
+//#include "canvas.h"
+#include "spi.h"
 
 class GameLogic {
 
 	public:
 		GameLogic();
-		void compute();
+		void next_frame();
 
 	private:
-		PcfFont font_normal { "gohufont-11.pcf" };
+		//PcfFont font_normal { "gohufont-11.pcf" };
 
-		Switches switches;
+		Spi spi;
+
+		Switches switches { spi };
 		StateBuffer<Switches> switches_delta { switches };
 
-		Solenoids solenoids;
-		StateBuffer<Solenoids> solenoids_delta { solenoids };
+		Solenoids solenoids { spi };
+		//StateBuffer<Solenoids> solenoids_delta { solenoids };
 
-		Display display;
+		//Display display;
 
-		ScrollingCanvas marquee { display, { -20, 0 } };
+		//ScrollingCanvas marquee { display, { -20, 0 } };
 };
 
 

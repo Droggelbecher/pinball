@@ -7,7 +7,7 @@ GameLogic::GameLogic() {
 
 }
 
-void GameLogic::compute() {
+void GameLogic::next_frame() {
 	using Sw = Switches::Index;
 	using Sol = Solenoids::Index;
 	using std::cout;
@@ -15,9 +15,9 @@ void GameLogic::compute() {
 
 
 	switches_delta.next_frame();
-	solenoids_delta.next_frame();
-	marquee.next_frame();
-
+	solenoids.next_frame();
+	//solenoids_delta.next_frame();
+	//marquee.next_frame();
 
 	uint8_t fl_left = switches.get(Sw::FLIPPER_LEFT);
 	uint8_t fl_right = switches.get(Sw::FLIPPER_RIGHT);
@@ -33,14 +33,20 @@ void GameLogic::compute() {
 		cout << "right" << endl;
 	}
 
-	display.clear();
+	//display.clear();
 
-	std::string text = "Hello, World!";
+	//std::string text = "Hello, World!";
 
-	marquee.resize(font_normal.get_size(text));
-	font_normal.render(text, marquee);
+	//marquee.resize(font_normal.get_size(text));
+	//font_normal.render(text, marquee);
 
-	solenoids.set(Sol::DTB0, switches.all(Sw::DTB0, 5));
+	solenoids.set(Sol::DTB0,
+		switches.get(Sw::DTB0_0) &&
+		switches.get(Sw::DTB0_1) &&
+		switches.get(Sw::DTB0_2) &&
+		switches.get(Sw::DTB0_3) &&
+		switches.get(Sw::DTB0_4));
+	
 }
 
 

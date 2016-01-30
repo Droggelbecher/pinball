@@ -2,12 +2,26 @@
 #ifndef SOLENOIDS_H
 #define SOLENOIDS_H
 
+#include "spi.h"
+
 class Solenoids {
 
 	public:
 		enum class Index { FLIPPER_LEFT = 0, FLIPPER_RIGHT, DTB0 };
 
+		//typedef std::bitset<16> Bitset;
+
+		Solenoids(Spi& spi) : spi(spi) { }
+
+		void next_frame();
+
 		void set(Index, bool);
+
+	private:
+		//Bitset bits;
+		Spi& spi;
+
+		uint8_t state[3];
 };
 
 #if 0

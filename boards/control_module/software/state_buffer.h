@@ -6,7 +6,7 @@ template<typename T>
 class StateBuffer {
 	
 	public:
-		StateBuffer(T& t) : parent(t) {
+		StateBuffer(T& t) : decorated(t) {
 		}
 
 		void next_frame() {
@@ -41,17 +41,23 @@ class StateBuffer {
 			 * relatively FLEXIBLE
 			 */
 
-			t.next_frame();
+			previous_state = decorated.get_bits();
+
+			decorated.next_frame();
 		}
 
-		bool rising(typename T::Index) {
+		bool rising(typename T::Index idx) {
+			return !previous_state[idx] && decorated.get(idx);
 			
 		}
 
-		bool falling(typename T::Index);
+		bool falling(typename T::Index idx) {
+			return previous_state[idx] && !decorated.get(idx);
+		}
 
 	private:
-		T& parent;
+		T& decorated;
+		typename T::Bitset previous_state;
 };
 
 #endif // STATE_BUFFER_H

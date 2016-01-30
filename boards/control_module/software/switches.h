@@ -2,47 +2,40 @@
 #ifndef SWITCHES_H
 #define SWITCHES_H
 
+#include <bitset>
+#include "spi.h"
 
 class Switches {
 
 	public:
-		enum class Index { FLIPPER_LEFT = 0, FLIPPER_RIGHT, DTB0 };
+		enum {
+			DATA_BYTES = 8,
+			DATA_BITS = DATA_BYTES * 8
+		};
+		enum Index {
+			FLIPPER_LEFT = 0,
+			FLIPPER_RIGHT,
+			DTB0_0,
+			DTB0_1,
+			DTB0_2,
+			DTB0_3,
+			DTB0_4
+		};
 
+		typedef std::bitset<DATA_BITS> Bitset;
+
+		Switches(Spi& spi) : spi(spi) { }
+
+		void next_frame();
 		bool get(Index);
+		const Bitset& get_bits() { return bits; }
 
-		bool all(Index, unsigned);
+	private:
+		void read();
+
+		Bitset bits;
+		Spi& spi;
 };
-
-
-//#include <stdint.h>
-
-//#include <spi_protocols/switches.h>
-
-//#include "spi.h"
-//#include "spi_ss.h"
-
-
-#if 0
-uint8_t switches_state_[8];
-
-/**
- * Read switches states from SPI.
- */
-void switches_read(void);
-
-/**
- * Return state of switch with given index.
- * @return 1 iff switch is pressed.
- */
-uint8_t switches_get(uint8_t idx);
-
-
-/**
- * Return state of switch with given index.
- * @return 1 iff switch is pressed.
- */
-uint8_t switches_get_range(uint8_t idx, uint8_t len);
-#endif // 0
 
 #endif // SWITCHES_H
 

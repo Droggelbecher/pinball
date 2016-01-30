@@ -1,4 +1,8 @@
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "checksum.h"
 
 /*
@@ -24,5 +28,7 @@ uint8_t checksum(uint8_t* data, uint8_t len) {
 	return ~crc;
 }
 
-
+#ifdef __cplusplus
+}
+#endif
 

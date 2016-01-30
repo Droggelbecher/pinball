@@ -1,12 +1,15 @@
 
 #include "main.h"
 
+#include "game_logic.h"
+
 int main(int argc, char **argv) {
 
-	Gamelogic game_logic;
+	GameLogic game_logic;
 
-	game_logic.next_frame();
-
+	while(true) {
+		game_logic.next_frame();
+	}
 
 }
 

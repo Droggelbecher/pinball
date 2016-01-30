@@ -7,12 +7,14 @@ LOCKFILE=/home/pinball/check_compile.lock
 
 LOGFILE=/home/pinball/log/check_compile.log
 
+mkdir -p /home/pinball/log/
+
 function online() {
 	ping -c 4 $ONLINE_HOST
 }
 
 function running() {
-	pgrep pinball_controller
+	pgrep pinball
 }
 
 function not() {
@@ -69,13 +71,14 @@ if not running; then
 
 	cd $REPO_DIR/boards/control_module/software
 
-	log "Trying to compile..."
-	make 2>&1 | loglines
+	#log "Trying to compile..."
+	#make clean
+	#make 2>&1 | loglines
 
-	if not running; then
-		log "Still not running, lets give it a go :-)"
-		sudo ./pinball_controller 2>&1 | loglines
-	fi
+	#if not running; then
+		#log "Still not running, lets give it a go :-)"
+		sudo ./pinball 2>&1 | loglines
+	#fi
 else
 	log "Controller already running, not doing anything."
 fi
