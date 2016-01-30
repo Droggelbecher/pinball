@@ -12,7 +12,7 @@ class Gamelogic {
 		void next_frame();
 
 	private:
-		Pcf font_normal { "gohufont-11.pcf" };
+		//Pcf font_normal { "gohufont-11.pcf" };
 
 		Switches switches;
 		StateBuffer<Switches> switches_delta { switches };

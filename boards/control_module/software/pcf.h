@@ -3,11 +3,24 @@
 #define PCF_H
 
 class Pcf {
-
 	public:
+		enum class TOCEntry {
+			BDF_ENCODINGS = 0,
+			BITMAPS = 1
+		};
+
+		enum FormatMask {
+			PCF_GLYPH_PAD = 3,
+			PCF_MS_BYTE = (1 << 2),
+			PCF_MS_BIT = (1 << 3),
+			PCF_SCAN_UNIT = (3 << 4),
+		};
+
 		Pcf(const std::string& filename);
 
 	private:
+		void load(const std::string& filename);
+
 		struct Bitmap {
 			Bitmap(const std::ifstream&);
 			~Bitmap();
@@ -19,8 +32,16 @@ class Pcf {
 		};
 
 		struct Encoding {
-			Encoding(const std::ifstream&);
+			Encoding(const std::istream&);
 			~Encoding();
+
+			//uint32_t format;
+			//uint16_t min_char_or_byte2;
+			//uint16_t max_char_or_byte2;
+			//uint16_t min_byte1;
+			//uint16_t max_byte1;
+			//uint16_t default_char;
+			uint16_t *glyph_indices;
 		};
 
 };
