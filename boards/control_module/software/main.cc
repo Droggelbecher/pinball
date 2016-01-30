@@ -1,7 +1,5 @@
 
-#include <glob.h>
-
-#include "gamelogic.h"
+#include "main.h"
 
 int main(int argc, char **argv) {
 
