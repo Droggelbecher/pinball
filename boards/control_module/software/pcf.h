@@ -2,6 +2,35 @@
 #ifndef PCF_H
 #define PCF_H
 
+class Pcf {
+
+	public:
+		Pcf(const std::string& filename);
+
+	private:
+		struct Bitmap {
+			Bitmap(const std::ifstream&);
+			~Bitmap();
+			uint32_t format;
+			uint32_t glyph_count = 0;;
+			uint32_t *offsets = nullptr;
+			uint32_t bitmap_data_size = 0;
+			uint8_t *bitmap_data = nullptr;
+		};
+
+		struct Encoding {
+			Encoding(const std::ifstream&);
+			~Encoding();
+		};
+
+};
+
+
+
+
+
+
+
 #include <stdint.h>
 
 // Sources:

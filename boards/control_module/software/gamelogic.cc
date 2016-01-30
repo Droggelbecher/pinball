@@ -5,12 +5,11 @@ Gamelogic::Gamelogic() {
 
 }
 
-void Gamelogic::compute() {
+void Gamelogic::next_frame() {
 	using Sw = Switches::SwitchIndices;
 	using Sol = Solenoids::SolenoidIndices;
 	using std::cout;
 	using std::endl;
-
 
 	switches_delta.next_frame();
 	solenoids_delta.next_frame();

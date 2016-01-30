@@ -5,17 +5,14 @@
 #include "switches.h"
 #include "solenoids.h"
 
-void gamelogic_compute(void);
-
-
 class Gamelogic {
 
 	public:
 		Gamelogic();
-		void compute();
+		void next_frame();
 
 	private:
-		PcfFont font_normal { "gohufont-11.pcf" };
+		Pcf font_normal { "gohufont-11.pcf" };
 
 		Switches switches;
 		StateBuffer<Switches> switches_delta { switches };
