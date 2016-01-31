@@ -43,6 +43,7 @@ class Spi {
 
 		enum {
 			SPI_BUS_SPEED = 1000 * 1000,
+			//SPI_BUS_SPEED = 1000,
 			SPI_MODE = 0,
 			SPI_BITS_PER_WORD = 8
 		};
@@ -76,7 +77,7 @@ class Spi {
 
 		int spi_cs_fd;
 		int gpio_mem_fd;
-		volatile unsigned *gpio_map;
+		//volatile unsigned *gpio_map;
 };
 
 

@@ -38,7 +38,7 @@ function loglines() {
 log "$0 starting."
 
 if [ "$(hostname)" != "raspberrypi" ]; then
-	log "Hostname is not 'pinball'. Sure you know what you are doing?"
+	log "Not running on raspberry pi. Sure you know what you are doing?"
 	exit 1;
 fi
 

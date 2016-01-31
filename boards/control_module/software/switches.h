@@ -13,13 +13,13 @@ class Switches {
 			DATA_BITS = DATA_BYTES * 8
 		};
 		enum Index {
-			FLIPPER_LEFT = 0,
-			FLIPPER_RIGHT,
-			DTB0_0,
-			DTB0_1,
-			DTB0_2,
-			DTB0_3,
-			DTB0_4
+			FLIPPER_LEFT = 2,
+			FLIPPER_RIGHT = 5,
+			DTB0_0 = 8,
+			DTB0_1 = 9,
+			DTB0_2 = 10,
+			DTB0_3 = 11,
+			DTB0_4 = 12
 		};
 
 		typedef std::bitset<DATA_BITS> Bitset;

@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include "utils.h"
+
 namespace {
 
 	// TODO: move this somewhere more central (utils?)
@@ -14,7 +16,6 @@ namespace {
 	template<int N>
 	std::bitset<N> to_bitset(const std::vector<uint8_t>& bytes) {
 		std::bitset<N> r;
-		std::cout << "N=" << (int)N << " bytes=" << (int)bytes.size() << std::endl;
 		assert(bytes.size() * 8 == N);
 		for(int i = 0; i < N; i++) {
 			r[i] = (bytes[i / 8] >> (i % 8)) & 0x01;
@@ -36,6 +37,9 @@ void Switches::read() {
 
 	if(answer.size() == 8) {
 		this->bits = to_bitset<64>(answer);
+	}
+	else {
+		std::cout << "sw chksum fail" << std::endl;
 	}
 }
 
