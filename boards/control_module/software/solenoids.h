@@ -2,41 +2,24 @@
 #ifndef SOLENOIDS_H
 #define SOLENOIDS_H
 
-#include "spi.h"
+#include "bit_actuator.h"
 
-class Solenoids {
+namespace solenoids_detail {
+	enum class Index {
+		FLIPPER_LEFT = 0,
+		FLIPPER_RIGHT = 1,
+		DTB0 = 2,
+		SLINGSHOT0 = 3,
+		SLINGSHOT1 = 4
+	};
+}
 
+class Solenoids : public BitActuator<solenoids_detail::Index, Spi::Slave::SOLENOIDS, 2> {
 	public:
-		enum class Index { FLIPPER_LEFT = 0, FLIPPER_RIGHT, DTB0 };
+		typedef BitActuator<solenoids_detail::Index, Spi::Slave::SOLENOIDS, 2> Super;
 
-		//typedef std::bitset<16> Bitset;
-
-		Solenoids(Spi& spi) : spi(spi) { }
-
-		void next_frame();
-
-		void set(Index, bool);
-
-	private:
-		//Bitset bits;
-		Spi& spi;
-
-		uint8_t state[3];
+		Solenoids(Spi& spi) : Super(spi) { }
 };
-
-#if 0
-#include <stdint.h>
-
-#include <checksum.h>
-#include <spi_protocols/solenoids.h>
-
-#include "spi_ss.h"
-
-uint8_t solenoids_state[3];
-
-void solenoids_write(void);
-void solenoids_set(uint8_t, uint8_t);
-#endif
 
 #endif // SOLENOIDS_H
 

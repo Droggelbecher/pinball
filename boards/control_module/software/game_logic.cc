@@ -12,17 +12,14 @@ void GameLogic::next_frame() {
 	using std::cout;
 	using std::endl;
 
-
 	switches_delta.next_frame();
 	solenoids.next_frame();
-	//solenoids_delta.next_frame();
 	//marquee.next_frame();
 
-	uint8_t fl_left = !switches.get(Sw::FLIPPER_LEFT);
-	uint8_t fl_right = !switches.get(Sw::FLIPPER_RIGHT);
+	// Flipper switches control flippers
 
-	solenoids.set(Sol::FLIPPER_LEFT, fl_left);
-	solenoids.set(Sol::FLIPPER_RIGHT, fl_right);
+	solenoids.set(Sol::FLIPPER_LEFT, !switches.get(Sw::FLIPPER_LEFT));
+	solenoids.set(Sol::FLIPPER_RIGHT, !switches.get(Sw::FLIPPER_RIGHT));
 
 	if(switches_delta.falling(Sw::FLIPPER_LEFT)) {
 		cout << "left" << endl;
@@ -32,12 +29,12 @@ void GameLogic::next_frame() {
 		cout << "right" << endl;
 	}
 
-	//display.clear();
+	// Slingshot switches control slingshots
 
-	//std::string text = "Hello, World!";
+	solenoids.set(Sol::SLINGSHOT0, !switches.get(Sw::SLINGSHOT0));
+	solenoids.set(Sol::SLINGSHOT1, !switches.get(Sw::SLINGSHOT1));
 
-	//marquee.resize(font_normal.get_size(text));
-	//font_normal.render(text, marquee);
+	// If all drop targets are down, re-set them.
 
 	solenoids.set(Sol::DTB0,
 		!switches.get(Sw::DTB0_0) &&
@@ -45,6 +42,15 @@ void GameLogic::next_frame() {
 		!switches.get(Sw::DTB0_2) &&
 		!switches.get(Sw::DTB0_3) &&
 		!switches.get(Sw::DTB0_4));
+
+
+	//display.clear();
+
+	//std::string text = "Hello, World!";
+
+	//marquee.resize(font_normal.get_size(text));
+	//font_normal.render(text, marquee);
+
 	
 }
 

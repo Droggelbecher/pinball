@@ -6,7 +6,6 @@
 #include "spi.h"
 
 class Switches {
-
 	public:
 		enum {
 			DATA_BYTES = 8,
@@ -19,7 +18,10 @@ class Switches {
 			DTB0_1 = 9,
 			DTB0_2 = 10,
 			DTB0_3 = 11,
-			DTB0_4 = 12
+			DTB0_4 = 12,
+
+			SLINGSHOT0 = 2,
+			SLINGSHOT1 = 5,
 		};
 
 		typedef std::bitset<DATA_BITS> Bitset;

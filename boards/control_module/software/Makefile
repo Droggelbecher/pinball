@@ -8,10 +8,13 @@ DEPLOY_DIR = /home/pinball/pinball
 DEPLOY_SCRIPT_DIR = /home/pinball
 
 OBJDIR = $(abspath obj)
-CXX_SOURCES = game_logic.cc main.cc \
-	solenoids.cc switches.cc \
+CXX_SOURCES = \
+	game_logic.cc \
+	main.cc \
 	spi.cc \
+	switches.cc \
 	utils.cc
+
 C_SOURCES = checksum.c
 
 CXXFLAGS = -std=c++11 -Wall
