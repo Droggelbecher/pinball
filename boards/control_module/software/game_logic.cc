@@ -16,7 +16,6 @@ void GameLogic::next_frame() {
 	//
 
 	switches_delta.next_frame();
-	solenoids.next_frame();
 	//marquee.next_frame();
 	audio.update();
 
@@ -31,6 +30,12 @@ void GameLogic::next_frame() {
 
 	if(switches_delta.changed()) {
 		cout << switches.get_bits() << endl;
+
+		//for(int i = 0; i < 16; i++) {
+			//if(switches.get_bits()[i] != switches_delta.get_previous_bits()[i]) {
+				//cout << i << endl;
+			//}
+		//}
 	}
 
 	if(switches_delta.falling(Sw::FLIPPER_LEFT)) {
@@ -46,6 +51,12 @@ void GameLogic::next_frame() {
 	solenoids.set(Sol::SLINGSHOT0, !switches.get(Sw::SLINGSHOT0));
 	solenoids.set(Sol::SLINGSHOT1, !switches.get(Sw::SLINGSHOT1));
 
+	// Bumper
+	
+	solenoids.set(Sol::BUMPER0, !switches.get(Sw::BUMPER0));
+	solenoids.set(Sol::BUMPER1, !switches.get(Sw::BUMPER1));
+	solenoids.set(Sol::BUMPER2, !switches.get(Sw::BUMPER2));
+
 	// If all drop targets are down, re-set them.
 
 	solenoids.set(Sol::DTB0,
@@ -54,6 +65,8 @@ void GameLogic::next_frame() {
 		!switches.get(Sw::DTB0_2) &&
 		!switches.get(Sw::DTB0_3) &&
 		!switches.get(Sw::DTB0_4));
+
+	solenoids.next_frame();
 
 	//
 	// Display

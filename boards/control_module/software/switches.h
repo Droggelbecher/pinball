@@ -22,6 +22,10 @@ class Switches {
 
 			SLINGSHOT0 = 3,
 			SLINGSHOT1 = 4,
+
+			BUMPER0 = 13, // ?
+			BUMPER1 = 14,
+			BUMPER2 = 15
 		};
 
 		typedef std::bitset<DATA_BITS> Bitset;

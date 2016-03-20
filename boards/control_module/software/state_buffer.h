@@ -27,6 +27,10 @@ class StateBuffer {
 			return previous_state[idx] && !decorated.get(idx);
 		}
 
+		const typename T::Bitset& get_previous_state() {
+			return previous_state;
+		}
+
 	private:
 		T& decorated;
 		typename T::Bitset previous_state;
