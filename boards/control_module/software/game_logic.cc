@@ -21,6 +21,10 @@ void GameLogic::next_frame() {
 	solenoids.set(Sol::FLIPPER_LEFT, !switches.get(Sw::FLIPPER_LEFT));
 	solenoids.set(Sol::FLIPPER_RIGHT, !switches.get(Sw::FLIPPER_RIGHT));
 
+	if(switches_delta.changed()) {
+		cout << switches.get_bits() << endl;
+	}
+
 	if(switches_delta.falling(Sw::FLIPPER_LEFT)) {
 		cout << "left" << endl;
 	}

@@ -125,7 +125,7 @@ std::vector<uint8_t> Spi::transfer_and_check(Slave slave, std::vector<uint8_t> i
 
 	uint8_t s = checksum(output, sizeof(output) - 1);
 
-	//if(slave != 25) {
+	//if(slave == 25) { // 25 = solenoids
 	//std::cout << "transfer_and_check(" << slave << ", " << input << ")"
 		//<< "  output=" << std::vector<uint8_t>(output, output + sizeof(output))
 		//<< " s=" << (int)s 
@@ -137,11 +137,11 @@ std::vector<uint8_t> Spi::transfer_and_check(Slave slave, std::vector<uint8_t> i
 		return std::vector<uint8_t>(output, output + sizeof(output) - 1);
 	}
 	else {
-	//std::cout << "checksum fail transfer_and_check(" << slave << ", " << input << ")"
-		//<< "  output=" << std::vector<uint8_t>(output, output + sizeof(output))
-		//<< " s=" << (int)s 
-		//<< " fd=" << spi_cs_fd
-		//<< std::endl;
+		//std::cout << "checksum fail transfer_and_check(" << slave << ", " << input << ")"
+			//<< "  output=" << std::vector<uint8_t>(output, output + sizeof(output))
+			//<< " sum=" << (int)s << " != " << (int)output[sizeof(output) - 1]
+			//<< " fd=" << spi_cs_fd
+			//<< std::endl;
 		return std::vector<uint8_t>();
 	}
 }

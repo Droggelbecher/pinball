@@ -199,6 +199,118 @@ void run_main(void) {
 			}
 		}
 
+		//
+		// SLINGSHOTS
+		//
+		{
+			uint8_t active_before = (SLINGSHOT_LEFT_PORT & (1 << SLINGSHOT_LEFT_PIN)) != (1 << SLINGSHOT_LEFT_PIN);
+			uint8_t power = 0;
+
+			if(get_state(SPI_SOLENOIDS_SLINGSHOT_LEFT_IDX)) {
+				if(!active_before && (cooldown_time[SPI_SOLENOIDS_SLINGSHOT_LEFT_IDX] == 0)) {
+					power = 1;
+					cooldown_time[SPI_SOLENOIDS_SLINGSHOT_LEFT_IDX] = SLINGSHOT_LEFT_CYCLE_TIME;
+				}
+				else if(cooldown_time[SPI_SOLENOIDS_SLINGSHOT_LEFT_IDX] > SLINGSHOT_LEFT_COOLDOWN_TIME) {
+					power = 1;
+				}
+			}
+
+			if(power) {
+				SLINGSHOT_LEFT_PORT &= ~(1 << SLINGSHOT_LEFT_PIN);
+			}
+			else {
+				SLINGSHOT_LEFT_PORT |= (1 << SLINGSHOT_LEFT_PIN);
+			}
+		}
+
+		{
+			uint8_t active_before = (SLINGSHOT_RIGHT_PORT & (1 << SLINGSHOT_RIGHT_PIN)) != (1 << SLINGSHOT_RIGHT_PIN);
+			uint8_t power = 0;
+
+			if(get_state(SPI_SOLENOIDS_SLINGSHOT_RIGHT_IDX)) {
+				if(!active_before && (cooldown_time[SPI_SOLENOIDS_SLINGSHOT_RIGHT_IDX] == 0)) {
+					power = 1;
+					cooldown_time[SPI_SOLENOIDS_SLINGSHOT_RIGHT_IDX] = SLINGSHOT_RIGHT_CYCLE_TIME;
+				}
+				else if(cooldown_time[SPI_SOLENOIDS_SLINGSHOT_RIGHT_IDX] > SLINGSHOT_RIGHT_COOLDOWN_TIME) {
+					power = 1;
+				}
+			}
+
+			if(power) {
+				SLINGSHOT_RIGHT_PORT &= ~(1 << SLINGSHOT_RIGHT_PIN);
+			}
+			else {
+				SLINGSHOT_RIGHT_PORT |= (1 << SLINGSHOT_RIGHT_PIN);
+			}
+		}
+
+		//
+		// POP BUMBERS
+		{
+			uint8_t active_before = (BUMPER_0_PORT & (1 << BUMPER_0_PIN)) != (1 << BUMPER_0_PIN);
+			uint8_t power = 0;
+
+			if(get_state(SPI_SOLENOIDS_BUMPER_0_IDX)) {
+				if(!active_before && (cooldown_time[SPI_SOLENOIDS_BUMPER_0_IDX] == 0)) {
+					power = 1;
+					cooldown_time[SPI_SOLENOIDS_BUMPER_0_IDX] = BUMPER_0_CYCLE_TIME;
+				}
+				else if(cooldown_time[SPI_SOLENOIDS_BUMPER_0_IDX] > BUMPER_0_COOLDOWN_TIME) {
+					power = 1;
+				}
+			}
+
+			if(power) {
+				BUMPER_0_PORT &= ~(1 << BUMPER_0_PIN);
+			}
+			else {
+				BUMPER_0_PORT |= (1 << BUMPER_0_PIN);
+			}
+		}
+		{
+			uint8_t active_before = (BUMPER_1_PORT & (1 << BUMPER_1_PIN)) != (1 << BUMPER_1_PIN);
+			uint8_t power = 0;
+
+			if(get_state(SPI_SOLENOIDS_BUMPER_1_IDX)) {
+				if(!active_before && (cooldown_time[SPI_SOLENOIDS_BUMPER_1_IDX] == 0)) {
+					power = 1;
+					cooldown_time[SPI_SOLENOIDS_BUMPER_1_IDX] = BUMPER_1_CYCLE_TIME;
+				}
+				else if(cooldown_time[SPI_SOLENOIDS_BUMPER_1_IDX] > BUMPER_1_COOLDOWN_TIME) {
+					power = 1;
+				}
+			}
+
+			if(power) {
+				BUMPER_1_PORT &= ~(1 << BUMPER_1_PIN);
+			}
+			else {
+				BUMPER_1_PORT |= (1 << BUMPER_1_PIN);
+			}
+		}
+		{
+			uint8_t active_before = (BUMPER_2_PORT & (1 << BUMPER_2_PIN)) != (1 << BUMPER_2_PIN);
+			uint8_t power = 0;
+
+			if(get_state(SPI_SOLENOIDS_BUMPER_2_IDX)) {
+				if(!active_before && (cooldown_time[SPI_SOLENOIDS_BUMPER_2_IDX] == 0)) {
+					power = 1;
+					cooldown_time[SPI_SOLENOIDS_BUMPER_2_IDX] = BUMPER_2_CYCLE_TIME;
+				}
+				else if(cooldown_time[SPI_SOLENOIDS_BUMPER_2_IDX] > BUMPER_2_COOLDOWN_TIME) {
+					power = 1;
+				}
+			}
+
+			if(power) {
+				BUMPER_2_PORT &= ~(1 << BUMPER_2_PIN);
+			}
+			else {
+				BUMPER_2_PORT |= (1 << BUMPER_2_PIN);
+			}
+		}
 
 	} // while
 }
@@ -289,7 +401,7 @@ void setup_timer(void) {
 
 void setup_spi(void) {
 	// MISO = output,
-	// PB1 = output (SS for next module)
+	// PB1, PB4 = output 
 	// others input
 	DDRB = (1<<PB1) | (1<<PB4);
 	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 1

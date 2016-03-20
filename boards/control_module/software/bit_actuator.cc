@@ -6,7 +6,7 @@
 template<typename Index_, Spi::Slave SLAVE_, int N>
 void BitActuator<Index_, SLAVE_, N>::next_frame() {
 	state[N] = checksum(state, N);
-	spi.transfer_and_check(SLAVE, std::vector<uint8_t>(state, state + N));
+	spi.transfer_and_check(SLAVE, std::vector<uint8_t>(state, state + N + 1));
 }
 
 template<typename Index_, Spi::Slave SLAVE_, int N>

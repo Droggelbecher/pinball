@@ -20,8 +20,8 @@ class Switches {
 			DTB0_3 = 11,
 			DTB0_4 = 12,
 
-			SLINGSHOT0 = 2,
-			SLINGSHOT1 = 5,
+			SLINGSHOT0 = 3,
+			SLINGSHOT1 = 4,
 		};
 
 		typedef std::bitset<DATA_BITS> Bitset;

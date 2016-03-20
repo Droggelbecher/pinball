@@ -26,6 +26,7 @@ function not() {
 }
 
 function log() {
+	echo $(date +'[%Y-%m-%d %H:%M]') $@ 
 	echo $(date +'[%Y-%m-%d %H:%M]') $@ >> $LOGFILE
 }
 

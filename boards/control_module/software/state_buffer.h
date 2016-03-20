@@ -14,6 +14,10 @@ class StateBuffer {
 			decorated.next_frame();
 		}
 
+		bool changed() {
+			return previous_state != decorated.get_bits();
+		}
+
 		bool rising(typename T::Index idx) {
 			return !previous_state[idx] && decorated.get(idx);
 			
