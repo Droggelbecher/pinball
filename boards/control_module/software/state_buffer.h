@@ -34,3 +34,4 @@ class StateBuffer {
 
 #endif // STATE_BUFFER_H
 
+/* vim: set ts=2 sw=2 tw=78 noexpandtab :*/

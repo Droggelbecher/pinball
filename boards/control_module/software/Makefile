@@ -14,7 +14,14 @@ CXX_SOURCES = \
 	main.cc \
 	spi.cc \
 	switches.cc \
-	utils.cc
+	display_canvas.cc \
+	utils.cc \
+	canvas_buffer.cc \
+	canvas.cc \
+	framer.cc
+
+	#scrolling_canvas.cc \
+	#pcf_font.cc 
 
 C_SOURCES = checksum.c
 

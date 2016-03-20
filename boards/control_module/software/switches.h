@@ -26,7 +26,7 @@ class Switches {
 
 		typedef std::bitset<DATA_BITS> Bitset;
 
-		Switches(Spi& spi) : spi(spi) { }
+		Switches(Spi& spi); // : spi(spi) { }
 
 		void next_frame();
 		bool get(Index);

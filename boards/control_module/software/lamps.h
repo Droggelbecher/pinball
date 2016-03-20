@@ -9,9 +9,9 @@ namespace lamps_detail {
 	};
 }
 
-class Solenoids : public BitActuator<solenoids_detail::Index, Spi::Slave::SOLENOIDS, 8> {
+class Lamps : public BitActuator<lamps_detail::Index, Spi::Slave::LAMPS, 8> {
 	public:
-		typedef BitActuator<solenoids_detail::Index, Spi::Slave::SOLENOIDS, 8> Super;
+		typedef BitActuator<lamps_detail::Index, Spi::Slave::LAMPS, 8> Super;
 
 		Lamps(Spi& spi) : Super(spi) { }
 };
