@@ -5,7 +5,10 @@ project(Pinball)
 
 set(my_SOURCES
 	src/audio.cc
-	src/display.cc
+	src/display_canvas.cc
+	src/canvas_buffer.cc
+	src/canvas.cc
+	src/framer.cc
 	src/game_logic.cc
 	src/main.cc
 	src/switches.cc

@@ -4,6 +4,11 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 Framer::Framer(int32_t framerate)
 	: frame_length { 1000 / framerate },
 	frame_start { get_time_ms() } {
@@ -26,9 +31,18 @@ int32_t Framer::get_time_ms() {
 	int32_t ms; // Milliseconds
 	time_t s;  // Seconds
 	struct timespec spec;
+
+#ifdef __MACH__
+	clock_serv_t cclock;
+	mach_timespec_t mts;
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+	clock_get_time(cclock, &mts);
+	mach_port_deallocate(mach_task_self(), cclock);
+	ms = mts.tv_sec * 1000 + (mts.tv_nsec / 1.0e6);
+#else
 	clock_gettime(CLOCK_REALTIME, &spec);
-	s = spec.tv_sec;
-	ms = s * 1000 + round(spec.tv_nsec / 1.0e6); // Convert nanoseconds to milliseconds
+	ms = spec.tv_sec * 1000 + (spec.tv_nsec / 1.0e6);
+#endif
 	return ms;
 }
 

@@ -15,13 +15,13 @@ class Framer {
 	private:
 
 		static int get_time_ms();
-		static void wait_ms();
+		static void wait_ms(int32_t);
 
 		int32_t frame_length;
 		int32_t frame_start;
 
 		double avg_real_length;
-		static const double real_length_alpha = .01;
+		static constexpr double real_length_alpha = .01;
 
 };
 
