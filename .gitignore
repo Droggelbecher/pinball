@@ -10,3 +10,7 @@
 *.map
 *.sym
 obj/
+CMakeCache.txt
+CMakeFiles/
+Pinball
+cmake_install.cmake
