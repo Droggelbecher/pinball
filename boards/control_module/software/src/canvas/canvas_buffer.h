@@ -17,6 +17,10 @@ class CanvasBuffer {
 		void set_all(uint8_t c) { memset(buffer_.get(), c, size_.row() * size_.column()); }
 
 		Coordinate<> size() const { return size_; }
+		uint8_t get(int row, int column);
+
+		int buffer_length() const { return size_.row() * size_.column(); }
+		uint8_t* data() { return buffer_.get(); }
 
 	private:
 		Coordinate<> size_;

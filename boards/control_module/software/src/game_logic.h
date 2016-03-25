@@ -29,8 +29,8 @@ class GameLogic {
 		StateBuffer<Switches> switches_delta { switches };
 		Solenoids solenoids { spi };
 
-		//DisplayCanvas display { Coordinate<>(16, 3 * 8) };
-		Display display;
+		Display display { Coordinate<>(16, 3 * 8) };
+		//Display display;
 		ScrollingCanvas marquee { display, { -20, 0 } };
 
 		Framer framer { 30 };

@@ -7,3 +7,7 @@ CanvasBuffer::CanvasBuffer(Coordinate<> size)
 {
 }
 
+uint8_t CanvasBuffer::get(int row, int column) {
+	return buffer_[column + row * size_.column()];
+}
+

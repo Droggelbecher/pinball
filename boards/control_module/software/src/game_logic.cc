@@ -1,5 +1,6 @@
 
 #include "game_logic.h"
+#include "canvas/paint.h"
 #include <iostream>
 
 GameLogic::GameLogic() {
@@ -73,6 +74,8 @@ void GameLogic::next_frame() {
 	//
 
 	//display.clear();
+	paint_random(display);
+	display.refresh();
 
 	//std::string text = "Hello, World!";
 
