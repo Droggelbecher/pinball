@@ -5,9 +5,9 @@ project(Pinball)
 
 set(my_SOURCES
 	src/audio.cc
-	src/display_canvas.cc
-	src/canvas_buffer.cc
-	src/canvas.cc
+	src/canvas/display_canvas.cc
+	src/canvas/canvas_buffer.cc
+	src/canvas/scrolling_canvas.cc
 	src/framer.cc
 	src/game_logic.cc
 	src/main.cc
@@ -30,9 +30,10 @@ else()
 endif(MOCK_SPI)
 
 #
-# Checksum include
+# Includes
 #
 
+include_directories(src/)
 include_directories(../../../common_software/include)
 
 #

@@ -1,5 +1,5 @@
 
-#include "canvas.h"
+#include "scrolling_canvas.h"
 
 ScrollingCanvas::ScrollingCanvas(Canvas& decorated, Coordinate<> speed)
 	: decorated_(decorated), speed_(speed)

@@ -4,8 +4,8 @@
 
 #include "audio.h"
 #include "switches.h"
-#include "canvas.h"
-#include "display_canvas.h"
+#include "canvas/scrolling_canvas.h"
+#include "canvas/display_canvas.h"
 #include "lamps.h"
 #include "solenoids.h"
 #include "spi.h"
