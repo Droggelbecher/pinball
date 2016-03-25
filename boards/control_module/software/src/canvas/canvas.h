@@ -11,6 +11,7 @@
  */
 class Canvas {
 	public:
+		virtual ~Canvas() { }
 		virtual void next_frame() { }
 		virtual void resize(Coordinate<>) { }
 		virtual Coordinate<> size() const = 0;

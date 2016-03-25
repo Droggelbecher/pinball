@@ -5,12 +5,13 @@
 #include "audio.h"
 #include "switches.h"
 #include "canvas/scrolling_canvas.h"
-#include "canvas/display_canvas.h"
+//#include "canvas/display_canvas.h"
 #include "lamps.h"
 #include "solenoids.h"
 #include "spi.h"
 #include "state_buffer.h"
 #include "framer.h"
+#include "display.h"
 
 class GameLogic {
 
@@ -28,7 +29,8 @@ class GameLogic {
 		StateBuffer<Switches> switches_delta { switches };
 		Solenoids solenoids { spi };
 
-		DisplayCanvas display { Coordinate<>(16, 3 * 8) };
+		//DisplayCanvas display { Coordinate<>(16, 3 * 8) };
+		Display display;
 		ScrollingCanvas marquee { display, { -20, 0 } };
 
 		Framer framer { 30 };
