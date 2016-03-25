@@ -72,7 +72,7 @@ void GameLogic::next_frame() {
 	// Display
 	//
 
-	//display.clear();
+	display.clear();
 
 	//std::string text = "Hello, World!";
 

@@ -33,7 +33,7 @@ int main(int argc, const char **argv) {
 	while(true) {
 		game_logic.next_frame();
 
-		usleep(10UL * 1000UL); // nanoseconds!
+		//usleep(10UL * 1000UL); // nanoseconds!
 	}
 
 }

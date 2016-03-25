@@ -37,7 +37,7 @@
 #define SPI_SS_PIN_DISPLAY 24
 #define SPI_SS_PIN_SOLENOIDS 25
 
-#define SPI_SS_SLAVES_MASK (\
+#define SPI_SS_SLAVES_MASK (uint16_t)(\
 		(1 << SPI_SS_PIN_LAMPS) | \
 		(1 << SPI_SS_PIN_DISPLAY) | \
 		(1 << SPI_SS_PIN_SWITCHES) | \

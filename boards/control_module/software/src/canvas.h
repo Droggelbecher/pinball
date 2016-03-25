@@ -4,22 +4,33 @@
 
 #include <cstdint>
 
+#include "coordinate.h"
+
+/**
+ *
+ */
 class Canvas {
 	public:
-		struct Coordinate {
-			int row;
-			int column;
-		};
+		virtual void next_frame() { }
+		virtual void resize(Coordinate<>) { }
+		virtual Coordinate<> size() const = 0;
 };
 
+/**
+ *
+ */
 class ScrollingCanvas : public Canvas {
-
 	public:
+		ScrollingCanvas(Canvas&, Coordinate<>);
 
-		ScrollingCanvas(const Canvas&, Coordinate);
+		void next_frame() override;
+		void resize(Coordinate<>) override;
+		Coordinate<> size() const override { return decorated_.size(); }
 
-		void next_frame();
-		void resize(Coordinate);
+	private:
+		Canvas& decorated_;
+		Coordinate<> speed_;
+		Coordinate<> offset_;
 };
 
 #endif // CANVAS_H
