@@ -39,5 +39,4 @@ class Coordinate {
 		int column_;
 };
 
-#endif
-
+#endif // COORDINATE_H
