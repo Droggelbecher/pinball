@@ -22,16 +22,32 @@ class Coordinate {
 		int row() const { return row_; }
 		int column() const { return column_; }
 
+		Coordinate operator+(const Coordinate& other) {
+			Coordinate r(*this);
+			r += other;
+			return r;
+		}
+
 		Coordinate& operator+=(const Coordinate& other) {
 			row_ += other.row_;
 			column_ += other.column_;
 			return *this;
 		}
 
+		Coordinate operator%(const Coordinate& other) {
+			Coordinate r(*this);
+			r %= other;
+			return r;
+		}
+
 		Coordinate& operator%=(const Coordinate& other) {
 			row_ %= other.row_;
 			column_ %= other.column_;
 			return *this;
+		}
+
+		bool contains(const Coordinate& other) const {
+			return (other.row_ <= row_) && (other.column_ <= column_);
 		}
 
 	private:

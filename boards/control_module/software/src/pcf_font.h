@@ -43,7 +43,7 @@ class PcfFont {
 
 		class Encoding {
 			public:
-				Encoding() { }
+				Encoding();
 				Encoding(std::ifstream& f);
 				~Encoding();
 				Encoding& operator=(Encoding&& other);
@@ -59,7 +59,7 @@ class PcfFont {
 
 		class Bitmaps {
 			public:
-				Bitmaps() { }
+				Bitmaps();
 				Bitmaps(std::ifstream& f);
 				~Bitmaps();
 				Bitmaps(Bitmaps&&);
@@ -75,9 +75,10 @@ class PcfFont {
 	public:
 		PcfFont(const std::string& filename);
 
-		Coordinate<> render(const std::string&, Canvas& canvas);
 		Coordinate<> size(const std::string& text);
 
+		bool paint_char(Canvas& canvas, char ch, Coordinate<> c, uint8_t color);
+		bool paint_string(Canvas& canvas, const char *s, Coordinate<> c, uint8_t color);
 
 	private:
 
@@ -85,16 +86,20 @@ class PcfFont {
 
 		static uint32_t read_u32(std::istream& is, unsigned char format);
 		static uint16_t read_u16(std::istream& is, unsigned char format);
-		//static uint16_t read_lsbint16(std::ifstream& f);
-		//static uint16_t read_msbint16(std::ifstream& f);
-		//static uint16_t read_int16(std::ifstream& f, unsigned char format);
-		//static uint32_t read_lsbint32(std::ifstream& f);
-		//static uint32_t read_msbint32(std::ifstream& f);
-		//static uint32_t read_int32(std::ifstream& f, unsigned char format);
 
-		// TODO: other read_... methods
+		static void transform_bytes(uint8_t *source_start, uint8_t *source_end, uint8_t *target_start, uint32_t format);
 
 		const std::string& filename_;
+		Bitmaps bitmaps;
+		Encoding encoding;
+
+		struct Transformed {
+			uint8_t *bitmap_data;
+			uint32_t offsets[256];
+		};
+
+		Transformed transformed_;
+
 };
 
 

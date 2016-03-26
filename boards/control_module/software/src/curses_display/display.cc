@@ -30,14 +30,23 @@ Display::~Display() {
 	endwin();
 }
 
-void Display::refresh() {
+void Display::next_frame() {
 
 	for(int row = 0; row < buffer_.size().row(); ++row) {
 		for(int column = 0; column < buffer_.size().column(); ++column) {
-			attrset(COLOR_PAIR(buffer_.get(row, column) + 1));
+			attrset(COLOR_PAIR(buffer_.get(Coordinate<>(row, column)) + 1));
 			printw("  ");
 		}
 		::move(row, 0);
 	}
 	::refresh();
 }
+
+void Display::set(Coordinate<> c, uint8_t color) {
+	buffer_.set(c, color);
+}
+
+uint8_t Display::get(Coordinate<> c) const {
+	return buffer_.get(c);
+}
+

@@ -74,14 +74,15 @@ void GameLogic::next_frame() {
 	//
 
 	//display.clear();
-	paint_random(display);
-	display.refresh();
+	//paint_random(display);
 
 	//std::string text = "Hello, World!";
 
 	//marquee.resize(font_normal.get_size(text));
-	//font_normal.render(text, marquee);
+	const char *s = "Hallo";
+	font_normal.paint_string(display, s, Coordinate<>(0, 0), 2);
 
+	display.next_frame();
 	
 }
 

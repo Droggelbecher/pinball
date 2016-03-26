@@ -11,6 +11,7 @@
 #include "spi.h"
 #include "state_buffer.h"
 #include "framer.h"
+#include "pcf_font.h"
 #include "display.h"
 
 class GameLogic {
@@ -21,7 +22,7 @@ class GameLogic {
 
 	private:
 		Audio audio { Audio::instance() };
-		//PcfFont font_normal { "gohufont-11.pcf" };
+		PcfFont font_normal { "resources/gohufont-11.pcf" };
 
 		Spi spi;
 

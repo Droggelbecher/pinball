@@ -7,7 +7,11 @@ CanvasBuffer::CanvasBuffer(Coordinate<> size)
 {
 }
 
-uint8_t CanvasBuffer::get(int row, int column) {
-	return buffer_[column + row * size_.column()];
+uint8_t CanvasBuffer::get(Coordinate<> c) const {
+	return buffer_[c.column() + c.row() * size_.column()];
+}
+
+void CanvasBuffer::set(Coordinate<> c, uint8_t color) {
+	buffer_[c.column() + c.row() * size_.column()] = color;
 }
 

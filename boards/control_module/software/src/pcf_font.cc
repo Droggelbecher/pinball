@@ -2,6 +2,7 @@
 #include "pcf_font.h"
 
 #include <fstream>
+#include <iostream>
 
 #include <utils.h>
 
@@ -57,6 +58,7 @@ uint16_t PcfFont::read_u16(std::istream& is, unsigned char format) {
 }
 
 PcfFont::PcfFont(const std::string& filename) : filename_(filename) {
+	load_font(filename_.c_str());
 }
 
 void PcfFont::load_font(const char *filename) {
@@ -74,9 +76,6 @@ void PcfFont::load_font(const char *filename) {
 	}
 
 	uint32_t table_count = read_lsb_u32(pcf);
-
-	Encoding encoding;
-	Bitmaps bitmaps;
 
 	for(uint32_t i = 0; i < table_count; i++) {
 		Entry e(pcf);
@@ -99,13 +98,82 @@ void PcfFont::load_font(const char *filename) {
 
 		pcf.seekg(pos);
 	} // for i
+
+
+	// Transform into internal format
+	
+	transformed_.bitmap_data = new uint8_t[bitmaps.bitmap_sizes[1]];
+
+	int target_offset = 0;
+	const int bytes_per_row = 1 << (bitmaps.format & PCF_GLYPH_PAD_MASK);
+	const float size_factor = 2.0 / bytes_per_row;
+
+	for(int glyph = 0; glyph < bitmaps.glyph_count - 1; glyph++) {
+		int offset_start = bitmaps.offsets[glyph];
+		int offset_end = bitmaps.offsets[glyph + 1];
+
+		transform_bytes(bitmaps.bitmap_data + offset_start,
+				bitmaps.bitmap_data + offset_end,
+				transformed_.bitmap_data + target_offset,
+				bitmaps.format);
+		target_offset += (offset_end - offset_start) * size_factor;
+	}
+
+	for(int j = encoding.min_char_or_byte2; j <= encoding.max_char_or_byte2; j++) {
+		uint16_t glyph_idx = encoding.glyphindeces[j - encoding.min_char_or_byte2];
+		uint16_t offs = 0xffff;
+		if(glyph_idx != 0xffff) {
+			offs = bitmaps.offsets[glyph_idx];
+		}
+		if(offs != 0xffff) {
+			offs *= size_factor;
+		}
+		transformed_.offsets[j] = offs;
+	}
+
 } // load_font()
+
+void PcfFont::transform_bytes(uint8_t *source_start, uint8_t *source_end, uint8_t *target_start, uint32_t format) {
+	const int reverse_bits = !!(format & PCF_BIT_MASK);
+	const int reverse_bytes = !!(format & PCF_BYTE_MASK);
+	const int bytes_per_row1 = format & PCF_GLYPH_PAD_MASK;
+	const int bytes_per_row = 1 << (format & PCF_GLYPH_PAD_MASK);
+
+	//                        1         2        4
+	int select_bytes[][2] = { { 0, 0 }, { 0, 1}, { 0, 1 }, { 1, 2 } };
+	int byte0;
+	int byte1;
+
+	if(reverse_bytes) {
+		byte0 = select_bytes[bytes_per_row1][1];
+		byte1 = select_bytes[bytes_per_row1][0];
+	}
+	else {
+		byte0 = select_bytes[bytes_per_row1][0];
+		byte1 = select_bytes[bytes_per_row1][1];
+	}
+
+	for( ; source_start < source_end; source_start += bytes_per_row) {
+		if(reverse_bits) {
+			*target_start++ = reverse_byte(source_start[byte0]);
+			*target_start++ = reverse_byte(source_start[byte1]);
+		}
+		else {
+			*target_start++ = source_start[byte0];
+			*target_start++ = source_start[byte1];
+		}
+	}
+}
 
 PcfFont::Entry::Entry(std::ifstream& pcf) {
 	type = read_lsb_u32(pcf);
 	format = read_lsb_u32(pcf);
 	size = read_lsb_u32(pcf);
 	offset = read_lsb_u32(pcf);
+}
+
+PcfFont::Encoding::Encoding()
+		: glyphindeces(nullptr) {
 }
 
 PcfFont::Encoding::Encoding(std::ifstream& pcf)
@@ -145,6 +213,10 @@ PcfFont::Encoding& PcfFont::Encoding::operator=(Encoding&& other) {
 	return *this;
 }
 
+PcfFont::Bitmaps::Bitmaps()
+	: offsets(nullptr), bitmap_data(nullptr) {
+}
+
 PcfFont::Bitmaps::Bitmaps(std::ifstream& pcf)
 		: offsets(nullptr), bitmap_data(nullptr) {
 	format = read_lsb_u32(pcf);
@@ -167,6 +239,7 @@ PcfFont::Bitmaps::~Bitmaps() {
 	delete bitmap_data;
 }
 
+
 PcfFont::Bitmaps::Bitmaps(Bitmaps&& other) {
 	*this = std::move(other);
 }
@@ -179,8 +252,7 @@ PcfFont::Bitmaps& PcfFont::Bitmaps::operator=(Bitmaps&& other) {
 	offsets = other.offsets;
 	other.offsets = nullptr;
 
-	// TODO: copy this with memcpy
-	//bitmap_sizes = other.bitmap_sizes;
+	std::copy(other.bitmap_sizes, other.bitmap_sizes + 4, bitmap_sizes);
 
 	delete bitmap_data;
 	bitmap_data = other.bitmap_data;
@@ -194,9 +266,53 @@ Coordinate<> PcfFont::size(const std::string& text) {
 	return Coordinate<>();
 }
 
-Coordinate<> PcfFont::render(const std::string& text, Canvas& canvas) {
-	// TODO
-	return Coordinate<>();
+bool PcfFont::paint_char(Canvas& canvas, char ch, Coordinate<> c, uint8_t color) {
+	uint16_t offs = transformed_.offsets[(uint8_t)ch];
+	bool r = false;
+	if(offs == 0xffff) { return r; }
+
+	for(uint16_t row = c.row(); offs < transformed_.offsets[(uint8_t)ch + 1]; offs += 2, row++) {
+		int bit;
+		for(bit = 0; bit < 8; bit++) {
+
+			Coordinate<> cb(row, c.column() + bit);
+			if((transformed_.bitmap_data[offs] & (1 << bit)) && canvas.size().contains(cb)) {
+				canvas.set(cb, color);
+				r = true;
+			}
+			//else {
+				//std::cout << canvas.size().contains(cb)
+					//<< ": " << cb.row() << " " << cb.column()
+					//<< "  " << canvas.size().row() << " " << canvas.size().column()
+					//<< std::endl;
+			//}
+
+			cb = Coordinate<>(row + 1, c.column() + bit);
+			if((transformed_.bitmap_data[offs + 1] & (1 << bit)) && canvas.size().contains(cb)) {
+				canvas.set(cb, color);
+				r = true;
+			}
+			//else {
+				//std::cout << canvas.size().contains(cb)
+					//<< ": " << cb.row() << " " << cb.column()
+					//<< "  " << canvas.size().row() << " " << canvas.size().column()
+					//<< std::endl;
+			//}
+		}
+	}
+	return r;
+}
+
+bool PcfFont::paint_string(Canvas& canvas, const char *s,  Coordinate<> start, uint8_t color) {
+
+	uint16_t width = 8;
+	uint8_t r;
+
+	for( ; *s != '\0'; s++) {
+		r = paint_char(canvas, *s, start, color) || r;
+		start += Coordinate<>(0, width);
+	}
+	return r;
 }
 
 /* vim: set ts=2 sw=2 tw=78 noexpandtab :*/
