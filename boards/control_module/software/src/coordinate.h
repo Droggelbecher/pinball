@@ -39,6 +39,11 @@ class Coordinate {
 			return { row() + other.row(), column() + other.column() };
 		}
 
+		template<typename C>
+		Coordinate<decltype(T() - typename C::Ordinate())> operator-(const C& other) {
+			return { row() - other.row(), column() - other.column() };
+		}
+
 		Coordinate& operator+=(const Coordinate& other) {
 			row_ += other.row_;
 			column_ += other.column_;

@@ -17,10 +17,11 @@ class ScrollingCanvas : public Canvas {
 		uint8_t get(Coordinate<> c) const override;
 
 		void resize(Coordinate<>) override;
-		Coordinate<> size() const override { return decorated_.size(); }
+		Coordinate<> size() const override { return size_; }
 
 	private:
 		Canvas& decorated_;
+		Coordinate<> size_;
 		Coordinate<double> speed_;
 		Coordinate<double> offset_;
 };

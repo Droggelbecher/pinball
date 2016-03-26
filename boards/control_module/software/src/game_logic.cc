@@ -4,6 +4,7 @@
 #include <iostream>
 
 GameLogic::GameLogic() {
+	marquee.resize({ 16, 100 });
 }
 
 void GameLogic::next_frame() {
