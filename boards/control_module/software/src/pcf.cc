@@ -5,7 +5,6 @@
 
 #include "pcf.h"
 
-
 namespace {
 
 	struct LSB {

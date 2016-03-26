@@ -3,7 +3,7 @@
 #define PCF_FONT_H
 
 #include <string>
-#include "canvas.h"
+#include "canvas/canvas.h"
 
 class PcfFont {
 
@@ -31,6 +31,16 @@ class PcfFont {
 			PCF_NOGLYPH            =  0xffff
 		};
 
+		struct Entry {
+			public:
+				Entry(std::ifstream& f);
+
+				uint32_t type;
+				uint32_t format;
+				uint32_t size;
+				uint32_t offset;
+		};
+
 		class Encoding {
 			public:
 				Encoding() { }
@@ -52,6 +62,7 @@ class PcfFont {
 				Bitmaps() { }
 				Bitmaps(std::ifstream& f);
 				~Bitmaps();
+				Bitmaps(Bitmaps&&);
 				Bitmaps& operator=(Bitmaps&& other);
 
 				uint32_t format;
@@ -72,12 +83,14 @@ class PcfFont {
 
 		void load_font(const char *filename);
 
-		static uint16_t read_lsbint16(std::ifstream& f);
-		static uint16_t read_msbint16(std::ifstream& f);
-		static uint16_t read_int16(std::ifstream& f, unsigned char format);
-		static uint32_t read_lsbint32(std::ifstream& f);
-		static uint32_t read_msbint32(std::ifstream& f);
-		static uint32_t read_int32(std::ifstream& f, unsigned char format);
+		static uint32_t read_u32(std::istream& is, unsigned char format);
+		static uint16_t read_u16(std::istream& is, unsigned char format);
+		//static uint16_t read_lsbint16(std::ifstream& f);
+		//static uint16_t read_msbint16(std::ifstream& f);
+		//static uint16_t read_int16(std::ifstream& f, unsigned char format);
+		//static uint32_t read_lsbint32(std::ifstream& f);
+		//static uint32_t read_msbint32(std::ifstream& f);
+		//static uint32_t read_int32(std::ifstream& f, unsigned char format);
 
 		// TODO: other read_... methods
 

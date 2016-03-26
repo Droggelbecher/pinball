@@ -12,8 +12,10 @@ set(my_SOURCES
 	src/game_logic.cc
 	src/main.cc
 	src/switches.cc
-	src/utils.cc
+	#src/utils.cc
+	src/pcf_font.cc
 	../../../common_software/src/checksum.c
+	../../../common_software/src/utils.c
 	)
 
 #
