@@ -1,7 +1,7 @@
 
 #include "scrolling_canvas.h"
 
-ScrollingCanvas::ScrollingCanvas(Canvas& decorated, Coordinate<> speed)
+ScrollingCanvas::ScrollingCanvas(Canvas& decorated, Coordinate<double> speed)
 	: decorated_(decorated), speed_(speed)
 {
 }

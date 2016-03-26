@@ -12,6 +12,8 @@ void GameLogic::next_frame() {
 	using std::cout;
 	using std::endl;
 
+	framer.next_frame();
+
 	//
 	// Trigger various sub-components
 	//
@@ -76,13 +78,15 @@ void GameLogic::next_frame() {
 	//display.clear();
 	//paint_random(display);
 
-	//std::string text = "Hello, World!";
+	paint_clear(display);
 
-	//marquee.resize(font_normal.get_size(text));
-	const char *s = "Hallo";
-	font_normal.paint_string(display, s, Coordinate<>(0, 0), 2);
+	marquee.next_frame();
+
+	std::string text = "Hallo, Welt!";
+	font_normal.paint_string(marquee, text.c_str(), Coordinate<>(0, 0), 2);
 
 	display.next_frame();
+	framer.wait_frame_end();
 	
 }
 

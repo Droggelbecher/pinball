@@ -9,7 +9,7 @@
  */
 class ScrollingCanvas : public Canvas {
 	public:
-		ScrollingCanvas(Canvas&, Coordinate<>);
+		ScrollingCanvas(Canvas&, Coordinate<double>);
 
 		void next_frame() override;
 
@@ -21,8 +21,8 @@ class ScrollingCanvas : public Canvas {
 
 	private:
 		Canvas& decorated_;
-		Coordinate<> speed_;
-		Coordinate<> offset_;
+		Coordinate<double> speed_;
+		Coordinate<double> offset_;
 };
 
 #endif // SCROLLING_CANVAS_H
