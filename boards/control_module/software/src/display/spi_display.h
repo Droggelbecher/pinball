@@ -2,30 +2,34 @@
 #ifndef __SPI_DISPLAY_H__
 #define __SPI_DISPLAY_H__
 
-#include <string.h> // for memset
-#include <time.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <linux/types.h>
-#include <stdint.h>
+#include "canvas/canvas.h"
 
-#include "config.h"
-#include "spi.h"
-#include "spi_ss.h"
+class SpiDisplay : public Canvas {
+	public:
+		enum {
+			C_BLACK = 0,
+			C_RED = 1,
+			C_GREEN = 2,
+			C_YELLOW = 3,
+			C_ORANGE = 4,
+			C_DARK_RED = 5,
+			C_DARK_GREEN = 6,
+			C_BLOOD_ORANGE = 7,
 
-enum {
-	C_BLACK = 0,
-	C_RED = 1,
-	C_GREEN = 2,
-	C_YELLOW = 3,
-	C_ORANGE = 4,
-	C_DARK_RED = 5,
-	C_DARK_GREEN = 6,
-	C_BLOOD_ORANGE = 7,
+			COLORS = 8,
+		};
 
-	COLORS = 8,
+		SpiDisplay(uint8_t, Coordinate<>);
+		~SpiDisplay();
 
-	//C_EOT = 0xff
+		Coordinate<> size() const override;
+		void next_frame() override;
+
+		void set(Coordinate<> c, uint8_t color) override;
+		uint8_t get(Coordinate<> c) const override;
+
+		int buffer_length() const;
+		uint8_t* buffer();
 };
 
 

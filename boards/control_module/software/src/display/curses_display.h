@@ -5,11 +5,30 @@
 #include "canvas/canvas.h"
 #include "canvas/canvas_buffer.h"
 
-class Display : public Canvas {
+class CursesDisplay : public Canvas {
+	public:
+		enum {
+			C_BLACK = 0,
+			C_RED = 1,
+			C_GREEN = 2,
+			C_YELLOW = 3,
+			C_ORANGE = 4,
+			C_DARK_RED = 5,
+			C_DARK_GREEN = 6,
+			C_BLOOD_ORANGE = 7,
+
+			COLORS = 8,
+		};
+
+	private:
+		static const char color_symbols[];
+		static const uint8_t color_fg[];
+		static const uint8_t color_bg[];
+
 	public:
 
-		Display(Coordinate<>);
-		~Display();
+		CursesDisplay(Coordinate<>);
+		~CursesDisplay();
 
 		Coordinate<> size() const override { return buffer_.size(); }
 

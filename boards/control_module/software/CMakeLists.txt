@@ -45,16 +45,14 @@ endif(MOCK_SPI)
 #
 
 if(MOCK_SPI)
-	set(my_SOURCES ${my_SOURCES} src/curses_display/display.cc)
-	include_directories(src/curses_display)
+	set(my_SOURCES ${my_SOURCES} src/display/curses_display.cc)
 
 	set(CURSES_NEED_NCURSES TRUE)
 	find_package(curses REQUIRED)
 	include_directories(${CURSES_INCLUDE_DIR})
 
 else()
-	set(my_SOURCES ${my_SOURCES} src/spi_display/display.cc)
-	include_directories(src/spi_display)
+	set(my_SOURCES ${my_SOURCES} src/display/spi_display.cc)
 
 endif()
 

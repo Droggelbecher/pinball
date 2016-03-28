@@ -84,7 +84,7 @@ void GameLogic::next_frame() {
 	marquee.next_frame();
 
 	std::string text = "Hallo, Welt!";
-	font_normal.paint_string(marquee, text.c_str(), Coordinate<>(0, 0), 2);
+	font_normal.paint_string(marquee, text.c_str(), Coordinate<>(0, 0), 7);
 
 	display.next_frame();
 	framer.wait_frame_end();

@@ -12,7 +12,7 @@
 #include "state_buffer.h"
 #include "framer.h"
 #include "pcf_font.h"
-#include "display.h"
+#include "display/curses_display.h"
 
 class GameLogic {
 
@@ -30,7 +30,7 @@ class GameLogic {
 		StateBuffer<Switches> switches_delta { switches };
 		Solenoids solenoids { spi };
 
-		Display display { Coordinate<>(16, 3 * 8) };
+		CursesDisplay display { Coordinate<>(16, 3 * 8) };
 		ScrollingCanvas marquee { display, { 0.3, 0.6 } };
 
 		Framer framer { 30 };
