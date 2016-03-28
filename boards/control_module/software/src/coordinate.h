@@ -80,7 +80,7 @@ class Coordinate {
 
 		bool contains(const Coordinate& other) const {
 			return (other.row_ >= 0) && (other.column_ >= 0)
-				&& (other.row_ <= row_) && (other.column_ <= column_);
+				&& (other.row_ < row_) && (other.column_ < column_);
 		}
 
 	private:

@@ -31,7 +31,7 @@ class GameLogic {
 		Solenoids solenoids { spi };
 
 		Display display { Coordinate<>(16, 3 * 8) };
-		ScrollingCanvas marquee { display, { 0, 0.6 } };
+		ScrollingCanvas marquee { display, { 0.3, 0.6 } };
 
 		Framer framer { 30 };
 

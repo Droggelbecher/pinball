@@ -20,26 +20,52 @@ void ScrollingCanvas::resize(Coordinate<> new_size) {
 }
 
 void ScrollingCanvas::set(Coordinate<> c, uint8_t color) {
-
 	/*
-	 * ---+                      +--------
-	 * +--|----------------------|-------+
-	 * |  |                      |       |
-	 * +--|----------------------|-------+
-	 * ---+                      +--------
-	 *                           offset
+	 *  +-----------------------------------+
+	 *  | A|                         |  B   |
+	 *  |  |                         |      |
+	 *  |--+                         +------|
+	 *  |                                   |
+	 *  |                                   |
+	 *  |                                   |
+	 *  |                                   |
+	 *  |                          offset_  |
+	 *  |--+                         X------|-----+
+	 *  | C|                         |  D   |     |
+	 *  +-----------------------------------X     |
+	 *           [R1]                |    size()  |
+	 *                               |            |
+	 *                               +------------+
+	 *  +---------+                       [R2]
+	 *  |   D  : C|
+	 *  |......:..|
+	 *  |   B  : A|
+	 *  |      :  |
+	 *  +---------+
+	 *     [R2]   decorated_.size()
 	 */
+	
+	assert(size().contains(c));
 
+	// Is coordinate c in part A, B, C or D? (if existant)
 
-	if(c.column() >= offset_.column() && c.column() < offset_.column() + decorated_.size().column()) {
-		decorated_.set(c - offset_, color);
+	// if c is in A, B or C, add size() so it is in R2
+	// if c is in D, nothing will happen
+	// if c is neither in A, B, C or D it will land outside of R2
+
+	if(c.column() < offset_.column()) {
+		c += Coordinate<>(0, size().column());
 	}
 
-	else if(offset_.column() + decorated_.size().column() > size().column()
-			&& c.column() < offset_.column() + decorated_.size().column() - size().column()) {
-		Coordinate<> cc = (c + size() - offset_) % decorated_.size();
+	if(c.row() < offset_.row()) {
+		c += Coordinate<>(size().row(), 0);
+	}
 
-		decorated_.set(cc, color);
+	// substract offset_ to make the coordinate relative to decorated_.
+	// If it is inside, pass it through
+
+	if(decorated_.size().contains(c - offset_)) {
+		decorated_.set(c - offset_, color);
 	}
 }
 
