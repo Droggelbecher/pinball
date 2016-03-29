@@ -119,29 +119,15 @@ std::vector<uint8_t> Spi::transfer_and_check(Slave slave, std::vector<uint8_t> i
 	uint8_t output[input.size()];
 	memset(output, 77, sizeof(output));
 
-
 	this->transfer(input.size(), input.data(), output);
 	disable_all();
 
 	uint8_t s = checksum(output, sizeof(output) - 1);
 
-	//if(slave == 25) { // 25 = solenoids
-	//std::cout << "transfer_and_check(" << slave << ", " << input << ")"
-		//<< "  output=" << std::vector<uint8_t>(output, output + sizeof(output))
-		//<< " s=" << (int)s 
-		//<< " fd=" << spi_cs_fd
-		//<< std::endl;
-	//}
-
 	if(s == output[sizeof(output) - 1]) {
 		return std::vector<uint8_t>(output, output + sizeof(output) - 1);
 	}
 	else {
-		//std::cout << "checksum fail transfer_and_check(" << slave << ", " << input << ")"
-			//<< "  output=" << std::vector<uint8_t>(output, output + sizeof(output))
-			//<< " sum=" << (int)s << " != " << (int)output[sizeof(output) - 1]
-			//<< " fd=" << spi_cs_fd
-			//<< std::endl;
 		return std::vector<uint8_t>();
 	}
 }
@@ -159,11 +145,6 @@ void Spi::disable_all() {
 }
 
 int Spi::transfer(int size, unsigned char *wr, unsigned char *rd) {
-
-	/*
-	 * Fast version -- no pause between bytes
-	 */
-
 	struct spi_ioc_transfer msg;
 
 	memset((void*)&msg, 0x00, sizeof(msg));
@@ -177,11 +158,7 @@ int Spi::transfer(int size, unsigned char *wr, unsigned char *rd) {
 	msg.cs_change = 0;
 	msg.pad = 0;
 
-	//std::cout << "before ioctl len=" << msg.len <<  std::endl;
-
 	int r = ioctl(spi_cs_fd, SPI_IOC_MESSAGE(1), &msg);
-
-	//std::cout << "after ioctl len=" << msg.len << " r=" << r << std::endl;
 
 	if(r == -1) {
 		perror("couldnt send spi msg");

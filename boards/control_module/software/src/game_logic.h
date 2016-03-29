@@ -5,7 +5,7 @@
 #include "audio.h"
 #include "switches.h"
 #include "canvas/scrolling_canvas.h"
-//#include "canvas/display_canvas.h"
+#include "canvas/broadcast_canvas.h"
 #include "lamps.h"
 #include "solenoids.h"
 #include "spi.h"
@@ -13,6 +13,9 @@
 #include "framer.h"
 #include "pcf_font.h"
 #include "display/curses_display.h"
+#include "display/spi_display.h"
+
+#include <memory>
 
 class GameLogic {
 
@@ -30,7 +33,11 @@ class GameLogic {
 		StateBuffer<Switches> switches_delta { switches };
 		Solenoids solenoids { spi };
 
-		CursesDisplay display { Coordinate<>(16, 3 * 8) };
+		//CursesDisplay display { Coordinate<>(16, 3 * 8) };
+		BroadcastCanvas display {
+			std::unique_ptr<CursesDisplay> { new CursesDisplay { Coordinate<>(16, 3 * 8) } }
+			//SpiDisplay { spi, 3, Coordinate<>(16, 8) }
+		};
 		ScrollingCanvas marquee { display, { 0.3, 0.6 } };
 
 		Framer framer { 30 };

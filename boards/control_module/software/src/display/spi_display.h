@@ -19,7 +19,7 @@ class SpiDisplay : public Canvas {
 			COLORS = 8,
 		};
 
-		SpiDisplay(uint8_t, Coordinate<>);
+		SpiDisplay(Spi&, uint8_t, Coordinate<>);
 		~SpiDisplay();
 
 		Coordinate<> size() const override;
@@ -30,9 +30,15 @@ class SpiDisplay : public Canvas {
 
 		int buffer_length() const;
 		uint8_t* buffer();
+
+	private:
+		Spi& spi_;
+		uint8_t modules_;
+		Coordinate<> module_size_;
+		uint8_t *display_screen_;
 };
 
-
+/*
 enum {
 	DISPLAY_SCREEN_BYTES =
 		DISPLAY_MODULE_COUNT * DISPLAY_MODULE_ROWS *
@@ -53,6 +59,7 @@ void display_debug_fps(void);
 
 uint8_t display_sane(uint8_t row, uint8_t column);
 unsigned char* display_screen(uint8_t row, uint8_t column);
+*/
 
 #endif // __SPI_DISPLAY_H__
 

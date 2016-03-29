@@ -8,6 +8,7 @@ set(my_SOURCES
 	src/canvas/display_canvas.cc
 	src/canvas/canvas_buffer.cc
 	src/canvas/scrolling_canvas.cc
+	src/canvas/broadcast_canvas.cc
 	src/framer.cc
 	src/game_logic.cc
 	src/main.cc
