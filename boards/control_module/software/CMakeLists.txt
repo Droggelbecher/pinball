@@ -49,9 +49,8 @@ if(MOCK_SPI)
 	set(my_SOURCES ${my_SOURCES} src/display/curses_display.cc)
 
 	set(CURSES_NEED_NCURSES TRUE)
-	find_package(curses REQUIRED)
+	find_package(Curses REQUIRED)
 	include_directories(${CURSES_INCLUDE_DIR})
-
 else()
 	set(my_SOURCES ${my_SOURCES} src/display/spi_display.cc)
 
@@ -80,7 +79,10 @@ find_package(OpenAL REQUIRED)
 include_directories(${OPENAL_INCLUDE_DIRS})
 target_link_libraries(Pinball ${OPENAL_LIBRARY})
 
+# MacOS
 include_directories(/usr/local/opt/alure/include/OpenAL)
+# ArchLinux
+include_directories(/usr/include/AL)
 
 find_library(ALURE_LIBRARIES alure PATHS)
 target_link_libraries(Pinball ${ALURE_LIBRARIES})

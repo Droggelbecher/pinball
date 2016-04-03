@@ -44,6 +44,11 @@ class Coordinate {
 			return { row() - other.row(), column() - other.column() };
 		}
 
+		template<typename C>
+		Coordinate<decltype(T() * typename C::Ordinate())> operator*(const C& other) const {
+			return { row() * other.row(), column() * other.column() };
+		}
+
 		Coordinate& operator+=(const Coordinate& other) {
 			row_ += other.row_;
 			column_ += other.column_;
@@ -76,6 +81,10 @@ class Coordinate {
 			if(row_ < 0) { row_ += other.row(); }
 			if(column_ < 0) { column_ += other.column(); }
 			return *this;
+		}
+
+		Ordinate area() const {
+			return row_ * column_;
 		}
 
 		bool contains(const Coordinate& other) const {

@@ -3,6 +3,7 @@
 #define BROADCAST_CANVAS_H
 
 #include <vector>
+#include <memory>
 
 #include "canvas/canvas.h"
 
