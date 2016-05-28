@@ -5,6 +5,8 @@
 
 GameLogic::GameLogic() {
 	marquee.resize({ 16, 100 });
+
+	sound_r2d2_again = audio.sound_load("resources/sounds/r2d2_again.mp3");
 }
 
 void GameLogic::next_frame() {
@@ -57,6 +59,13 @@ void GameLogic::next_frame() {
 	if(switches_delta.falling(Sw::FLIPPER_RIGHT)) {
 		cout << "right" << endl;
 	}
+
+	//
+	if(switches_delta.falling(Sw::HOLE0)) {
+		cout << "hole0!" << endl;
+		audio.sound_play(sound_r2d2_again);
+	}
+
 
 	// Slingshot switches control slingshots
 

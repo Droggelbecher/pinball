@@ -49,6 +49,23 @@ void Audio::update() {
 	alureUpdate();
 }
 
+Audio::audio_source_t Audio::sound_load(const char *filename) {
+	audio_source_t src;
+	ALuint buffer_id;
+
+	alGenSources(1, &src);
+	if(alGetError() != AL_NO_ERROR) {
+		perror("Failed to create OpenAL source.");
+	}
+
+	buffer_id = alureCreateBufferFromFile(filename);
+
+	// Set source parameters
+	alSourcei(src, AL_BUFFER, buffer_id);
+	return src;
+}
+
+
 void Audio::sound_play(audio_source_t source) {
 	alSourcePlay(source);
 }

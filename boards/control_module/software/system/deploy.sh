@@ -6,6 +6,7 @@ DEPLOY_DIR=/home/pinball/pinball
 DEPLOY_SCRIPT_DIR=/home/pinball
 
 LOCAL_DIR=/home/henning/repos/pinball
+TARGET=Pinball
 
 ssh ${DEPLOY_USER}@${DEPLOY_HOST} "sudo killall ${TARGET}; mkdir -p ${DEPLOY_DIR}"
 rsync -CHaPx $LOCAL_DIR/ ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_DIR}/ \
