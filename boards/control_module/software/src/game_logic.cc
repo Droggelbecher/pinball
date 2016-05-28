@@ -35,11 +35,19 @@ void GameLogic::next_frame() {
 	if(switches_delta.changed()) {
 		cout << switches.get_bits() << endl;
 
-		//for(int i = 0; i < 16; i++) {
-			//if(switches.get_bits()[i] != switches_delta.get_previous_bits()[i]) {
-				//cout << i << endl;
-			//}
-		//}
+		for(int i = 0; i < 16; i++) {
+			if(switches.get_bits()[i] != switches_delta.get_previous_state()[i]) {
+				cout << i
+					<< (switches.get_bits()[i] ? " ->high" : " ->low")
+					<< endl;
+			}
+		}
+
+		cout << "bumpers: "
+			<< switches.get(Sw::BUMPER0)
+			<< switches.get(Sw::BUMPER1)
+			<< switches.get(Sw::BUMPER2)
+			<< endl;
 	}
 
 	if(switches_delta.falling(Sw::FLIPPER_LEFT)) {
