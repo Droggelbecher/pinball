@@ -35,8 +35,8 @@ class GameLogic {
 
 		//CursesDisplay display { Coordinate<>(16, 3 * 8) };
 		BroadcastCanvas display {
-			std::unique_ptr<CursesDisplay> { new CursesDisplay { Coordinate<>(16, 3 * 8) } }
-			//SpiDisplay { spi, 3, Coordinate<>(16, 8) }
+			//std::unique_ptr<CursesDisplay> { new CursesDisplay { Coordinate<>(16, 3 * 8) } }
+			std::unique_ptr<SpiDisplay> { new SpiDisplay { spi, 3, Coordinate<>(16, 8) } }
 		};
 		ScrollingCanvas marquee { display, { 0.3, 0.6 } };
 

@@ -50,17 +50,17 @@ class Spi {
 	public:
 		Spi();
 		
-		void enable_slave(int n);
-		void disable_slaves();
 		std::vector<uint8_t> transfer_and_check(Slave slave, std::vector<uint8_t> input);
+
+		void enable_only(Slave slave);
+		void disable_all();
 		int transfer(int size, unsigned char *wr, unsigned char *rd);
 
 	private:
+
 		void open_gpio();
 		void open_spi();
 		void gpio_set_output(int n);
-		void enable_only(Slave slave);
-		void disable_all();
 
 		volatile uint32_t *gpio_map;
 		int spi_cs_fd;

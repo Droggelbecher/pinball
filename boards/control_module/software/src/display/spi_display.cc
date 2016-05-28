@@ -20,7 +20,7 @@ Coordinate<> SpiDisplay::size() const {
 }
 
 void SpiDisplay::next_frame() {
-	spi_.enable_slave(Spi::DISPLAY);
+	spi_.enable_only(Spi::DISPLAY);
 
 	int i;
 	for(i = 0; i < modules_; i++) {
@@ -30,7 +30,7 @@ void SpiDisplay::next_frame() {
 		usleep(10);
 	}
 	
-	spi_.disable_slaves();
+	spi_.disable_all();
 }
 
 void SpiDisplay::set(Coordinate<> c, uint8_t color) {
@@ -48,7 +48,8 @@ void SpiDisplay::set(Coordinate<> c, uint8_t color) {
 		c.row() * (module_size_.column()) +
 		(module_size_.column() - col - 1);
 
-	assert(r >= display_screen_ && r < (display_screen_ + sizeof(display_screen_)));
+	assert(r >= display_screen_);
+	assert(r < (display_screen_ + modules_ * module_size_.area()));
 
 	*r = color;
 }

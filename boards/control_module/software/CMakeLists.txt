@@ -66,7 +66,21 @@ add_executable(Pinball ${my_SOURCES})
 # Force C++11
 #
 
-target_compile_features(Pinball PRIVATE cxx_uniform_initialization)
+# Requires cmake >= ???
+#target_compile_features(Pinball PRIVATE cxx_uniform_initialization)
+
+# Requires cmake >= 3.1.0
+#set_property(TARGET Pinball PROPERTY CXX_STANDARD 11)
+#set_property(TARGET Pinball PROPERTY CXX_STANDARD_REQUIRED ON)
+
+# Quick and dirty, after all we don't strive for being ultra-portable
+set(CMAKE_CXX_FLAGS "-std=c++11")
+
+#
+# Sys libs
+#
+
+target_link_libraries(Pinball -lrt)
 
 #
 # Audio libs
