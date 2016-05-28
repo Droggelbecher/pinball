@@ -35,7 +35,7 @@ void GameLogic::next_frame() {
 	if(switches_delta.changed()) {
 		cout << switches.get_bits() << endl;
 
-		for(int i = 0; i < 16; i++) {
+		for(int i = 0; i < switches.get_bits().size(); i++) {
 			if(switches.get_bits()[i] != switches_delta.get_previous_state()[i]) {
 				cout << i
 					<< (switches.get_bits()[i] ? " ->high" : " ->low")
