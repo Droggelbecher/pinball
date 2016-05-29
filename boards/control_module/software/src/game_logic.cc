@@ -7,6 +7,7 @@ GameLogic::GameLogic() {
 	marquee.resize({ 16, 100 });
 
 	sound_r2d2_again = audio.sound_load("resources/sounds/r2d2_again.mp3");
+	sound_death_star_explode = audio.sound_load("resources/sounds/death_star_explode.mp3");
 }
 
 void GameLogic::next_frame() {
@@ -63,7 +64,7 @@ void GameLogic::next_frame() {
 	//
 	if(switches_delta.falling(Sw::HOLE0)) {
 		cout << "hole0!" << endl;
-		audio.sound_play(sound_r2d2_again);
+		audio.sound_play(sound_death_star_explode);
 	}
 
 
