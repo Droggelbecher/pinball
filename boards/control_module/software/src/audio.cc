@@ -9,6 +9,9 @@ Audio::Audio() {
 	}
 
 	alGenSources(1, &music_source_);
+
+	// Set music volume to 70%
+	alSourcef(music_source_, AL_GAIN, 0.7);
 }
 
 void Audio::playlist_append(const char *filename) {
@@ -62,6 +65,9 @@ Audio::audio_source_t Audio::sound_load(const char *filename) {
 
 	// Set source parameters
 	alSourcei(src, AL_BUFFER, buffer_id);
+
+	// Set sound volume to 100%
+	alSourcef(src, AL_GAIN, 1.0);
 	return src;
 }
 
