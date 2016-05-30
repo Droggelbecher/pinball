@@ -88,6 +88,10 @@ void GameLogic::next_frame() {
 		!switches.get(Sw::DTB0_3) &&
 		!switches.get(Sw::DTB0_4));
 
+	// Ball return
+	
+	solenoids.set(Sol::BALL_RETURN, !switches.get(Sw::BALL_OUT));
+
 	solenoids.next_frame();
 
 	//

@@ -27,7 +27,8 @@ class Switches {
 			BUMPER1 = 14,
 			BUMPER2 = 15,
 
-			HOLE0 = 23
+			HOLE0 = 23,
+			BALL_OUT = 22
 		};
 
 		typedef std::bitset<DATA_BITS> Bitset;

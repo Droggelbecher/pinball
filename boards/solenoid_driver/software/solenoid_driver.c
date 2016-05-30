@@ -17,6 +17,153 @@
 
 #define ENABLE_UART 0
 
+Solenoid solenoids[] = {
+	// port, ddr, pin, cooldown, active, t
+	
+	// Flipper left power
+	{ &PORTC, &DDRC, PINC0,   1,  10, 0 },
+	// Flipper left hold
+	{ &PORTC, &DDRC, PINC1,   1, 255, 0 },
+	// Flipper right power
+	{ &PORTC, &DDRC, PINC2,   1,  10, 0 },
+	// Flipper right hold
+	{ &PORTC, &DDRC, PINC3,   1, 255, 0 },
+
+	// Drop Target Bank 0
+	{ &PORTC, &DDRC, PINC4, 100, 100, 0 },
+
+	// Slingshot left
+	{ &PORTC, &DDRC, PINC5, 100, 100, 0 },
+
+	// Slingshot right
+	{ &PORTB, &DDRB, PINB1, 100, 100, 0 },
+
+	// Bumper 0
+	{ &PORTD, &DDRD, PIND7, 100, 100, 0 },
+	
+	// Bumper 1
+	{ &PORTD, &DDRD, PIND6, 100, 100, 0 },
+
+	// Bumper 2
+	{ &PORTD, &DDRD, PIND5, 100, 100, 0 },
+
+	// Ball return
+	{ &PORTD, &DDRD, PIND2, 100, 100, 0 },
+
+	// Aux 0
+	{ &PORTD, &DDRD, PIND3, 100, 100, 0 },
+
+	// Aux 1
+	{ &PORTD, &DDRD, PIND4, 100, 100, 0 }
+
+};
+
+enum {
+	SN_FLIPPER_LEFT_POWER = 0,
+	SN_FLIPPER_LEFT_HOLD,
+	SN_FLIPPER_RIGHT_POWER,
+	SN_FLIPPER_RIGHT_HOLD,
+	SN_DROP_TARGET_BANK_0,
+	SN_SLINGSHOT_LEFT,
+	SN_SLINGSHOT_RIGHT,
+	SN_BUMPER_0,
+	SN_BUMPER_1,
+	SN_BUMPER_2,
+	SN_BALL_RETURN,
+	SN_AUX_0,
+	SN_AUX_1
+};
+
+
+
+
+uint8_t is_pin_active(Solenoid *s) {
+	return (*(s->port) & (1 << s->pin)) == 0;
+}
+
+uint8_t is_state_cool(Solenoid *s) {
+	return s->t == 0;
+}
+
+uint8_t is_state_active(Solenoid *s) {
+	return s->t > s->cooldown;
+}
+
+void start_active_state(Solenoid *s) {
+	s->t = s->cooldown + s->active;
+}
+
+void check_flipper(int state_index_power, int state_index_hold, int spi_index) {
+
+	uint8_t power = 0;
+	uint8_t hold = 0;
+
+	Solenoid *s_power = &solenoids[state_index_power];
+	Solenoid *s_hold = &solenoids[state_index_hold];
+
+	uint8_t active_before = is_pin_active(s_power)
+		|| is_pin_active(s_hold);
+
+	if(get_state(spi_index)) {
+		if(!active_before && is_state_cool(s_power)) {
+			start_active_state(s_power);
+			power = 1;
+		}
+
+		else if(is_state_active(s_power)) {
+			power = 1;
+		}
+
+		else if(active_before) {
+			hold = 1;
+		}
+	}
+
+	if(power) {
+		*(s_power->port) &= ~(1 << s_power->pin);
+	}
+	else {
+		*(s_power->port) |= 1 << s_power->pin;
+	}
+	
+	if(hold) {
+		*(s_hold->port) &= ~(1 << s_hold->pin);
+	}
+	else {
+		*(s_hold->port) |= 1 << s_hold->pin;
+	}
+}
+
+
+void check_solenoid(int state_index, int spi_index) {
+
+	uint8_t power = 0;
+
+	Solenoid *s = &solenoids[state_index];
+
+	uint8_t active_before = is_pin_active(s);
+
+	if(get_state(spi_index)) {
+		if(!active_before && is_state_cool(s)) {
+			start_active_state(s);
+			power = 1;
+		}
+
+		else if(is_state_active(s)) {
+			power = 1;
+		}
+	}
+
+	if(power) {
+		*(s->port) &= ~(1 << s->pin);
+	}
+	else {
+		*(s->port) |= 1 << s->pin;
+	}
+}
+
+
+
 
 int main(void) {
 	setup_spi();
@@ -25,33 +172,13 @@ int main(void) {
 
 	uart_puts("\aSOLENOID MODULE 0.1\r\n");
 
-	// HIGH == Solenoid turned OFF
-
-	FLIPPER_LEFT_POWER_DDR |= (1 << FLIPPER_LEFT_POWER_PIN);
-	FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN);
-
-	FLIPPER_LEFT_HOLD_DDR |= (1 << FLIPPER_LEFT_HOLD_PIN);
-	FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN);
-
-	FLIPPER_RIGHT_POWER_DDR |= (1 << FLIPPER_RIGHT_POWER_PIN);
-	FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN);
-
-	FLIPPER_RIGHT_HOLD_DDR |= (1 << FLIPPER_RIGHT_HOLD_PIN);
-	FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN);
-
-	DROP_TARGET_BANK_0_DDR |= (1 << DROP_TARGET_BANK_0_PIN);
-	DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
-
-	SLINGSHOT_LEFT_DDR |= (1 << SLINGSHOT_LEFT_PIN);
-	SLINGSHOT_LEFT_PORT |= (1 << SLINGSHOT_LEFT_PIN);
-	SLINGSHOT_RIGHT_DDR |= (1 << SLINGSHOT_RIGHT_PIN);
-	SLINGSHOT_RIGHT_PORT |= (1 << SLINGSHOT_RIGHT_PIN);
-	BUMPER_0_DDR |= (1 << BUMPER_0_PIN);
-	BUMPER_0_PORT |= (1 << BUMPER_0_PIN);
-	BUMPER_1_DDR |= (1 << BUMPER_1_PIN);
-	BUMPER_1_PORT |= (1 << BUMPER_1_PIN);
-	BUMPER_2_DDR |= (1 << BUMPER_2_PIN);
-	BUMPER_2_PORT |= (1 << BUMPER_2_PIN);
+	// Make all solenoids output and turn all solenoids off (high)
+	
+	for(int i = 0; i < sizeof(solenoids) / sizeof(solenoids[0]); i++) {
+		*(solenoids[i].ddr) |= (1 << solenoids[i].pin);
+		*(solenoids[i].port) |= (1 << solenoids[i].pin);
+		solenoids[i].t = 0;	
+	}
 
 
 	// PB0 low --> selftest
@@ -59,10 +186,7 @@ int main(void) {
 	DDRB &= ~(1 << PB0);
 	PORTB |= (1 << PB0);
 
-	/*cooldown_time[SPI_SOLENOIDS_FLIPPER_LEFT_IDX] = 0;*/
-	/*cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] = 0;*/
-	/*cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0] = 0;*/
-	memset(cooldown_time, 0, sizeof(cooldown_time));
+	/*memset(cooldown_time, 0, sizeof(cooldown_time));*/
 
 	run_main();
 	
@@ -75,252 +199,29 @@ void run_main(void) {
 			run_selftest();
 		}
 
-		// if (
-		// 		activity requested &&
-		// 		not yet active &&
-		// 		cooled down &&
-		// 		 /*not active too long*/
-		// ) {
-		// 		set active
-		// 		set to not cooled down
-		// 		start activity timeout
-		// }
-		//
-		//
-		// if (
-		// 		activity requested &&
-		// 		not yet hot &&
-		// 		 /*not active too long*/
-		// ) {
-		// 		keep power coil active
-		// }
-		//
-		// if (
-		// 		activity requested &&
-		// 		active before &&
-		// 		cooling down
-		// ) {
-		// 		use hold coil
-		// }
-		//
+		// Special treatment for flipper double-coils
 
+		check_flipper(SN_FLIPPER_LEFT_POWER, SN_FLIPPER_LEFT_HOLD, SPI_SOLENOIDS_FLIPPER_LEFT_IDX);
+		check_flipper(SN_FLIPPER_RIGHT_POWER, SN_FLIPPER_RIGHT_HOLD, SPI_SOLENOIDS_FLIPPER_RIGHT_IDX);
 
-		//
-		// FLIPPERS
-		//
-
-		{
-			// true if either power or hold coil is currently active (low)
-			uint8_t fl_left_active_before = (FLIPPER_LEFT_POWER_PORT & ((1 << FLIPPER_LEFT_POWER_PIN) | (1 << FLIPPER_LEFT_HOLD_PIN))) != ((1 << FLIPPER_LEFT_POWER_PIN) | (1 << FLIPPER_LEFT_HOLD_PIN));
-			uint8_t fl_right_active_before = (FLIPPER_RIGHT_POWER_PORT & ((1 << FLIPPER_RIGHT_POWER_PIN) | (1 << FLIPPER_RIGHT_HOLD_PIN))) != ((1 << FLIPPER_RIGHT_POWER_PIN) | (1 << FLIPPER_RIGHT_HOLD_PIN));
-
-			uint8_t fl_left_power = 0,
-					fl_left_hold = 0,
-					fl_right_power = 0,
-					fl_right_hold = 0;
-
-			// activity of this solenoid requested
-			if(get_state(SPI_SOLENOIDS_FLIPPER_LEFT_IDX)) {
-				if(
-						!fl_left_active_before &&
-						(cooldown_time[SPI_SOLENOIDS_FLIPPER_LEFT_IDX] == 0)
-				) {
-					fl_left_power = 1;
-					cooldown_time[SPI_SOLENOIDS_FLIPPER_LEFT_IDX] = FLIPPER_LEFT_CYCLE_TIME;
-				}
-				else if(cooldown_time[SPI_SOLENOIDS_FLIPPER_LEFT_IDX] > FLIPPER_LEFT_COOLDOWN_TIME) { fl_left_power = 1; }
-				else if(fl_left_active_before) { fl_left_hold = 1; }
-			}
-
-			if(get_state(SPI_SOLENOIDS_FLIPPER_RIGHT_IDX)) {
-				/*uart_puthex(cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX]);*/
-				/*uart_putc(' ');*/
-				/*uart_putc(fl_right_active_before + '0');*/
-				/*uart_putc(' ');*/
-
-				if(
-						!fl_right_active_before &&
-						(cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] == 0)
-				) {
-					/*uart_putc('R');*/
-					
-					fl_right_power = 1;
-					cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] = FLIPPER_RIGHT_CYCLE_TIME;
-				}
-				else if(cooldown_time[SPI_SOLENOIDS_FLIPPER_RIGHT_IDX] > FLIPPER_RIGHT_COOLDOWN_TIME) { /*uart_putc('r');*/ fl_right_power = 1; }
-				else if(fl_right_active_before) { /*uart_putc('~');*/ fl_right_hold = 1; }
-
-				/*uart_puts("\r\n");*/
-			}
-
-			if(fl_left_power) { FLIPPER_LEFT_POWER_PORT &= ~(1 << FLIPPER_LEFT_POWER_PIN); }
-			else { FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN); }
-			if(fl_left_hold) { FLIPPER_LEFT_HOLD_PORT &= ~(1 << FLIPPER_LEFT_HOLD_PIN); }
-			else { FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN); }
-
-			if(fl_right_power) { FLIPPER_RIGHT_POWER_PORT &= ~(1 << FLIPPER_RIGHT_POWER_PIN); }
-			else { FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN); }
-			if(fl_right_hold) { FLIPPER_RIGHT_HOLD_PORT &= ~(1 << FLIPPER_RIGHT_HOLD_PIN); }
-			else { FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN); }
-		}
-
-		//
-		// DROP TARGET BANKS
-		//
-		{
-			uint8_t bank_0_active_before = (DROP_TARGET_BANK_0_PORT & (1 << DROP_TARGET_BANK_0_PIN)) != (1 << DROP_TARGET_BANK_0_PIN);
-			uint8_t bank_0_power = 0;
-
-
-			if(get_state(SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX)) {
-				if(!bank_0_active_before && (cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX] == 0)) {
-					bank_0_power = 1;
-					cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX] = DROP_TARGET_BANK_0_CYCLE_TIME;
-				}
-				else if(cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX] > DROP_TARGET_BANK_0_COOLDOWN_TIME) {
-					bank_0_power = 1;
-				}
-			}
-
-			/*uart_puthex(bank_0_active_before);*/
-			/*uart_putc(' ');*/
-			/*uart_puthex(get_state(SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX));*/
-			/*uart_putc(' ');*/
-			/*uart_puthex(cooldown_time[SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX]);*/
-			/*uart_putc(' ');*/
-			/*uart_puthex(bank_0_power);*/
-			/*uart_puts("\r\n");*/
-
-			if(bank_0_power) {
-				DROP_TARGET_BANK_0_PORT &= ~(1 << DROP_TARGET_BANK_0_PIN);
-			}
-			else {
-				DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
-			}
-		}
-
-		//
-		// SLINGSHOTS
-		//
-		{
-			uint8_t active_before = (SLINGSHOT_LEFT_PORT & (1 << SLINGSHOT_LEFT_PIN)) != (1 << SLINGSHOT_LEFT_PIN);
-			uint8_t power = 0;
-
-			if(get_state(SPI_SOLENOIDS_SLINGSHOT_LEFT_IDX)) {
-				if(!active_before && (cooldown_time[SPI_SOLENOIDS_SLINGSHOT_LEFT_IDX] == 0)) {
-					power = 1;
-					cooldown_time[SPI_SOLENOIDS_SLINGSHOT_LEFT_IDX] = SLINGSHOT_LEFT_CYCLE_TIME;
-				}
-				else if(cooldown_time[SPI_SOLENOIDS_SLINGSHOT_LEFT_IDX] > SLINGSHOT_LEFT_COOLDOWN_TIME) {
-					power = 1;
-				}
-			}
-
-			if(power) {
-				SLINGSHOT_LEFT_PORT &= ~(1 << SLINGSHOT_LEFT_PIN);
-			}
-			else {
-				SLINGSHOT_LEFT_PORT |= (1 << SLINGSHOT_LEFT_PIN);
-			}
-		}
-
-		{
-			uint8_t active_before = (SLINGSHOT_RIGHT_PORT & (1 << SLINGSHOT_RIGHT_PIN)) != (1 << SLINGSHOT_RIGHT_PIN);
-			uint8_t power = 0;
-
-			if(get_state(SPI_SOLENOIDS_SLINGSHOT_RIGHT_IDX)) {
-				if(!active_before && (cooldown_time[SPI_SOLENOIDS_SLINGSHOT_RIGHT_IDX] == 0)) {
-					power = 1;
-					cooldown_time[SPI_SOLENOIDS_SLINGSHOT_RIGHT_IDX] = SLINGSHOT_RIGHT_CYCLE_TIME;
-				}
-				else if(cooldown_time[SPI_SOLENOIDS_SLINGSHOT_RIGHT_IDX] > SLINGSHOT_RIGHT_COOLDOWN_TIME) {
-					power = 1;
-				}
-			}
-
-			if(power) {
-				SLINGSHOT_RIGHT_PORT &= ~(1 << SLINGSHOT_RIGHT_PIN);
-			}
-			else {
-				SLINGSHOT_RIGHT_PORT |= (1 << SLINGSHOT_RIGHT_PIN);
-			}
-		}
-
-		//
-		// POP BUMBERS
-		{
-			uint8_t active_before = (BUMPER_0_PORT & (1 << BUMPER_0_PIN)) != (1 << BUMPER_0_PIN);
-			uint8_t power = 0;
-
-			if(get_state(SPI_SOLENOIDS_BUMPER_0_IDX)) {
-				if(!active_before && (cooldown_time[SPI_SOLENOIDS_BUMPER_0_IDX] == 0)) {
-					power = 1;
-					cooldown_time[SPI_SOLENOIDS_BUMPER_0_IDX] = BUMPER_0_CYCLE_TIME;
-				}
-				else if(cooldown_time[SPI_SOLENOIDS_BUMPER_0_IDX] > BUMPER_0_COOLDOWN_TIME) {
-					power = 1;
-				}
-			}
-
-			if(power) {
-				BUMPER_0_PORT &= ~(1 << BUMPER_0_PIN);
-			}
-			else {
-				BUMPER_0_PORT |= (1 << BUMPER_0_PIN);
-			}
-		}
-		{
-			uint8_t active_before = (BUMPER_1_PORT & (1 << BUMPER_1_PIN)) != (1 << BUMPER_1_PIN);
-			uint8_t power = 0;
-
-			if(get_state(SPI_SOLENOIDS_BUMPER_1_IDX)) {
-				if(!active_before && (cooldown_time[SPI_SOLENOIDS_BUMPER_1_IDX] == 0)) {
-					power = 1;
-					cooldown_time[SPI_SOLENOIDS_BUMPER_1_IDX] = BUMPER_1_CYCLE_TIME;
-				}
-				else if(cooldown_time[SPI_SOLENOIDS_BUMPER_1_IDX] > BUMPER_1_COOLDOWN_TIME) {
-					power = 1;
-				}
-			}
-
-			if(power) {
-				BUMPER_1_PORT &= ~(1 << BUMPER_1_PIN);
-			}
-			else {
-				BUMPER_1_PORT |= (1 << BUMPER_1_PIN);
-			}
-		}
-		{
-			uint8_t active_before = (BUMPER_2_PORT & (1 << BUMPER_2_PIN)) != (1 << BUMPER_2_PIN);
-			uint8_t power = 0;
-
-			if(get_state(SPI_SOLENOIDS_BUMPER_2_IDX)) {
-				if(!active_before && (cooldown_time[SPI_SOLENOIDS_BUMPER_2_IDX] == 0)) {
-					power = 1;
-					cooldown_time[SPI_SOLENOIDS_BUMPER_2_IDX] = BUMPER_2_CYCLE_TIME;
-				}
-				else if(cooldown_time[SPI_SOLENOIDS_BUMPER_2_IDX] > BUMPER_2_COOLDOWN_TIME) {
-					power = 1;
-				}
-			}
-
-			if(power) {
-				BUMPER_2_PORT &= ~(1 << BUMPER_2_PIN);
-			}
-			else {
-				BUMPER_2_PORT |= (1 << BUMPER_2_PIN);
-			}
-		}
+		check_solenoid(SN_DROP_TARGET_BANK_0, SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX);
+		check_solenoid(SN_SLINGSHOT_LEFT, SPI_SOLENOIDS_SLINGSHOT_LEFT_IDX);
+		check_solenoid(SN_SLINGSHOT_RIGHT, SPI_SOLENOIDS_SLINGSHOT_RIGHT_IDX);
+		check_solenoid(SN_BUMPER_0, SPI_SOLENOIDS_BUMPER_0_IDX);
+		check_solenoid(SN_BUMPER_1, SPI_SOLENOIDS_BUMPER_1_IDX);
+		check_solenoid(SN_BUMPER_2, SPI_SOLENOIDS_BUMPER_2_IDX);
+		check_solenoid(SN_BALL_RETURN, SPI_SOLENOIDS_BALL_RETURN_IDX);
+		check_solenoid(SN_AUX_0, SPI_SOLENOIDS_AUX_0_IDX);
+		check_solenoid(SN_AUX_1, SPI_SOLENOIDS_AUX_1_IDX);
 
 	} // while
 }
 
 void run_selftest(void) {
-	FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN);
-	FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN);
-	FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN);
-	FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN);
-	DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
+	// turn off all solenoids
+	for(int i = 0; i < sizeof(solenoids) / sizeof(solenoids[0]); i++) {
+		*(solenoids[i].port) |= (1 << solenoids[i].pin);
+	}
 
 	while(1) {
 		/*usleep(5UL * 1000000UL);*/
@@ -330,52 +231,7 @@ void run_selftest(void) {
 			return;
 		}
 
-		// Power coil 
-		FLIPPER_LEFT_POWER_PORT &= ~(1 << FLIPPER_LEFT_POWER_PIN);
-		_delay_ms(100);
-		FLIPPER_LEFT_POWER_PORT |= (1 << FLIPPER_LEFT_POWER_PIN);
-		// Hold coil
-		FLIPPER_LEFT_HOLD_PORT &= ~(1 << FLIPPER_LEFT_HOLD_PIN);
-		_delay_ms(1000);
-		FLIPPER_LEFT_HOLD_PORT |= (1 << FLIPPER_LEFT_HOLD_PIN);
-
-		_delay_ms(1000);
-		// Power coil 
-		FLIPPER_RIGHT_POWER_PORT &= ~(1 << FLIPPER_RIGHT_POWER_PIN);
-		_delay_ms(100);
-		FLIPPER_RIGHT_POWER_PORT |= (1 << FLIPPER_RIGHT_POWER_PIN);
-		// Hold coil
-		FLIPPER_RIGHT_HOLD_PORT &= ~(1 << FLIPPER_RIGHT_HOLD_PIN);
-		_delay_ms(1000);
-		FLIPPER_RIGHT_HOLD_PORT |= (1 << FLIPPER_RIGHT_HOLD_PIN);
-
-		_delay_ms(1000);
-		DROP_TARGET_BANK_0_PORT &= ~(1 << DROP_TARGET_BANK_0_PIN);
-		_delay_ms(100);
-		DROP_TARGET_BANK_0_PORT |= (1 << DROP_TARGET_BANK_0_PIN);
-
-		_delay_ms(1000);
-		SLINGSHOT_LEFT_PORT &= ~(1 << SLINGSHOT_LEFT_PIN);
-		_delay_ms(100);
-		SLINGSHOT_LEFT_PORT |= (1 << SLINGSHOT_LEFT_PIN);
-
-		_delay_ms(1000);
-		SLINGSHOT_RIGHT_PORT &= ~(1 << SLINGSHOT_RIGHT_PIN);
-		_delay_ms(100);
-		SLINGSHOT_RIGHT_PORT |= (1 << SLINGSHOT_RIGHT_PIN);
-
-		_delay_ms(1000);
-		BUMPER_0_PORT &= ~(1 << BUMPER_0_PIN);
-		_delay_ms(100);
-		BUMPER_0_PORT |= (1 << BUMPER_0_PIN);
-		_delay_ms(1000);
-		BUMPER_1_PORT &= ~(1 << BUMPER_1_PIN);
-		_delay_ms(100);
-		BUMPER_1_PORT |= (1 << BUMPER_1_PIN);
-		_delay_ms(1000);
-		BUMPER_2_PORT &= ~(1 << BUMPER_2_PIN);
-		_delay_ms(100);
-		BUMPER_2_PORT |= (1 << BUMPER_2_PIN);
+		// TODO: re-implement self-test
 	}
 }
 
@@ -427,9 +283,10 @@ void setup_uart(void) {
 }
 
 ISR(TIMER0_COMPA_vect) {
-	int i = 0;
-	for(i = 0; i < sizeof(cooldown_time); i++) {
-		if(cooldown_time[i] > 0) { cooldown_time[i]--; }
+	for(int i = 0; i < sizeof(solenoids) / sizeof(solenoids[0]); i++) {
+		if(solenoids[i].t > 0) {
+			--(solenoids[i].t);
+		}
 	}
 }
 
