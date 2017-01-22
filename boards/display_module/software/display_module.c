@@ -7,6 +7,13 @@
 // UART:
 //https://www.mikrocontroller.net/articles/AVR-GCC-Tutorial/Der_UART
 
+
+// TODO:
+// * Check pins (P_SIN etc...) which is connected where?
+// * Check which pin P_GSCLK must be connected to (Timer!), change breadboard accordingly
+
+
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -19,50 +26,85 @@
 
 inline void xfer_spi(void);
 
-unsigned char row = 0;
-int demo_state = 1;
-int demo_frame = 0;
-unsigned char pwm_phase = 0;
 int spi_xfer = 0;
-int selftest = 0;
+int selftest = 1;
 unsigned long phase = 0;
 
 unsigned int palette[][COLORS] = {
-	// -- RED CHANNEL
-	// BLACK  RED  GREEN YELLOW ORANGE DRK GRE DRK RE
-	{  0x00, 0xff, 0x00,  0x07,  0x1f,   0x00,  0x01, 0x01 },
-	// -- GREEN CHANNEL
-	{  0x00, 0x00, 0xff,  0x1f,  0x1f,   0x03,  0x00, 0x01 }
+
+	// TODO: Fix these color values
+	// (they are still PWM patterns!)
+
+	// R     G
+
+	{ 0x00, 0x00 },
+	{ 0xff, 0x00 },
+	{ 0x00, 0xff },
+	{ 0x07, 0x1f },
+	{ 0x1f, 0x1f },
+	{ 0x00, 0x03 },
+	{ 0x01, 0x00 },
+	{ 0x01, 0x01 }
+
 };
 
 
 int main(void) {
 	setup_spi();
 	setup_tlc5940();
+	setup_mosfets();
 
-	setup_display();
 	clear_screen();
-	output_screen();
 
-
-	PORTB |= (1 << PINB0);
 	while(1) {
+		if(selftest) {
+			render_selftest(phase++);
+		}
+
 		output_screen();
-		xfer_spi();
+
+		if(!selftest) {
+			xfer_spi();
+		}
+	}
+}
+
+void output_screen(void) {
+
+	for(int row = 0; row < 8; row++) {
+		output_row(row);
 	}
 }
 
 
+
 inline ScreenIndex decode_master_screen_index(int i) {
-	// TODO
+	ScreenIndex r;
+	r.column = 7 - (i % 8);
+	r.row = i / 8;
+	return r;
 }
 
 inline int encode_lm23088_screen_index(ScreenIndex si) {
-	// TODO
+
+	// internal layout:
+	// we have 8 anodes (= pairs of rows on the 2 matrices)
+	// each 2x 16 columns per board (Green/Red interchangingly)
+
+	return si.row * 16 + si.column * 2 + (si.color == IDX_RED);
 }
 
-inline void set_screen(int screen_index, int palette_index) {
+inline void set_screen(int row, int column, int color, int v) {
+	ScreenIndex si = { .row = row, .column = column, .color = color };
+	int idx = encode_lm23088_screen_index(si);
+	screen[idx] = v;
+}
 
+inline int get_screen(int row, int column, int color) {
+	ScreenIndex si = { .row = row, .column = column, .color = color };
+	int idx = encode_lm23088_screen_index(si);
+	return screen[idx]; 
+}
 
 
 inline void xfer_spi(void) {
@@ -71,6 +113,7 @@ inline void xfer_spi(void) {
 
 		while(!(SPSR & (1 << SPIF))) { }
 		char chx = SPDR;
+		(void)chx;
 
 		// read in all but the last byte
 		// after the last byte we need to quickly activate the next display
@@ -87,16 +130,15 @@ inline void xfer_spi(void) {
 
 			ScreenIndex idx = decode_master_screen_index(screen_index);
 			idx.color = IDX_GREEN;
-			screen[ encode_lm23088_screen_index(idx) ] = palette_index[IDX_GREEN][(int)ch];
+			screen[ encode_lm23088_screen_index(idx) ] = palette[IDX_GREEN][(int)ch];
 			idx.color = IDX_RED;
-			screen[ encode_lm23088_screen_index(idx) ] = palette_index[IDX_RED][(int)ch];
+			screen[ encode_lm23088_screen_index(idx) ] = palette[IDX_RED][(int)ch];
 
 		}
 
 		// the nop is for timing optimization
 		asm volatile ("nop");
 		while(!(SPSR & (1 << SPIF))) { }
-
 		char ch = SPDR;
 
 		// enable_next(), pull SS pin of next module low
@@ -105,9 +147,9 @@ inline void xfer_spi(void) {
 
 		ScreenIndex idx = decode_master_screen_index(screen_index);
 		idx.color = IDX_GREEN;
-		screen[ encode_lm23088_screen_index(idx) ] = palette_index[IDX_GREEN][(int)ch];
+		screen[ encode_lm23088_screen_index(idx) ] = palette[IDX_GREEN][(int)ch];
 		idx.color = IDX_RED;
-		screen[ encode_lm23088_screen_index(idx) ] = palette_index[IDX_RED][(int)ch];
+		screen[ encode_lm23088_screen_index(idx) ] = palette[IDX_RED][(int)ch];
 
 		spi_xfer = 0;
 	}
@@ -156,7 +198,7 @@ void setup_tlc5940(void) {
 	// Timer 0 (8 Bit)
 	TCCR0A = (1 << WGM01) | (0 << WGM00); // CTC
 	TCCR0A |= (0 << COM0A1) | (1 << COM0A0); // Toggle on Compare Match
-	TCRR0B = (0 << CS02) | (0 << CS01) | (1 << CS00); // No prescaler
+	TCCR0B = (0 << CS02) | (0 << CS01) | (1 << CS00); // No prescaler
 	OCR0A = 0; // f(OCR) = F_CPU/2/Prescaler
 }
 
@@ -177,88 +219,18 @@ ISR(PCINT0_vect) {
 	spi_xfer = !(PINB & (1 << PB2)); // SS pin high -> end of transmission
 	if(!spi_xfer) {
 		disable_next();
-		//PORTB |= 0x02;
 	}
 }
 
-
-void shift(unsigned char x) {
-	x = x ? 0b100 : 0b000;
-
-	// SCK=1 SI=x
-	PORTC = 0b001 | x;
-	// SCK=0 SI=x
-	PORTC = 0b000 | x;
-}
-
-int shift_row(void) {
-	// the comments give the order of pins from QA...QH
-	// note that we have to shift them in in the *reverse* order of that
-	
-	// green col 4 | row 4 | green col 5 | row 5 | ... | green col 7 | row 7
-	for(int i = 7; i >= 4; i--) {
-		shift(row == i);
-		// what we name row is a column for the display (brainfuck!)
-		shift(screen[IDX_GREEN][i + (row & 8)][row & 7] & pwm_phase);
-	}
-
-		/*if(spi_xfer) { return 0; }*/
-	
-	// row 3 | green col 3 | ... | row 0 | green col 0
-	for(int i = 0; i < 4; i++) {
-		shift(screen[IDX_GREEN][i + (row & 8)][row & 7] & pwm_phase);
-		shift(row == i);
-	}
-		/*if(spi_xfer) { return 0; }*/
-	
-	// red col 4 | row 12 | ... | red col 7 | row 15
-	for(int i = 7; i >= 4; i--) {
-		shift(row == i + 8);
-		shift(screen[IDX_RED][i + (row & 8)][row & 7] & pwm_phase);
-	}
-	// row 11 | red col 3 | ... | row 8 | red col 0
-	for(int i = 0; i < 4; i++) {
-		shift(screen[IDX_RED][i + (row & 8)][row & 7] & pwm_phase);
-		shift(row == i + 8);
-	}
-
-	return 1;
-}
-
-
-int output_row(void) {
-	if(row >= ROWS) { row = 0; }
-	if(shift_row()) {
-	
-		// flank RCK --> write to status registers
-		PORTC = 0b010;
-		PORTC = 0b000;
-		row++;
-	}
-	
-	return 1;
-}
-
-void output_blank_row(void) {
-	if(row >= ROWS) { row = 0; }
-	for(int i = 0; i < 32; i++) {
-		shift(0);
-	}
-	// flank RCK --> write to status registers
-	PORTC = 0b010;
-	PORTC = 0b000;
-
-	row++;
-}
 
 
 #define GETBIT(V, B) ((V >> B) & 0x01)
 
-void output_current_column(void) {
+void output_row(int row) {
 
 	PORT_TLC5940 |= (1 << P_BLANK);
 
-	for(int i = 0; i < ROWS * COLORS; i++) {
+	for(int i = 0; i < COLUMNS * COLORS * 2; i++) {
 		// highest 4 MSBits are 0
 
 		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
@@ -266,7 +238,7 @@ void output_current_column(void) {
 		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
 		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
 
-		unsigned char s = screen[g_current_column][i];
+		unsigned char s = get_screen(row, i / 2, i % 2);
 		unsigned char b = GETBIT(s, 0) << P_SIN;
 
 		PORT_TLC5940 = (1 << P_BLANK) | b;
@@ -311,10 +283,6 @@ void output_current_column(void) {
 	TCCR0A |= (0 << COM0A1) | (1 << COM0A0);
 	TCNT1 = 0;
 
-	g_current_column++;
-	if(g_current_column == COLUMNS) {
-		g_current_column = 0;
-	}
 }
 
 void clear_screen(void) {
@@ -336,7 +304,7 @@ void render_selftest(unsigned long phase) {
 		case 0: {
 			int row = subphase % 16;
 			for(int i = 0; i < 8; i++) {
-				screen[IDX_GREEN][row][i] = 0xff;
+				set_screen(row, i, IDX_GREEN, 0xff);
 			}
 			break;
 		}
@@ -344,7 +312,7 @@ void render_selftest(unsigned long phase) {
 		case 1: {
 			int row = subphase % 16;
 			for(int i = 0; i < 8; i++) {
-				screen[IDX_RED][row][i] = 0xff;
+				set_screen(row, i, IDX_RED, 0xff);
 			}
 			break;
 		}
@@ -352,7 +320,7 @@ void render_selftest(unsigned long phase) {
 		case 2: {
 			int col = subphase % 8;
 			for(int i = 0; i < 16; i++) {
-				screen[IDX_GREEN][i][col] = 0xff;
+				set_screen(i, col, IDX_GREEN, 0xff);
 			}
 			break;
 		}
@@ -360,7 +328,7 @@ void render_selftest(unsigned long phase) {
 		case 3: {
 			int col = subphase % 8;
 			for(int i = 0; i < 16; i++) {
-				screen[IDX_RED][i][col] = 0xff;
+				set_screen(i, col, IDX_RED, 0xff);
 			}
 			break;
 		}

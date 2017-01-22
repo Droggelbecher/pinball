@@ -2,6 +2,14 @@
 #ifndef DISPLAY_MODULE_H
 #define DISPLAY_MODULE_H
 
+
+// TODO
+#define DDR_TLC5940 DDRC
+#define PORT_TLC5940 PORTC
+
+#define DDR_MOSFETS DDRD
+#define PORT_MOSFETS PORTD
+
 enum {
 	ROWS = 16,
 	COLUMNS = 8,
@@ -10,7 +18,13 @@ enum {
 
 	IDX_RED = 0,
 	IDX_GREEN = 1,
-	LED_COLORS = 2
+	COLORS = 2,
+
+	P_SIN = 0,
+	P_SCLK = 1,
+	P_XLAT = 2,
+	P_BLANK = 3,
+	P_GSCLK = 4,
 };
 
 enum {
@@ -23,40 +37,32 @@ enum {
 	C_DARK_GREEN = 6,
 	C_BLOOD_ORANGE = 7,
 
-	COLORS = 8,
+	LED_COLORS = 8,
 
 	C_EOT = 0xff
 };
 
 
-typedef struct ScreenIndex {
+typedef struct {
 	unsigned char row;
 	unsigned char column;
 	unsigned char color;
-}
+} ScreenIndex;
 
 
 
 unsigned int palette[LED_COLORS][COLORS];
-unsigned char screen[COLUMNS][ROWS * COLORS];
+unsigned char screen[COLUMNS * ROWS * COLORS];
 
-#define BAUD 9600UL      // Baudrate
-//#define BAUD 38400UL      // Baudrate
 
-// Berechnungen
-#define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1)   // clever runden
-#define BAUD_REAL (F_CPU/(16*(UBRR_VAL+1)))     // Reale Baudrate
-#define BAUD_ERROR ((BAUD_REAL*1000)/BAUD) // Fehler in Promille, 1000 = kein Fehler.
-#if ((BAUD_ERROR<990) || (BAUD_ERROR>1010))
-  #error Systematischer Fehler der Baudrate grösser 1% und damit zu hoch! 
-#endif
 
 int main(void);
 void setup_spi(void);
-void setup_uart(void);
-void setup_display(void);
-void uart_putc(char);
-void uart_puts(char*);
+void enable_next(void);
+void disable_next(void);
+void setup_tlc5940(void);
+void setup_mosfets(void);
+void output_row(int);
 void output_screen(void);
 void render_selftest(unsigned long);
 void clear_screen(void);
