@@ -28,8 +28,17 @@ enum {
 	C_EOT = 0xff
 };
 
+
+typedef struct ScreenIndex {
+	unsigned char row;
+	unsigned char column;
+	unsigned char color;
+}
+
+
+
 unsigned int palette[LED_COLORS][COLORS];
-unsigned char screen[LED_COLORS][ROWS][COLUMNS];
+unsigned char screen[COLUMNS][ROWS * COLORS];
 
 #define BAUD 9600UL      // Baudrate
 //#define BAUD 38400UL      // Baudrate
