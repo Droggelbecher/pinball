@@ -3,7 +3,6 @@
 #define DISPLAY_MODULE_H
 
 
-// TODO
 #define DDR_TLC5940 DDRC
 #define PORT_TLC5940 PORTC
 
@@ -20,11 +19,10 @@ enum {
 	IDX_GREEN = 1,
 	COLORS = 2,
 
-	P_SIN = 0,
-	P_SCLK = 1,
-	P_XLAT = 2,
-	P_BLANK = 3,
-	P_GSCLK = 4,
+	P_SIN = 5,
+	P_SCLK = 4,
+	P_XLAT = 3,
+	P_BLANK = 2,
 };
 
 enum {

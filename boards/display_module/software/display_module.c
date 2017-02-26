@@ -8,11 +8,6 @@
 //https://www.mikrocontroller.net/articles/AVR-GCC-Tutorial/Der_UART
 
 
-// TODO:
-// * Check pins (P_SIN etc...) which is connected where?
-// * Check which pin P_GSCLK must be connected to (Timer!), change breadboard accordingly
-
-
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -32,19 +27,16 @@ unsigned long phase = 0;
 
 unsigned int palette[][COLORS] = {
 
-	// TODO: Fix these color values
-	// (they are still PWM patterns!)
-
 	// R     G
 
-	{ 0x00, 0x00 },
-	{ 0xff, 0x00 },
-	{ 0x00, 0xff },
-	{ 0x07, 0x1f },
-	{ 0x1f, 0x1f },
-	{ 0x00, 0x03 },
-	{ 0x01, 0x00 },
-	{ 0x01, 0x01 }
+	{ 0x00, 0x00 }, // Black
+	{ 0xff, 0x00 }, // Full red
+	{ 0x00, 0xff }, // Full green
+	{ 0x40, 0x80 },
+	{ 0x80, 0x80 },
+	{ 0x00, 0x40 },
+	{ 0x10, 0x00 },
+	{ 0x10, 0x10 }
 
 };
 
@@ -193,7 +185,7 @@ void setup_spi(void) {
 }
 
 void setup_tlc5940(void) {
-	DDR_TLC5940 |= (1 << P_SIN) | (1 << P_SCLK) | (1 << P_XLAT) | (1 << P_BLANK) | (1 << P_GSCLK);
+	DDR_TLC5940 |= (1 << P_SIN) | (1 << P_SCLK) | (1 << P_XLAT) | (1 << P_BLANK);
 
 	// Timer 0 (8 Bit)
 	TCCR0A = (1 << WGM01) | (0 << WGM00); // CTC
@@ -278,7 +270,7 @@ void output_row(int row) {
 
 	PORT_TLC5940 = 0; // unblank
 
-	// Reactivate GSCKL and reset TCNT
+	// Reactivate GSCLK and reset TCNT
 	TCCR0A = (1 << WGM01) | (0 << WGM00);
 	TCCR0A |= (0 << COM0A1) | (1 << COM0A0);
 	TCNT1 = 0;
