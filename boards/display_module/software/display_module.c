@@ -260,51 +260,60 @@ void output_row(int row) {
 
 	PORT_TLC5940 |= (1 << P_BLANK);
 
-	for(int i = 0; i < COLUMNS * COLORS * 2; i++) {
-		// highest 4 MSBits are 0
+	for(int matrix = 0; matrix < 2; matrix++) {
+		for(int i = 0; i < COLUMNS * COLORS; i++) {
+			// highest 4 MSBits are 0
 
-		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
-		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
-		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
-		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
+			PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
+			PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
+			PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
+			PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
 
-		unsigned char s = get_screen(row, i / 2, i % 2);
-		unsigned char b = GETBIT(s, 0) << P_SIN;
+			unsigned char s = get_screen(row, i / 2, i % 2);
+			unsigned char b = GETBIT(s, 0) << P_SIN;
 
-		PORT_TLC5940 = (1 << P_BLANK) | b;
-		PORT_TLC5940 |= (1 << P_SCLK);
+			PORT_TLC5940 = (1 << P_BLANK) | b;
+			PORT_TLC5940 |= (1 << P_SCLK);
 
-		b = GETBIT(s, 1) << P_SIN;
-		PORT_TLC5940 = (1 << P_BLANK) | b;
-		PORT_TLC5940 |= (1 << P_SCLK);
+			b = GETBIT(s, 1) << P_SIN;
+			PORT_TLC5940 = (1 << P_BLANK) | b;
+			PORT_TLC5940 |= (1 << P_SCLK);
 
-		b = GETBIT(s, 2) << P_SIN;
-		PORT_TLC5940 = (1 << P_BLANK) | b;
-		PORT_TLC5940 |= (1 << P_SCLK);
+			b = GETBIT(s, 2) << P_SIN;
+			PORT_TLC5940 = (1 << P_BLANK) | b;
+			PORT_TLC5940 |= (1 << P_SCLK);
 
-		b = GETBIT(s, 3) << P_SIN;
-		PORT_TLC5940 = (1 << P_BLANK) | b;
-		PORT_TLC5940 |= (1 << P_SCLK);
+			b = GETBIT(s, 3) << P_SIN;
+			PORT_TLC5940 = (1 << P_BLANK) | b;
+			PORT_TLC5940 |= (1 << P_SCLK);
 
-		b = GETBIT(s, 4) << P_SIN;
-		PORT_TLC5940 = (1 << P_BLANK) | b;
-		PORT_TLC5940 |= (1 << P_SCLK);
+			b = GETBIT(s, 4) << P_SIN;
+			PORT_TLC5940 = (1 << P_BLANK) | b;
+			PORT_TLC5940 |= (1 << P_SCLK);
 
-		b = GETBIT(s, 5) << P_SIN;
-		PORT_TLC5940 = (1 << P_BLANK) | b;
-		PORT_TLC5940 |= (1 << P_SCLK);
+			b = GETBIT(s, 5) << P_SIN;
+			PORT_TLC5940 = (1 << P_BLANK) | b;
+			PORT_TLC5940 |= (1 << P_SCLK);
 
-		b = GETBIT(s, 6) << P_SIN;
-		PORT_TLC5940 = (1 << P_BLANK) | b;
-		PORT_TLC5940 |= (1 << P_SCLK);
+			b = GETBIT(s, 6) << P_SIN;
+			PORT_TLC5940 = (1 << P_BLANK) | b;
+			PORT_TLC5940 |= (1 << P_SCLK);
 
-		b = GETBIT(s, 7) << P_SIN;
-		PORT_TLC5940 = (1 << P_BLANK) | b;
-		PORT_TLC5940 |= (1 << P_SCLK);
+			b = GETBIT(s, 7) << P_SIN;
+			PORT_TLC5940 = (1 << P_BLANK) | b;
+			PORT_TLC5940 |= (1 << P_SCLK);
+		}
+
+
 	}
 
+	// Latch
+	PORT_TLC5940 = (1 << P_BLANK);
 	PORT_TLC5940 = (1 << P_BLANK) | (1 << P_XLAT);
 	PORT_TLC5940 = (1 << P_BLANK);
+
+	// Additional SCLK cycle at the end
+	PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
 
 	PORT_TLC5940 = 0; // unblank
 
