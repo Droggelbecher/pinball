@@ -77,7 +77,7 @@ int main(void) {
 void output_screen(void) {
 
 	for(int row = 0; row < 8; row++) {
-		output_row(row);
+		output_column(row);
 	}
 }
 
@@ -97,6 +97,8 @@ inline int encode_lm23088_screen_index(ScreenIndex si) {
 	// each 2x 16 columns per board (Green/Red interchangingly)
 
 	return si.row * 16 + si.column * 2 + (si.color == IDX_RED);
+
+	//return si.column * 32 + si.row * 2 + (si.color == IDX_RED);
 }
 
 inline void set_screen(int row, int column, int color, int v) {
@@ -256,55 +258,53 @@ ISR(PCINT0_vect) {
 
 #define GETBIT(V, B) ((V >> B) & 0x01)
 
-void output_row(int row) {
+void output_column(int column) {
 
 	PORT_TLC5940 |= (1 << P_BLANK);
 
-	for(int matrix = 0; matrix < 2; matrix++) {
-		for(int i = 0; i < COLUMNS * COLORS; i++) {
-			// highest 4 MSBits are 0
+	for(int matrix = 0; matrix < 2; matrix++)
+	for(int row = 0; row < ROWS; row++)
+	for(int color = 0; color < COLORS; color++) {
+		// highest 4 MSBits are 0
 
-			PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
-			PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
-			PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
-			PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
+		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
+		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
+		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
+		PORT_TLC5940 = (1 << P_BLANK); PORT_TLC5940 = (1 << P_BLANK) | (1 << P_SCLK);
 
-			unsigned char s = get_screen(row, i / 2, i % 2);
-			unsigned char b = GETBIT(s, 0) << P_SIN;
+		unsigned char s = get_screen((1 - matrix) * 8 + row, column, color);
+		unsigned char b = GETBIT(s, 0) << P_SIN;
 
-			PORT_TLC5940 = (1 << P_BLANK) | b;
-			PORT_TLC5940 |= (1 << P_SCLK);
+		PORT_TLC5940 = (1 << P_BLANK) | b;
+		PORT_TLC5940 |= (1 << P_SCLK);
 
-			b = GETBIT(s, 1) << P_SIN;
-			PORT_TLC5940 = (1 << P_BLANK) | b;
-			PORT_TLC5940 |= (1 << P_SCLK);
+		b = GETBIT(s, 1) << P_SIN;
+		PORT_TLC5940 = (1 << P_BLANK) | b;
+		PORT_TLC5940 |= (1 << P_SCLK);
 
-			b = GETBIT(s, 2) << P_SIN;
-			PORT_TLC5940 = (1 << P_BLANK) | b;
-			PORT_TLC5940 |= (1 << P_SCLK);
+		b = GETBIT(s, 2) << P_SIN;
+		PORT_TLC5940 = (1 << P_BLANK) | b;
+		PORT_TLC5940 |= (1 << P_SCLK);
 
-			b = GETBIT(s, 3) << P_SIN;
-			PORT_TLC5940 = (1 << P_BLANK) | b;
-			PORT_TLC5940 |= (1 << P_SCLK);
+		b = GETBIT(s, 3) << P_SIN;
+		PORT_TLC5940 = (1 << P_BLANK) | b;
+		PORT_TLC5940 |= (1 << P_SCLK);
 
-			b = GETBIT(s, 4) << P_SIN;
-			PORT_TLC5940 = (1 << P_BLANK) | b;
-			PORT_TLC5940 |= (1 << P_SCLK);
+		b = GETBIT(s, 4) << P_SIN;
+		PORT_TLC5940 = (1 << P_BLANK) | b;
+		PORT_TLC5940 |= (1 << P_SCLK);
 
-			b = GETBIT(s, 5) << P_SIN;
-			PORT_TLC5940 = (1 << P_BLANK) | b;
-			PORT_TLC5940 |= (1 << P_SCLK);
+		b = GETBIT(s, 5) << P_SIN;
+		PORT_TLC5940 = (1 << P_BLANK) | b;
+		PORT_TLC5940 |= (1 << P_SCLK);
 
-			b = GETBIT(s, 6) << P_SIN;
-			PORT_TLC5940 = (1 << P_BLANK) | b;
-			PORT_TLC5940 |= (1 << P_SCLK);
+		b = GETBIT(s, 6) << P_SIN;
+		PORT_TLC5940 = (1 << P_BLANK) | b;
+		PORT_TLC5940 |= (1 << P_SCLK);
 
-			b = GETBIT(s, 7) << P_SIN;
-			PORT_TLC5940 = (1 << P_BLANK) | b;
-			PORT_TLC5940 |= (1 << P_SCLK);
-		}
-
-
+		b = GETBIT(s, 7) << P_SIN;
+		PORT_TLC5940 = (1 << P_BLANK) | b;
+		PORT_TLC5940 |= (1 << P_SCLK);
 	}
 
 	// Latch
@@ -317,7 +317,7 @@ void output_row(int row) {
 
 	PORT_TLC5940 = 0; // unblank
 
-	PORT_MOSFETS = ~(1 << row);
+	PORT_MOSFETS = ~(1 << column);
 
 	//GTCCR &= ~(1 << TSM); // continue timers
 	//_delay_ms(5.0); // takes ~30 times too long when timer1 is running full speed
@@ -335,7 +335,8 @@ void output_row(int row) {
 	// of this (again, loop overhead will slow this down, which is ok,
     // as long as were below 10ms a precise timing is not important here)
 
-	for(int i = 0; i < 50; i++) {
+	int cycles = (int)(PULSE_TIME / 0.032);
+	for(int i = 0; i < cycles; i++) {
 
 		// one GSCLK period takes 2 timer ticks, so wait 2*256 ticks
 
@@ -371,6 +372,7 @@ void render_selftest(unsigned long phase) {
 	int subphase = phase % subphases;
 
 	switch(mode) {
+		// green row wandering down
 		case 0: {
 			int row = subphase % 16;
 			for(int i = 0; i < 8; i++) {
@@ -379,6 +381,7 @@ void render_selftest(unsigned long phase) {
 			break;
 		}
 
+		// red row wandering down
 		case 1: {
 			int row = subphase % 16;
 			for(int i = 0; i < 8; i++) {
@@ -387,6 +390,7 @@ void render_selftest(unsigned long phase) {
 			break;
 		}
 
+		// green column left to right
 		case 2: {
 			int col = subphase % 8;
 			for(int i = 0; i < 16; i++) {
@@ -395,6 +399,7 @@ void render_selftest(unsigned long phase) {
 			break;
 		}
 
+		// red row left to right
 		case 3: {
 			int col = subphase % 8;
 			for(int i = 0; i < 16; i++) {
@@ -403,6 +408,7 @@ void render_selftest(unsigned long phase) {
 			break;
 		}
 
+		// full blink
 		case 4: {
 			if(subphase % 2) {
 				memset(screen, 0xff, sizeof(screen));
@@ -410,6 +416,7 @@ void render_selftest(unsigned long phase) {
 			break;
 		}
 
+		// full light
 		case 5: {
 			memset(screen, 0xff, sizeof(screen));
 			break;
