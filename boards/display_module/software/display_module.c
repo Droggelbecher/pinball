@@ -50,7 +50,7 @@ int main(void) {
 	setup_spi();
 	setup_tlc5940();
 	setup_mosfets();
-	//sei();
+	sei();
 
 	clear_screen();
 
@@ -343,7 +343,8 @@ void output_column(int column) {
 		for(int j = 0; j < 2; j++) {
 			TCNT0 = 0;
 			// Reset TOV0 to 0 by writing a one to it (don't ask, its technical...)
-			TIFR0 |= (1 << TOV0);
+			// http://www.atmel.com/webdoc/AVRLibcReferenceManual/FAQ_1faq_intbits.html
+			TIFR0 = (1 << TOV0);
 			while(!(TIFR0 & (1 << TOV0))) { // wait for overflow event
 			}
 		}
