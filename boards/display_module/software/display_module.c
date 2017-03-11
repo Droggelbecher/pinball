@@ -26,7 +26,7 @@
 inline void xfer_spi(void);
 
 int spi_xfer = 0;
-int selftest = 1;
+int selftest = 0;
 unsigned long phase = 0;
 
 unsigned int palette[][COLORS] = {
