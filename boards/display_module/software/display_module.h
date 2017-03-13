@@ -60,7 +60,7 @@ void enable_next(void);
 void disable_next(void);
 void setup_tlc5940(void);
 void setup_mosfets(void);
-void output_row(int);
+void output_column(int);
 void output_screen(void);
 void render_selftest(unsigned long);
 void clear_screen(void);

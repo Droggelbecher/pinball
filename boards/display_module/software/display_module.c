@@ -31,16 +31,16 @@ unsigned long phase = 0;
 
 unsigned int palette[][COLORS] = {
 
-	// R     G
+	// G     R
 
 	{ 0x00, 0x00 }, // Black
 	{ 0xff, 0x00 }, // Full red
 	{ 0x00, 0xff }, // Full green
-	{ 0x40, 0x80 },
-	{ 0x80, 0x80 },
-	{ 0x00, 0x40 },
-	{ 0x10, 0x00 },
-	{ 0x10, 0x10 }
+	{ 0x40, 0x80 }, // Yellow
+	{ 0x80, 0x80 }, // Orange
+	{ 0x00, 0x40 }, // Dark Red
+	{ 0x10, 0x00 }, // Dark Green
+	{ 0x10, 0x10 }  // Blood Orange
 
 };
 
@@ -74,9 +74,13 @@ int main(void) {
 	}
 }
 
+
 void output_screen(void) {
 
+	// This is ~12ms
 	for(int row = 0; row < 8; row++) {
+
+		// a column takes about 1ms to output
 		output_column(row);
 	}
 }
@@ -114,6 +118,7 @@ inline int get_screen(int row, int column, int color) {
 }
 
 
+// We have about 300us time from SS high->low until transmission starts!
 inline void xfer_spi(void) {
 	if(spi_xfer) {
 		int screen_index = 0;
@@ -132,14 +137,13 @@ inline void xfer_spi(void) {
 			// the nop is for timing optimization
 			asm volatile ("nop");
 			while(!(SPSR & (1 << SPIF))) { }
-
 			char ch = SPDR;
 
 			ScreenIndex idx = decode_master_screen_index(screen_index);
 			idx.color = IDX_GREEN;
-			screen[ encode_lm23088_screen_index(idx) ] = palette[IDX_GREEN][(int)ch];
+			screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_GREEN];
 			idx.color = IDX_RED;
-			screen[ encode_lm23088_screen_index(idx) ] = palette[IDX_RED][(int)ch];
+			screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_RED];
 
 		}
 
@@ -154,9 +158,9 @@ inline void xfer_spi(void) {
 
 		ScreenIndex idx = decode_master_screen_index(screen_index);
 		idx.color = IDX_GREEN;
-		screen[ encode_lm23088_screen_index(idx) ] = palette[IDX_GREEN][(int)ch];
+		screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_GREEN];
 		idx.color = IDX_RED;
-		screen[ encode_lm23088_screen_index(idx) ] = palette[IDX_RED][(int)ch];
+		screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_RED];
 
 		spi_xfer = 0;
 	}
@@ -173,13 +177,11 @@ void disable_next() {
 void setup_spi(void) {
 	// MISO = output,
 	// PB0 = output (SS for next module)
-	// others input
+	// PB1 = ??? used by setup_tlc5940()
+	// PB2 = input (SS)
+	// PB3 = input (MOSI)
+	// PB4 = output (MISO)
 	DDRB |= (1 << PB0) | (1 << PB4);
-
-	// debug pins
-	DDRD |= (1 << PD7) | (1 << PD5) | (1 << PD4);
-	PORTD &= ~((1 << PD7) | (1 << PD5) | (1 << PD4));
-
 
 	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 1
 	// http://maxembedded.com/2013/11/the-spi-of-the-avr/
@@ -244,8 +246,6 @@ void setup_mosfets(void) {
  * SS interrupt.
  * Activated when SS flanks (low<->high), i.e. at beginning and end of
  * SPI transmission.
- * If called on transmission start will handle the complete SPI communication
- * (blockingly), will just return if called at end of transmission.
  */
 ISR(PCINT0_vect) {
 	spi_xfer = !(PINB & (1 << PB2)); // SS pin high -> end of transmission
@@ -346,6 +346,11 @@ void output_column(int column) {
 			// http://www.atmel.com/webdoc/AVRLibcReferenceManual/FAQ_1faq_intbits.html
 			TIFR0 = (1 << TOV0);
 			while(!(TIFR0 & (1 << TOV0))) { // wait for overflow event
+				if(spi_xfer) {
+					// damn, there is a new screen to display, abort displaying
+					// this one (takes too long!) and retriee the new SPI data immedieately!
+					goto _XFER_SPI;
+				}
 			}
 		}
 
@@ -355,6 +360,14 @@ void output_column(int column) {
 
 
 	PORT_MOSFETS = 0xff;
+	return;
+
+_XFER_SPI:
+	PORT_TLC5940 = (1 << P_BLANK);
+	PORT_MOSFETS = 0xff;
+	xfer_spi();
+	return;
+
 }
 
 void clear_screen(void) {
