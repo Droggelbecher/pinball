@@ -1,4 +1,4 @@
-update=So 17 Apr 2016 16:26:21 CEST
+update=So 12 Mär 2017 10:25:17 CET
 version=1
 last_client=kicad
 [pcbnew]
@@ -59,3 +59,4 @@ LibName27=atmel
 LibName28=contrib
 LibName29=valves
 LibName30=/Users/hasemann/repos/git/pinball/boards/display_module/kicad/my_connectors
+LibName31=my_transistors
