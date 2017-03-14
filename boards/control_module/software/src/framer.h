@@ -11,6 +11,7 @@ class Framer {
 
 		void next_frame();
 		void wait_frame_end();
+		int32_t get_last_frame_duration_ms();
 
 	private:
 
@@ -19,6 +20,7 @@ class Framer {
 
 		int32_t frame_length;
 		int32_t frame_start;
+		int32_t last_frame_duration;
 
 		double avg_real_length;
 		static constexpr double real_length_alpha = .01;

@@ -80,7 +80,8 @@ set(CMAKE_CXX_FLAGS "-std=c++11")
 # Sys libs
 #
 
-target_link_libraries(Pinball -lrt)
+# TODO Not available/needed on OSX?!
+#target_link_libraries(Pinball -lrt)
 
 #
 # Audio libs

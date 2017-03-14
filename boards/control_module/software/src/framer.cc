@@ -19,12 +19,17 @@ void Framer::next_frame() {
 	frame_start = get_time_ms();
 }
 
+int32_t Framer::get_last_frame_duration_ms() {
+	return last_frame_duration;
+}
+
 void Framer::wait_frame_end() {
 	int32_t length_so_far = get_time_ms() - frame_start;
 	avg_real_length = avg_real_length * (1.0 - real_length_alpha) + length_so_far * real_length_alpha;
 	if(length_so_far < frame_length) {
 		wait_ms(frame_length - length_so_far);
 	}
+	last_frame_duration = get_time_ms() - frame_start;
 }
 
 int32_t Framer::get_time_ms() {

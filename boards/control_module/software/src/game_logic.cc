@@ -51,6 +51,14 @@ void GameLogic::next_frame() {
 			<< switches.get(Sw::BUMPER1)
 			<< switches.get(Sw::BUMPER2)
 			<< endl;
+
+		cout << "drop target bank 0: "
+			<< switches.get(Sw::DTB0_0)
+			<< switches.get(Sw::DTB0_1)
+			<< switches.get(Sw::DTB0_2)
+			<< switches.get(Sw::DTB0_3)
+			<< switches.get(Sw::DTB0_4)
+			<< endl;
 	}
 
 	if(switches_delta.falling(Sw::FLIPPER_LEFT)) {
@@ -89,8 +97,7 @@ void GameLogic::next_frame() {
 		!switches.get(Sw::DTB0_4));
 
 	// Ball return
-	
-	solenoids.set(Sol::BALL_RETURN, !switches.get(Sw::BALL_OUT));
+	solenoids.set(Sol::BALL_RETURN, ball_return.get());
 
 	solenoids.next_frame();
 
