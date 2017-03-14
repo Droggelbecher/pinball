@@ -79,7 +79,7 @@ void CursesInterface::handle_keys() {
 	};
 
 	// clear all key states
-	for(int i = 0; i < sizeof(key_table); i++) {
+	for(int i = 0; i < sizeof(key_table) / sizeof(key_table[0]); i++) {
 		switches().set(key_table[i].idx, key_table[i].state);
 	}
 
@@ -88,7 +88,7 @@ void CursesInterface::handle_keys() {
 		return;
 	}
 
-	for(int i = 0; i < sizeof(key_table); i++) {
+	for(int i = 0; i < sizeof(key_table) / sizeof(key_table[0]); i++) {
 		if(ch == key_table[i].toggle) {
 			switches().set(key_table[i].idx, !key_table[i].state);
 			break;

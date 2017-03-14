@@ -2,6 +2,7 @@
 #define MEMORY_SENSOR_H_INCLUDED
 
 #include <bitset>
+#include <cassert>
 
 template<typename TIndex>
 class MemorySensorActuator {
@@ -14,10 +15,11 @@ class MemorySensorActuator {
 		};
 
 		typedef std::bitset<DATA_BITS> Bitset;
-		//typedef std::bitset<32> Bitset;
 
 		void next_frame() { }
-		void set(Index i, bool v) { bits[(int)i] = v; }
+		void set(Index i, bool v) {
+			bits[(int)i] = v;
+		}
 		bool get(Index i) { return bits[(int)i]; }
 		const Bitset& get_bits() { return bits; }
 	private:

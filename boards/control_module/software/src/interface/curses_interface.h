@@ -24,10 +24,6 @@ class CursesInterface : public Canvas {
 		};
 
 		enum Index {
-			// Weird bug: whatever is in the first position seems to reset to 0 regularly
-			//X,
-			//XX,
-			//XXX,
 			FLIPPER_LEFT, FLIPPER_RIGHT,
 			DTB0, DTB0_0, DTB0_1, DTB0_2, DTB0_3, DTB0_4,
 			SLINGSHOT0, SLINGSHOT1,
