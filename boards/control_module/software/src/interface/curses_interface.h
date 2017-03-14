@@ -6,6 +6,7 @@
 
 #include "canvas/canvas.h"
 #include "canvas/canvas_buffer.h"
+#include "memory_sensor_actuator.h"
 
 class CursesInterface : public Canvas {
 	public:
@@ -23,6 +24,10 @@ class CursesInterface : public Canvas {
 		};
 
 		enum Index {
+			// Weird bug: whatever is in the first position seems to reset to 0 regularly
+			//X,
+			//XX,
+			//XXX,
 			FLIPPER_LEFT, FLIPPER_RIGHT,
 			DTB0, DTB0_0, DTB0_1, DTB0_2, DTB0_3, DTB0_4,
 			SLINGSHOT0, SLINGSHOT1,
@@ -35,15 +40,17 @@ class CursesInterface : public Canvas {
 		using SolenoidsIndex = Index;
 		using LampsIndex = Index;
 
-		typedef std::bitset<MAX + 1> Bitset;
-
 	public:
+		using Switches = MemorySensorActuator<SwitchesIndex>;
+		using Solenoids = MemorySensorActuator<SolenoidsIndex>;
+		using Lamps = MemorySensorActuator<LampsIndex>;
 
 		CursesInterface(Coordinate<>);
 		~CursesInterface();
 
 		void next_frame() override;
 
+		// TODO: Get rid of canvas v-inheritance and instead add a .canvas() method?
 		Coordinate<> canvas_size() const override { return buffer_.canvas_size(); }
 		void set_pixel(Coordinate<> c, uint8_t v) override;
 		uint8_t get_pixel(Coordinate<> c) const override;
@@ -53,30 +60,21 @@ class CursesInterface : public Canvas {
 		int buffer_length() const { return buffer_.buffer_length(); }
 		uint8_t* buffer() { return buffer_.buffer(); }
 
-		bool get_switch(SwitchesIndex) const;
-		const Bitset& get_switches_bits() const;
-
-		struct Switches {
-				using Index = SwitchesIndex;
-				using Bitset = Bitset;
-				Switches(CursesInterface *parent) : parent(parent) { };
-				bool get(Index i) const { return parent->get_switch(i); }
-				const Bitset& get_bits() const { return parent->get_switches_bits(); }
-				void next_frame() const {}
-			private:
-				CursesInterface *parent;
-		};
 		Switches& switches() { return switches_; }
-
-		void set_solenoid(SolenoidsIndex, bool);
-		void set_lamp(LampsIndex, bool);
+		Solenoids& solenoids() { return solenoids_; }
+		Lamps& lamps() { return lamps_; }
 
 	private:
+		void print_state(const char *s, bool active, int row, int column);
+		void handle_keys();
+
 		CanvasBuffer buffer_;
 		static const char color_symbols[];
 		static const uint8_t color_fg[];
 		static const uint8_t color_bg[];
-		Switches switches_ { this };
+		Switches switches_;
+		Solenoids solenoids_;
+		Lamps lamps_;
 };
 
 #endif // __CURSES_INTERFACE_H__

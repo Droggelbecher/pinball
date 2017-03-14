@@ -35,7 +35,7 @@ class GameLogic {
     StateBuffer<typename Interface::Switches> switches_delta { interface.switches() };
 
     KeepValueDelay ball_return {
-      [this]() -> bool { return !interface.get_switch(Interface::SwitchesIndex::BALL_OUT); },
+      [this]() -> bool { return !interface.switches().get(Interface::SwitchesIndex::BALL_OUT); },
       framer, true, 1000000
     };
 

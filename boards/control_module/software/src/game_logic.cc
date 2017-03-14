@@ -16,10 +16,13 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 	using std::cout;
 	using std::endl;
 
+	static typename Interface::Switches& switches = interface.switches();
+	static typename Interface::Solenoids& solenoids = interface.solenoids();
+	static typename Interface::Lamps& lamps = interface.lamps();
+
 	interface.next_frame();
 	framer.next_frame();
 	switches_delta.next_frame();
-	//marquee.next_frame();
 	audio.update();
 
 	//
@@ -28,8 +31,8 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 
 	// Flipper switches control flippers
 
-	interface.set_solenoid(Sol::FLIPPER_LEFT, !interface.get_switch(Sw::FLIPPER_LEFT));
-	interface.set_solenoid(Sol::FLIPPER_RIGHT, !interface.get_switch(Sw::FLIPPER_RIGHT));
+	solenoids.set(Sol::FLIPPER_LEFT, !switches.get(Sw::FLIPPER_LEFT));
+	solenoids.set(Sol::FLIPPER_RIGHT, !switches.get(Sw::FLIPPER_RIGHT));
 
 	/*
 	if(switches_delta.changed()) {
@@ -75,26 +78,26 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 
 	// Slingshot switches control slingshots
 
-	interface.set_solenoid(Sol::SLINGSHOT0, !interface.get_switch(Sw::SLINGSHOT0));
-	interface.set_solenoid(Sol::SLINGSHOT1, !interface.get_switch(Sw::SLINGSHOT1));
+	solenoids.set(Sol::SLINGSHOT0, !switches.get(Sw::SLINGSHOT0));
+	solenoids.set(Sol::SLINGSHOT1, !switches.get(Sw::SLINGSHOT1));
 
 	// Bumper
 	
-	interface.set_solenoid(Sol::BUMPER0, !interface.get_switch(Sw::BUMPER0));
-	interface.set_solenoid(Sol::BUMPER1, !interface.get_switch(Sw::BUMPER1));
-	interface.set_solenoid(Sol::BUMPER2, !interface.get_switch(Sw::BUMPER2));
+	solenoids.set(Sol::BUMPER0, !switches.get(Sw::BUMPER0));
+	solenoids.set(Sol::BUMPER1, !switches.get(Sw::BUMPER1));
+	solenoids.set(Sol::BUMPER2, !switches.get(Sw::BUMPER2));
 
 	// If all drop targets are down, re-set them.
 
-	interface.set_solenoid(Sol::DTB0,
-		!interface.get_switch(Sw::DTB0_0) &&
-		!interface.get_switch(Sw::DTB0_1) &&
-		!interface.get_switch(Sw::DTB0_2) &&
-		!interface.get_switch(Sw::DTB0_3) &&
-		!interface.get_switch(Sw::DTB0_4));
+	solenoids.set(Sol::DTB0,
+		!switches.get(Sw::DTB0_0) &&
+		!switches.get(Sw::DTB0_1) &&
+		!switches.get(Sw::DTB0_2) &&
+		!switches.get(Sw::DTB0_3) &&
+		!switches.get(Sw::DTB0_4));
 
 	// Ball return
-	interface.set_solenoid(Sol::BALL_RETURN, ball_return.get());
+	solenoids.set(Sol::BALL_RETURN, ball_return.get());
 
 	//
 	// Display
