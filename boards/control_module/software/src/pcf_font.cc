@@ -276,28 +276,16 @@ bool PcfFont::paint_char(Canvas& canvas, char ch, Coordinate<> c, uint8_t color)
 		for(bit = 0; bit < 8; bit++) {
 
 			Coordinate<> cb(row, c.column() + bit);
-			if((transformed_.bitmap_data[offs] & (1 << bit)) && canvas.size().contains(cb)) {
-				canvas.set(cb, color);
+			if((transformed_.bitmap_data[offs] & (1 << bit)) && canvas.canvas_size().contains(cb)) {
+				canvas.set_pixel(cb, color);
 				r = true;
 			}
-			//else {
-				//std::cout << canvas.size().contains(cb)
-					//<< ": " << cb.row() << " " << cb.column()
-					//<< "  " << canvas.size().row() << " " << canvas.size().column()
-					//<< std::endl;
-			//}
 
 			cb = Coordinate<>(row + 1, c.column() + bit);
-			if((transformed_.bitmap_data[offs + 1] & (1 << bit)) && canvas.size().contains(cb)) {
-				canvas.set(cb, color);
+			if((transformed_.bitmap_data[offs + 1] & (1 << bit)) && canvas.canvas_size().contains(cb)) {
+				canvas.set_pixel(cb, color);
 				r = true;
 			}
-			//else {
-				//std::cout << canvas.size().contains(cb)
-					//<< ": " << cb.row() << " " << cb.column()
-					//<< "  " << canvas.size().row() << " " << canvas.size().column()
-					//<< std::endl;
-			//}
 		}
 	}
 	return r;

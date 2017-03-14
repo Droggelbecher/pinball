@@ -12,11 +12,11 @@ class BroadcastCanvas : public Canvas {
 		//BroadcastCanvas(std::initializer_list<std::unique_ptr<Canvas>> cs);
 		BroadcastCanvas(std::unique_ptr<Canvas>);
 
-		void set(Coordinate<> c, uint8_t color) override;
-		uint8_t get(Coordinate<> c) const override;
+		void set_pixel(Coordinate<> c, uint8_t color) override;
+		uint8_t get_pixel(Coordinate<> c) const override;
 		void next_frame() override;
 		//void resize(Coordinate<>) override;
-		Coordinate<> size() const override;
+		Coordinate<> canvas_size() const override;
 
 		// TODO: implement!
 		//uint8_t *buffer() { return canvas_[0]->buffer(); }

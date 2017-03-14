@@ -15,7 +15,7 @@ SpiDisplay::~SpiDisplay() {
 	delete[] display_screen_;
 }
 
-Coordinate<> SpiDisplay::size() const {
+Coordinate<> SpiDisplay::canvas_size() const {
 	return module_size_ * Coordinate<>(1, modules_);
 }
 
@@ -33,7 +33,7 @@ void SpiDisplay::next_frame() {
 	spi_.disable_all();
 }
 
-void SpiDisplay::set(Coordinate<> c, uint8_t color) {
+void SpiDisplay::set_pixel(Coordinate<> c, uint8_t color) {
 	const unsigned char module = c.column() / module_size_.column();
 	const unsigned char col = c.column() % module_size_.column();
 
@@ -54,7 +54,7 @@ void SpiDisplay::set(Coordinate<> c, uint8_t color) {
 	*r = color;
 }
 
-uint8_t SpiDisplay::get(Coordinate<> c) const {
+uint8_t SpiDisplay::get_pixel(Coordinate<> c) const {
 	throw std::exception();
 }
 

@@ -13,11 +13,11 @@ class ScrollingCanvas : public Canvas {
 
 		void next_frame() override;
 
-		void set(Coordinate<> c, uint8_t color) override;
-		uint8_t get(Coordinate<> c) const override;
+		void set_pixel(Coordinate<> c, uint8_t color) override;
+		uint8_t get_pixel(Coordinate<> c) const override;
 
 		void resize(Coordinate<>) override;
-		Coordinate<> size() const override { return size_; }
+		Coordinate<> canvas_size() const override { return size_; }
 
 	private:
 		Canvas& decorated_;

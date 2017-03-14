@@ -9,14 +9,14 @@ BroadcastCanvas::BroadcastCanvas(std::unique_ptr<Canvas> c) {
 	//}
 }
 
-void BroadcastCanvas::set(Coordinate<> c, uint8_t color) {
+void BroadcastCanvas::set_pixel(Coordinate<> c, uint8_t color) {
 	for(auto& canvas: canvas_) {
-		canvas->set(c, color);
+		canvas->set_pixel(c, color);
 	}
 }
 
-uint8_t BroadcastCanvas::get(Coordinate<> c) const {
-	return canvas_[0]->get(c);
+uint8_t BroadcastCanvas::get_pixel(Coordinate<> c) const {
+	return canvas_[0]->get_pixel(c);
 }
 
 void BroadcastCanvas::next_frame() {
@@ -25,7 +25,7 @@ void BroadcastCanvas::next_frame() {
 	}
 }
 
-Coordinate<> BroadcastCanvas::size() const {
-	return canvas_[0]->size();
+Coordinate<> BroadcastCanvas::canvas_size() const {
+	return canvas_[0]->canvas_size();
 }
 

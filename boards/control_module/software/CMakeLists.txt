@@ -10,7 +10,7 @@ set(my_SOURCES
 	src/canvas/scrolling_canvas.cc
 	src/canvas/broadcast_canvas.cc
 	src/framer.cc
-	src/game_logic.cc
+	#src/game_logic.cc
 	src/main.cc
 	src/switches.cc
 	#src/utils.cc
@@ -34,6 +34,7 @@ option(MOCK_SPI "Substitute SPI interface with debugging implementation" OFF)
 if(MOCK_SPI)
 	set(my_SOURCES ${my_SOURCES} src/mock_spi/spi.cc)
 	include_directories(src/mock_spi)
+	add_definitions(-DMOCK_SPI)
 
 else()
 	set(my_SOURCES ${my_SOURCES} src/linux_spi/spi.cc)
@@ -46,13 +47,14 @@ endif(MOCK_SPI)
 #
 
 if(MOCK_SPI)
-	set(my_SOURCES ${my_SOURCES} src/display/curses_display.cc)
+	#set(my_SOURCES ${my_SOURCES} src/display/curses_display.cc)
+	set(my_SOURCES ${my_SOURCES} src/interface/curses_interface.cc)
 
 	set(CURSES_NEED_NCURSES TRUE)
 	find_package(Curses REQUIRED)
 	include_directories(${CURSES_INCLUDE_DIR})
 else()
-	set(my_SOURCES ${my_SOURCES} src/display/spi_display.cc)
+	#set(my_SOURCES ${my_SOURCES} src/display/spi_display.cc)
 
 endif()
 
