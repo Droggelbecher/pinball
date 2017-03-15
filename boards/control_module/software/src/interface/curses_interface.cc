@@ -79,8 +79,9 @@ void CursesInterface::handle_keys() {
 	};
 
 	// clear all key states
-	for(int i = 0; i < sizeof(key_table) / sizeof(key_table[0]); i++) {
-		switches().set(key_table[i].idx, key_table[i].state);
+	//for(int i = 0; i < sizeof(key_table) / sizeof(key_table[0]); i++) {
+	for(const Key& key: key_table) {
+		switches().set(key.idx, key.state);
 	}
 
 	int ch = getch();
@@ -88,14 +89,14 @@ void CursesInterface::handle_keys() {
 		return;
 	}
 
-	for(int i = 0; i < sizeof(key_table) / sizeof(key_table[0]); i++) {
-		if(ch == key_table[i].toggle) {
-			switches().set(key_table[i].idx, !key_table[i].state);
+	for(Key& key: key_table) {
+		if(ch == key.toggle) {
+			switches().set(key.idx, !key.state);
 			break;
 		}
-		else if(ch == key_table[i].flip) {
-			key_table[i].state = !key_table[i].state;
-			switches().set(key_table[i].idx, key_table[i].state);
+		else if(ch == key.flip) {
+			key.state = !key.state;
+			switches().set(key.idx, key.state);
 			break;
 		}
 	}
