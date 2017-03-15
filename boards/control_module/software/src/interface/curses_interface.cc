@@ -11,6 +11,9 @@ const uint8_t CursesInterface::color_bg[] = { COLOR_BLACK, COLOR_RED, COLOR_GREE
 
 CursesInterface::CursesInterface(Coordinate<> size_) : buffer_(size_) {
 
+	// Switches are active low, thus default them to high
+	switches().set();
+
 	::initscr();
 	::nodelay(stdscr, TRUE); // allow non-blocking keyboard input
 	::start_color();
@@ -29,8 +32,25 @@ CursesInterface::~CursesInterface() {
 
 void CursesInterface::next_frame() {
 
+	struct SolenoidState {
+		const char *str;
+		Index index;
+	};
 
-	// "display"
+	static SolenoidState solenoid_states[] = {
+		{ "FL L", FLIPPER_LEFT },
+		{ "FL R", FLIPPER_RIGHT },
+		{ "DTB0", DTB0 },
+		{ "SS 0", SLINGSHOT0 },
+		{ "SS 1", SLINGSHOT1 },
+		{ "BMP0", BUMPER0 },
+		{ "BMP1", BUMPER1 },
+		{ "BMP2", BUMPER2 },
+		{ "BLRT", BALL_RETURN },
+	};
+
+
+	// Display emulation
 
 	int row = 0;
 	for( ; row < buffer_.canvas_size().row(); ++row) {
@@ -44,18 +64,22 @@ void CursesInterface::next_frame() {
 	}
 
 	row += 2;
+	int column = 2;
 
-	// "solenoids"
-	print_state(" FL L ", solenoids().get(FLIPPER_LEFT), row, 2);
-	print_state(" FL R ", solenoids().get(FLIPPER_RIGHT), row, 9);
+	// Solenoid states
+
+	for(SolenoidState& s: solenoid_states) {
+		::move(row, column);
+		::attrset(solenoids().get(s.index) ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
+		::printw(" %s ", s);
+		column += 7;
+	}
+	::attrset(COLOR_PAIR(0));
+
 
 	row += 2;
 
 	::move(row, 0);
-
-	::attrset(COLOR_PAIR(0));
-	::printw("1 FL L\n");
-	::printw("2 FL R\n");
 
 	::refresh();
 
@@ -65,21 +89,44 @@ void CursesInterface::next_frame() {
 void CursesInterface::handle_keys() {
 
 	struct Key {
-		Key(int toggle, int flip, Index idx, bool state) :
-			toggle(toggle), flip(flip), idx(idx), state(state) { }
 		int toggle;
 		int flip;
+		const char *str;
 		Index idx;
 		bool state;
 	};
 
 	static Key key_table[] = {
-		Key('1', '!', FLIPPER_LEFT, false),
-		Key('2', '@', FLIPPER_RIGHT, false)
+		{ '1', '!', "FL_L ", FLIPPER_LEFT,  true },
+		{ '2', '@', "FL_R ", FLIPPER_RIGHT, true },
+		{ '3', '#', "DTB00", DTB0_0, true },
+		{ '4', '$', "DTB01", DTB0_1, true },
+		{ '5', '%', "DTB02", DTB0_2, true },
+		{ '6', '^', "DTB03", DTB0_3, true },
+		{ '7', '&', "DTB04", DTB0_4, true },
+		{ '8', '*', "SS_0 ", SLINGSHOT0, true },
+		{ '9', '(', "SS_1 ", SLINGSHOT1, true },
+		{ '0', ')', "BMP_0", BUMPER0, true },
+		{ '[', '{', "BMP_1", BUMPER1, true },
+		{ ']', '}', "BMP_2", BUMPER2, true },
+
+		{ '\'', '"', "BLO ", BALL_OUT, true },
 	};
 
+	::printw("  ");
+	int i = 0;
+	for(const Key& key: key_table) {
+		::attrset(!key.state ? (COLOR_PAIR(0) | A_REVERSE) : COLOR_PAIR(0));
+		::printw(" %c%c:%s ", (char)key.toggle, (char)key.flip, key.str);
+		::attrset(COLOR_PAIR(0));
+		::printw(" ");
+		if(++i == 12) {
+			::printw("\n  ");
+			i = 0;
+		}
+	}
+
 	// clear all key states
-	//for(int i = 0; i < sizeof(key_table) / sizeof(key_table[0]); i++) {
 	for(const Key& key: key_table) {
 		switches().set(key.idx, key.state);
 	}
@@ -101,12 +148,6 @@ void CursesInterface::handle_keys() {
 		}
 	}
 
-}
-
-void CursesInterface::print_state(const char *s, bool active, int row, int column) {
-	::move(row, column);
-	::attrset((active ? COLOR_PAIR(7) : COLOR_PAIR(6)) | A_REVERSE);
-	::printw("%s", s);
 }
 
 void CursesInterface::set_pixel(Coordinate<> c, uint8_t color) {

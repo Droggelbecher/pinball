@@ -13,10 +13,6 @@
 
 #include <memory>
 
-#define _GAME_LOGIC_TEMPL(TTT) template<\
-  typename TInterface, TInterface& interface\
-  > TTT GameLogic<TInterface, interface>
-
 #define GAME_LOGIC_TEMPL(TTT) template<typename InterfaceT> TTT GameLogic<InterfaceT>
 
 template<typename InterfaceT>
@@ -34,9 +30,10 @@ class GameLogic {
     Framer framer { 30 };
     StateBuffer<typename Interface::Switches> switches_delta { interface.switches() };
 
+    // Delay ball return by a bit as to make sure ball has rolled all the way down first.
     KeepValueDelay ball_return {
-      [this]() -> bool { return !interface.switches().get(Interface::SwitchesIndex::BALL_OUT); },
-      framer, true, 1000000
+      [this]() -> bool { return interface.switches().get(Interface::SwitchesIndex::BALL_OUT); },
+      framer, false, 1000
     };
 
     ScrollingCanvas marquee { interface, { 0.0, 0.6 } };

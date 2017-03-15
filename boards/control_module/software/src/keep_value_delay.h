@@ -3,6 +3,7 @@
 #define KEEP_VALUE_DELAY_H
 
 #include <functional>
+#include <cassert>
 
 #include "framer.h"
 

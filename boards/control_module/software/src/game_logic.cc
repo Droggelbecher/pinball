@@ -25,6 +25,8 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 	switches_delta.next_frame();
 	audio.update();
 
+	ball_return.next_frame();
+
 	//
 	// Playfield logic
 	//
@@ -97,7 +99,7 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 		!switches.get(Sw::DTB0_4));
 
 	// Ball return
-	solenoids.set(Sol::BALL_RETURN, ball_return.get());
+	solenoids.set(Sol::BALL_RETURN, !ball_return.get());
 
 	//
 	// Display

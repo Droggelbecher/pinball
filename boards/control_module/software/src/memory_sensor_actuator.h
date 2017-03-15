@@ -17,6 +17,9 @@ class MemorySensorActuator {
 		typedef std::bitset<DATA_BITS> Bitset;
 
 		void next_frame() { }
+		void set() {
+			bits.set();
+		}
 		void set(Index i, bool v) {
 			bits[(int)i] = v;
 		}
