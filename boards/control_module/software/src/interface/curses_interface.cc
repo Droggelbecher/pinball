@@ -9,10 +9,17 @@ const uint8_t CursesInterface::color_fg[] = { COLOR_WHITE, COLOR_RED, COLOR_GREE
 const uint8_t CursesInterface::color_bg[] = { COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK, COLOR_BLACK, COLOR_RED };
 
 
-CursesInterface::CursesInterface(Coordinate<> size_) : buffer_(size_) {
+CursesInterface::CursesInterface(Coordinate<> size_, Interface& decorated) :
+		buffer_(size_),
+		decorated_(decorated),
+		switches_(decorated_.switches()),
+		solenoids_(decorated_.solenoids()),
+		lamps_(decorated_.lamps())
+{
+
 
 	// Switches are active low, thus default them to high
-	switches().set();
+	//switches().set();
 
 	::initscr();
 	::nodelay(stdscr, TRUE); // allow non-blocking keyboard input
@@ -31,6 +38,9 @@ CursesInterface::~CursesInterface() {
 }
 
 void CursesInterface::next_frame() {
+	if(wrapped) {
+		wrapped->next_frame();
+	}
 
 	struct SolenoidState {
 		const char *str;
@@ -51,7 +61,7 @@ void CursesInterface::next_frame() {
 
 
 	// Display emulation
-
+	// 
 	int row = 0;
 	for( ; row < buffer_.canvas_size().row(); ++row) {
 		for(int column = 0; column < buffer_.canvas_size().column(); ++column) {
@@ -62,12 +72,10 @@ void CursesInterface::next_frame() {
 		}
 		::move(row, 0);
 	}
-
 	row += 2;
 	int column = 2;
 
-	// Solenoid states
-
+	// Display Solenoid states
 	for(SolenoidState& s: solenoid_states) {
 		::move(row, column);
 		::attrset(solenoids().get(s.index) ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
@@ -75,19 +83,16 @@ void CursesInterface::next_frame() {
 		column += 7;
 	}
 	::attrset(COLOR_PAIR(0));
-
-
-	row += 2;
-
-	::move(row, 0);
-
 	::refresh();
-
 	handle_keys();
+
+	// Send state to physical solenoids
+	if(wrapped) {
+		wrapped->solenoids().get_bits() = solenoids().get_bits();
+	}
 }
 
 void CursesInterface::handle_keys() {
-
 	struct Key {
 		int toggle;
 		int flip;
@@ -126,11 +131,19 @@ void CursesInterface::handle_keys() {
 		}
 	}
 
-	// clear all key states
-	for(const Key& key: key_table) {
-		switches().set(key.idx, key.state);
+	// reset all key states
+	if(wrapped) {
+		for(const Key& key: key_table) {
+			switches().set(key.idx, key.state ^ wrapped->switches().get(key.idx));
+		}
+	}
+	else {
+		for(const Key& key: key_table) {
+			switches().set(key.idx, key.state);
+		}
 	}
 
+	// read & process key
 	int ch = getch();
 	if(ch == ERR) {
 		return;
@@ -151,6 +164,9 @@ void CursesInterface::handle_keys() {
 }
 
 void CursesInterface::set_pixel(Coordinate<> c, uint8_t color) {
+	if(wrapped) {
+		wrapped->set_pixel(c, color);
+	}
 	buffer_.set_pixel(c, color);
 }
 

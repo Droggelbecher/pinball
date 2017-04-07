@@ -4,8 +4,8 @@
 #include <bitset>
 #include <cassert>
 
-template<typename TIndex, typename TSensorActuator>
-class SensorActuatorOverride {
+template<typename TIndex>
+class MemorySensorActuator {
 	public:
 		using Index = TIndex;
 
@@ -16,11 +16,6 @@ class SensorActuatorOverride {
 
 		typedef std::bitset<DATA_BITS> Bitset;
 
-		SensorActuatorOverride(TSensorActuator& decorated)
-			: decorated_(decorated) {
-
-		}
-
 		void next_frame() { }
 		void set() {
 			bits.set();
@@ -28,19 +23,9 @@ class SensorActuatorOverride {
 		void set(Index i, bool v) {
 			bits[(int)i] = v;
 		}
-		bool get(Index i) {
-			return bits[(int)i] ^ decorated_.get(i);
-		}
-		const Bitset& get_bits() {
-			return bits ^ decorated_.get(i);
-		}
-
-		TSensorActuator& decorated() {
-			return decorated_;
-		}
-
+		bool get(Index i) { return bits[(int)i]; }
+		const Bitset& get_bits() { return bits; }
 	private:
-		TSensorActuator& decorated_;
 		Bitset bits;
 };
 
