@@ -67,7 +67,7 @@ void CursesInterface::next_frame() {
 		for(int column = 0; column < buffer_.canvas_size().column(); ++column) {
 			int col = buffer_.get_pixel(Coordinate<>(row, column));
 			assert(col >= 0 && col < 8);
-			::attrset(COLOR_PAIR(col + 1));
+			attrset(COLOR_PAIR(col + 1));
 			::printw("%c%c", color_symbols[col], color_symbols[col]);
 		}
 		::move(row, 0);
@@ -78,11 +78,17 @@ void CursesInterface::next_frame() {
 	// Display Solenoid states
 	for(SolenoidState& s: solenoid_states) {
 		::move(row, column);
-		::attrset(solenoids().get(s.index) ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
+		attrset(solenoids().get(s.index) ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
 		::printw(" %s ", s);
 		column += 7;
 	}
-	::attrset(COLOR_PAIR(0));
+	attrset(COLOR_PAIR(0));
+
+
+	row += 2;
+
+	::move(row, 0);
+
 	::refresh();
 	handle_keys();
 
@@ -121,9 +127,9 @@ void CursesInterface::handle_keys() {
 	::printw("  ");
 	int i = 0;
 	for(const Key& key: key_table) {
-		::attrset(!key.state ? (COLOR_PAIR(0) | A_REVERSE) : COLOR_PAIR(0));
+		attrset(!key.state ? (COLOR_PAIR(0) | A_REVERSE) : COLOR_PAIR(0));
 		::printw(" %c%c:%s ", (char)key.toggle, (char)key.flip, key.str);
-		::attrset(COLOR_PAIR(0));
+		attrset(COLOR_PAIR(0));
 		::printw(" ");
 		if(++i == 12) {
 			::printw("\n  ");

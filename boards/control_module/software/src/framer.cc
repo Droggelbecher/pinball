@@ -36,22 +36,15 @@ void Framer::wait_frame_end() {
 
 int32_t Framer::get_time_ms() {
 	int32_t ms; // Milliseconds
-	time_t s;  // Seconds
-	struct timespec spec;
 
 #ifdef __MACH__
 	timeval time;
 	gettimeofday(&time, NULL);
 	ms = time.tv_sec * 1000 + time.tv_usec / 1000;
-
-	//clock_serv_t cclock;
-	//mach_timespec_t mts;
-	//host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-	//clock_get_time(cclock, &mts);
-	//mach_port_deallocate(mach_task_self(), cclock);
-	//ms = mts.tv_sec * 1000 + (mts.tv_nsec / 1.0e6);
 #else
-	clock_gettime(CLOCK_REALTIME, &spec);
+	time_t s;  // Seconds
+	struct timespec spec;
+	clock_gettime(CLOCK_MONOTONIC, &spec);
 	ms = spec.tv_sec * 1000 + (spec.tv_nsec / 1.0e6);
 #endif
 	return ms;
