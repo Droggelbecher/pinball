@@ -10,10 +10,11 @@
 #define PORT_MOSFETS PORTD
 
 enum {
-	ROWS = 16,
+	MATRICES = 2,
+	ROWS = 8, //16, // per Matrix
 	COLUMNS = 8,
 
-	PIXELS = ROWS * COLUMNS,
+	PIXELS = MATRICES * ROWS * COLUMNS,
 
 	IDX_RED = 0,
 	IDX_GREEN = 1,
@@ -50,7 +51,7 @@ typedef struct {
 
 
 unsigned int palette[LED_COLORS][COLORS];
-unsigned char screen[COLUMNS * ROWS * COLORS];
+unsigned char screen[MATRICES * COLUMNS * ROWS * COLORS];
 
 
 

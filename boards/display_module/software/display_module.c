@@ -1,4 +1,3 @@
-
 // SPI tutorial:
 // http://www.engineersgarage.com/embedded/avr-microcontroller-projects/spi-serial-peripheral-interface-tutorial-circuit
 //
@@ -12,6 +11,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <stdlib.h> // rand()
 
 #include <string.h> // memset & co
 
@@ -21,7 +21,8 @@
 #define PULSE_TIME 1.0
 
 #define FRAME_RATE (1.0 / (8.0 * (PULSE_TIME / 1000.0)))
-
+#define PHASE_RATE 10.0
+#define SUBPHASES 256
 
 inline void xfer_spi(void);
 
@@ -58,7 +59,7 @@ int main(void) {
 
 	while(1) {
 		if(selftest) {
-			p += 10.0 * (1.0 / FRAME_RATE);
+			p += PHASE_RATE * (1.0 / FRAME_RATE);
 			if(p >= 1.0) {
 				phase += (int)p;
 				p = 0;
@@ -78,10 +79,10 @@ int main(void) {
 void output_screen(void) {
 
 	// This is ~12ms
-	for(int row = 0; row < 8; row++) {
+	for(int column = 0; column < 8; column++) {
 
 		// a column takes about 1ms to output
-		output_column(row);
+		output_column(column);
 	}
 }
 
@@ -89,29 +90,42 @@ void output_screen(void) {
 
 inline ScreenIndex decode_master_screen_index(int i) {
 	ScreenIndex r;
-	r.column = 7 - (i % 8);
-	r.row = i / 8;
+	r.column = i % 8;
+	r.row = 15 - (i / 8);
 	return r;
 }
 
-inline int encode_lm23088_screen_index(ScreenIndex si) {
-
-	// internal layout:
-	// we have 8 anodes (= pairs of rows on the 2 matrices)
-	// each 2x 16 columns per board (Green/Red interchangingly)
-
+inline int encode_physical_screen_index(ScreenIndex si) {
 	return si.row * 16 + si.column * 2 + (si.color == IDX_RED);
+}
 
-	//return si.column * 32 + si.row * 2 + (si.color == IDX_RED);
+
+inline int encode_lm23088_screen_index(ScreenIndex si) {
+	// Index that corrects for the circuit layout pin order
+	si.row = 15 - si.row;
+	si.column = 7 - si.column;
+	return encode_physical_screen_index(si);
 }
 
 inline void set_screen(int row, int column, int color, int v) {
+	if(row < 0 || row >= ROWS * MATRICES || column < 0 || column >= COLUMNS || color < 0 || color >= COLORS) {
+		return;
+	}
+	// row/column give physical positions
 	ScreenIndex si = { .row = row, .column = column, .color = color };
-	int idx = encode_lm23088_screen_index(si);
+	int idx = encode_physical_screen_index(si);
+	if(idx < 0 || idx > sizeof(screen)) { return; }
 	screen[idx] = v;
 }
 
 inline int get_screen(int row, int column, int color) {
+	if(row < 0 || row >= ROWS * MATRICES || column < 0 || column >= COLUMNS || color < 0 || color >= COLORS) {
+		return 0;
+	}
+	// here the rows/columns are given in the order
+	// they need to be shifted into the TLC5940s,
+	// this function will care for translating that to
+	// physical positions for lookup
 	ScreenIndex si = { .row = row, .column = column, .color = color };
 	int idx = encode_lm23088_screen_index(si);
 	return screen[idx]; 
@@ -262,7 +276,7 @@ void output_column(int column) {
 
 	PORT_TLC5940 |= (1 << P_BLANK);
 
-	for(int matrix = 0; matrix < 2; matrix++)
+	for(int matrix = 0; matrix < MATRICES; matrix++)
 	for(int row = 0; row < ROWS; row++)
 	for(int color = 0; color < COLORS; color++) {
 		// highest 4 MSBits are 0
@@ -374,64 +388,87 @@ void clear_screen(void) {
 	memset(screen, 0, sizeof(screen));
 }
 
+enum Modes {
+	M_ROW,
+	M_COLUMN,
+	M_PARTY_DOTS,
+	M_FULL_BLINK,
+	M_FULL,
+	M_MODES
+};
 
 void render_selftest(unsigned long phase) {
-	clear_screen();
 
-	const int subphases = 64;
-	const int modes = 6;
+	//const int subphases = 256; //64;
+	//const int modes = 6;
 
+	//clear_screen();
 
-	int mode = (phase / subphases) % modes;
-	int subphase = phase % subphases;
+	int mode = (phase / SUBPHASES) % M_MODES;
+	int subphase = phase % SUBPHASES;
+
+	//if(subphase == 0) {
+	//	clear_screen();
+	//}
 
 	switch(mode) {
-		// green row wandering down
-		case 0: {
-			int row = subphase % 16;
-			for(int i = 0; i < 8; i++) {
-				set_screen(row, i, IDX_GREEN, 0xff);
+
+		case M_PARTY_DOTS: {
+			int sub = subphase % (8 * 16);
+			if(sub == 0) {
+				clear_screen();
 			}
+			int column = sub % 8;
+			int row = sub / 8;
+			set_screen(row, column, IDX_GREEN, rand() % 0xff);
+			set_screen(row, column, IDX_RED, rand() % 0xff);
 			break;
 		}
+			           //((row + column) % 2) ? IDX_GREEN : IDX_RED,
 
-		// red row wandering down
-		case 1: {
-			int row = subphase % 16;
+		// green row wandering down
+		case M_ROW: {
+			int sub = subphase % (16 * 3);
+			int color = (sub / 16);
+			int row = sub % 16;
+			if(row == 0) {
+				clear_screen();
+			}
 			for(int i = 0; i < 8; i++) {
-				set_screen(row, i, IDX_RED, 0xff);
+				if(color == 0 || color == 2) { set_screen(row, i, IDX_GREEN, 0xff); }
+				if(color == 1 || color == 2) { set_screen(row, i, IDX_RED, 0xff); }
 			}
 			break;
 		}
 
 		// green column left to right
-		case 2: {
-			int col = subphase % 8;
-			for(int i = 0; i < 16; i++) {
-				set_screen(i, col, IDX_GREEN, 0xff);
+		case M_COLUMN: {
+			int sub = subphase % (8 * 3);
+			int color = (sub / 8);
+			int col = sub % 8;
+			if(col == 0) {
+				clear_screen();
 			}
-			break;
-		}
-
-		// red row left to right
-		case 3: {
-			int col = subphase % 8;
 			for(int i = 0; i < 16; i++) {
-				set_screen(i, col, IDX_RED, 0xff);
+				if(color == 0 || color == 2) { set_screen(i, col, IDX_GREEN, 0xff); }
+				if(color == 1 || color == 2) { set_screen(i, col, IDX_RED, 0xff); }
 			}
 			break;
 		}
 
 		// full blink
-		case 4: {
-			if(subphase % 2) {
+		case M_FULL_BLINK: {
+			if((subphase / 4) % 2) {
 				memset(screen, 0xff, sizeof(screen));
+			}
+			else {
+				clear_screen();
 			}
 			break;
 		}
 
 		// full light
-		case 5: {
+		case M_FULL: {
 			memset(screen, 0xff, sizeof(screen));
 			break;
 		}
