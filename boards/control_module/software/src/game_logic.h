@@ -32,11 +32,11 @@ class GameLogic {
 
     // Delay ball return by a bit as to make sure ball has rolled all the way down first.
     KeepValueDelay ball_return {
-      [this]() -> bool { return interface.switches().get(Interface::SwitchesIndex::BALL_OUT); },
+      [this]() -> bool { return interface.switches().get(Interface::Switches::Index::BALL_OUT); },
       framer, false, 1000
     };
 
-    ScrollingCanvas marquee { interface, { 0.0, 0.6 } };
+    ScrollingCanvas marquee { interface.canvas(), { 0.0, 0.6 } };
 
     Audio::audio_source_t sound_r2d2_again;
     Audio::audio_source_t sound_death_star_explode;

@@ -15,7 +15,7 @@ SpiDisplay::~SpiDisplay() {
 	delete[] display_screen_;
 }
 
-Coordinate<> SpiDisplay::canvas_size() const {
+Coordinate<> SpiDisplay::size() const {
 	return module_size_ * Coordinate<>(1, modules_);
 }
 

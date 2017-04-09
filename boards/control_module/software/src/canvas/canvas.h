@@ -19,7 +19,7 @@ class Canvas {
 		virtual void next_frame() { }
 		
 		virtual void resize(Coordinate<>) { }
-		virtual Coordinate<> canvas_size() const = 0;
+		virtual Coordinate<> size() const = 0;
 };
 
 #endif // CANVAS_H

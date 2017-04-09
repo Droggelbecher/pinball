@@ -14,8 +14,8 @@ void paint_random(C& canvas) {
 
 template<typename C>
 void paint_clear(C& canvas) {
-	for(int row = 0; row < canvas.canvas_size().row(); ++row) {
-		for(int column = 0; column < canvas.canvas_size().column(); ++column) {
+	for(int row = 0; row < canvas.size().row(); ++row) {
+		for(int column = 0; column < canvas.size().column(); ++column) {
 			canvas.set_pixel(Coordinate<>(row, column), 0);
 		}
 	}

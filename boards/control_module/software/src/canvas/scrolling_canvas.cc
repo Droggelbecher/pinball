@@ -11,12 +11,12 @@ ScrollingCanvas::ScrollingCanvas(Canvas& decorated, Coordinate<double> speed)
 
 void ScrollingCanvas::next_frame() {
 	offset_ += speed_;
-	offset_ %= canvas_size();
+	offset_ %= size();
 }
 
 void ScrollingCanvas::resize(Coordinate<> new_size) {
 	size_ = new_size;
-	offset_ %= canvas_size();
+	offset_ %= size();
 }
 
 void ScrollingCanvas::set_pixel(Coordinate<> c, uint8_t color) {
@@ -45,7 +45,7 @@ void ScrollingCanvas::set_pixel(Coordinate<> c, uint8_t color) {
 	 *     [R2]   decorated_.size()
 	 */
 	
-	assert(canvas_size().contains(c));
+	assert(size().contains(c));
 
 	// Is coordinate c in part A, B, C or D? (if existant)
 
@@ -54,22 +54,22 @@ void ScrollingCanvas::set_pixel(Coordinate<> c, uint8_t color) {
 	// if c is neither in A, B, C or D it will land outside of R2
 
 	if(c.column() < offset_.column()) {
-		c += Coordinate<>(0, canvas_size().column());
+		c += Coordinate<>(0, size().column());
 	}
 
 	if(c.row() < offset_.row()) {
-		c += Coordinate<>(canvas_size().row(), 0);
+		c += Coordinate<>(size().row(), 0);
 	}
 
 	// substract offset_ to make the coordinate relative to decorated_.
 	// If it is inside, pass it through
 
-	if(decorated_.canvas_size().contains(c - offset_)) {
+	if(decorated_.size().contains(c - offset_)) {
 		decorated_.set_pixel(c - offset_, color);
 	}
 }
 
 uint8_t ScrollingCanvas::get_pixel(Coordinate<> c) const {
-	return decorated_.get_pixel((c + offset_) % decorated_.canvas_size());
+	return decorated_.get_pixel((c + offset_) % decorated_.size());
 }
 

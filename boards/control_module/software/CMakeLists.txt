@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.4)
 
 project(Pinball)
 
@@ -10,10 +10,8 @@ set(my_SOURCES
 	src/canvas/scrolling_canvas.cc
 	src/canvas/broadcast_canvas.cc
 	src/framer.cc
-	#src/game_logic.cc
 	src/main.cc
 	src/switches.cc
-	#src/utils.cc
 	src/pcf_font.cc
 	../../../common_software/src/checksum.c
 	../../../common_software/src/utils.c
@@ -47,8 +45,7 @@ endif(MOCK_SPI)
 #
 
 if(MOCK_SPI)
-	#set(my_SOURCES ${my_SOURCES} src/display/curses_display.cc)
-	set(my_SOURCES ${my_SOURCES} src/interface/curses_interface.cc)
+	#set(my_SOURCES ${my_SOURCES} src/interface/curses_interface.cc)
 
 	set(CURSES_NEED_NCURSES TRUE)
 	find_package(Curses REQUIRED)
@@ -72,8 +69,8 @@ add_executable(Pinball ${my_SOURCES})
 #target_compile_features(Pinball PRIVATE cxx_uniform_initialization)
 
 # Requires cmake >= 3.1.0
-#set_property(TARGET Pinball PROPERTY CXX_STANDARD 11)
-#set_property(TARGET Pinball PROPERTY CXX_STANDARD_REQUIRED ON)
+set_property(TARGET Pinball PROPERTY CXX_STANDARD 11)
+set_property(TARGET Pinball PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Quick and dirty, after all we don't strive for being ultra-portable
 set(CMAKE_CXX_FLAGS "-std=c++11")

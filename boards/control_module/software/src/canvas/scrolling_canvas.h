@@ -17,7 +17,7 @@ class ScrollingCanvas : public Canvas {
 		uint8_t get_pixel(Coordinate<> c) const override;
 
 		void resize(Coordinate<>) override;
-		Coordinate<> canvas_size() const override { return size_; }
+		Coordinate<> size() const override { return size_; }
 
 	private:
 		Canvas& decorated_;

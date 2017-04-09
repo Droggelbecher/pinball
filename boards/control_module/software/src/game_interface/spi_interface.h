@@ -22,7 +22,7 @@ class SpiInterface : public Canvas {
 
 		// Display
 		using Color = Display::Color;
-		Coordinate<> canvas_size() const { return display.canvas_size(); }
+		Coordinate<> size() const { return display.size(); }
 		void set_pixel(Coordinate<> c, uint8_t v) { return display.set_pixel(c, v); }
 		uint8_t get_pixel(Coordinate<> c) { return display.get_pixel(c); }
 		int buffer_length() const { return display.buffer_length(); }

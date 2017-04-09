@@ -14,7 +14,7 @@ void DisplayCanvas::fill(uint8_t v) {
 	buffer_.set_all(v);
 }
 
-Coordinate<> DisplayCanvas::canvas_size() const {
-	return buffer_.canvas_size();
+Coordinate<> DisplayCanvas::size() const {
+	return buffer_.size();
 }
 

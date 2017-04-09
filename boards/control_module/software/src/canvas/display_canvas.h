@@ -8,7 +8,7 @@
 class DisplayCanvas : public Canvas {
 	public:
 		DisplayCanvas(Coordinate<> size);
-		Coordinate<> canvas_size() const override;
+		Coordinate<> size() const override;
 
 		void clear();
 		void fill(uint8_t v);

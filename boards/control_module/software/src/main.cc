@@ -24,28 +24,29 @@ void fill_playlist(void) {
 	globfree(&pglob);
 }
 
-	#if MOCK_SPI
-		#include "interface/curses_interface.h"
-		CursesInterface interface { Coordinate<>(16, 3 * 8) };
-		using GameLogic_t = GameLogic<
-			CursesInterface //, curses_interface
-			>;
-	#else
-		#include "interface/spi_interface.h"
-		#include "spi/linux_spi.h"
-		#include "display/spi_display.h"
-		#include "switches.h"
-		#include "solenoids.h"
+#if MOCK_SPI
+	#include "game_interface/dummy_interface.h"
+	#include "game_interface/curses_interface.h"
+	DummyInterface dummy_interface;
+	CursesInterface<DummyInterface> interface { Coordinate<>(16, 5 * 8), dummy_interface  };
+	using GameLogic_t = GameLogic<
+		CursesInterface<DummyInterface>
+		>;
+#else
+	#include "interface/spi_interface.h"
+	#include "spi/linux_spi.h"
+	#include "display/spi_display.h"
+	#include "switches.h"
+	#include "solenoids.h"
+	#include "game_interface/curses_interface.h"
 
-		Spi spi;
-		//SpiDisplay display { spi, 3, Coordinate<>(16, 8) };
-		//Switches switches { spi };
-		//Solenoids solenoids { spi };
-		SpiInterface interface { spi, 3, Coordinate<>(16, 8) };
-		using GameLogic_t = GameLogic<
-			SpiInterface //, spi_interface
-			>;
-	#endif
+	Spi spi;
+	SpiInterface spi_interface { spi, 3, Coordinate<>(16, 8) };
+	CursesInterface<SpiInterface> interface { Coordinate<>(16, 5 * 8), spi_interface };
+	using GameLogic_t = GameLogic<
+		CursesInterface<SpiInterface>
+		>;
+#endif
 
 int main(int argc, const char **argv) {
 

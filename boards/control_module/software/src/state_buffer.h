@@ -19,12 +19,12 @@ class StateBuffer {
 		}
 
 		bool rising(typename T::Index idx) {
-			return !previous_state[idx] && decorated.get(idx);
+			return !previous_state[static_cast<int>(idx)] && decorated.get(idx);
 			
 		}
 
 		bool falling(typename T::Index idx) {
-			return previous_state[idx] && !decorated.get(idx);
+			return previous_state[static_cast<int>(idx)] && !decorated.get(idx);
 		}
 
 		const typename T::Bitset& get_previous_state() {

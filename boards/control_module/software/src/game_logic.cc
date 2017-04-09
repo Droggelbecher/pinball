@@ -11,8 +11,8 @@ GAME_LOGIC_TEMPL()::GameLogic(Interface& interface) : interface(interface) {
 }
 
 GAME_LOGIC_TEMPL(void)::next_frame() {
-	using Sw = typename Interface::SwitchesIndex;
-	using Sol = typename Interface::SolenoidsIndex;
+	using Sw = typename Interface::Switches::Index;
+	using Sol = typename Interface::Solenoids::Index;
 	using std::cout;
 	using std::endl;
 
@@ -105,7 +105,7 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 	// Display
 	//
 
-	paint_clear(interface);
+	paint_clear(interface.canvas());
 
 	marquee.next_frame();
 	std::string text = "Hallo, Welt!";
