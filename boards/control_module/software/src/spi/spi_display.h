@@ -3,7 +3,7 @@
 #define __SPI_DISPLAY_H__
 
 #include "canvas/canvas.h"
-#include "spi.h"
+#include "spi/spi.h"
 #include "coordinate.h"
 
 class SpiDisplay : public Canvas {

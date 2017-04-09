@@ -36,42 +36,6 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 	solenoids.set(Sol::FLIPPER_LEFT, !switches.get(Sw::FLIPPER_LEFT));
 	solenoids.set(Sol::FLIPPER_RIGHT, !switches.get(Sw::FLIPPER_RIGHT));
 
-	/*
-	if(switches_delta.changed()) {
-		cout << interface.get_switches_bits() << endl;
-
-		for(int i = 0; i < switches.get_bits().size(); i++) {
-			if(switches.get_bits()[i] != switches_delta.get_previous_state()[i]) {
-				cout << i
-					<< (switches.get_bits()[i] ? " ->high" : " ->low")
-					<< endl;
-			}
-		}
-
-		cout << "bumpers: "
-			<< switches.get(Sw::BUMPER0)
-			<< switches.get(Sw::BUMPER1)
-			<< switches.get(Sw::BUMPER2)
-			<< endl;
-
-		cout << "drop target bank 0: "
-			<< switches.get(Sw::DTB0_0)
-			<< switches.get(Sw::DTB0_1)
-			<< switches.get(Sw::DTB0_2)
-			<< switches.get(Sw::DTB0_3)
-			<< switches.get(Sw::DTB0_4)
-			<< endl;
-	}
-
-	if(switches_delta.falling(Sw::FLIPPER_LEFT)) {
-		cout << "left" << endl;
-	}
-
-	if(switches_delta.falling(Sw::FLIPPER_RIGHT)) {
-		cout << "right" << endl;
-	}
-	*/
-
 	//
 	if(switches_delta.falling(Sw::HOLE0)) {
 		audio.sound_play(sound_death_star_explode);

@@ -9,23 +9,6 @@
 #include "sensor_actuator_override.h"
 
 /**
- *
- * TODO XXX
- *
- * So this is the idea:
- * 
- * abstract class GameInterface; // read: User Interface (not "abstract class", although it actually is)
- * 
- * class DummyInterface : GameInterface; // Simple dummy interface that just stores or discards in/output
- * class SpiInterface : GameInterface; // Actual interface to the physical pinball machine
- * class CursesInterface : GameInterface; // Decorator that adds a curses UI on top of any interface.
- * 
- * 
- * --> We *MUST* template this, otherwise we will not be able
- *     to match the ...Index (and thus ...SensorActuator) types with the decorated!
- */
-
-/**
  * Interface wrapper that displays current state
  * using curses in the terminal and allows manipulation
  * using the keyboard.

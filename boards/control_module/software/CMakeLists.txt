@@ -5,13 +5,11 @@ project(Pinball)
 
 set(my_SOURCES
 	src/audio.cc
-	src/canvas/display_canvas.cc
 	src/canvas/canvas_buffer.cc
 	src/canvas/scrolling_canvas.cc
 	src/canvas/broadcast_canvas.cc
 	src/framer.cc
 	src/main.cc
-	src/switches.cc
 	src/pcf_font.cc
 	../../../common_software/src/checksum.c
 	../../../common_software/src/utils.c
@@ -30,30 +28,19 @@ include_directories(../../../common_software/include)
 
 option(MOCK_SPI "Substitute SPI interface with debugging implementation" OFF)
 if(MOCK_SPI)
-	set(my_SOURCES ${my_SOURCES} src/mock_spi/spi.cc)
-	include_directories(src/mock_spi)
+	#set(my_SOURCES ${my_SOURCES} src/mock_spi/spi.cc)
+	#include_directories(src/mock_spi)
 	add_definitions(-DMOCK_SPI)
-
-else()
-	set(my_SOURCES ${my_SOURCES} src/linux_spi/spi.cc)
-	include_directories(src/linux_spi)
-
-endif(MOCK_SPI)
-
-#
-# Display emulation, find curses if necessary
-#
-
-if(MOCK_SPI)
-	#set(my_SOURCES ${my_SOURCES} src/interface/curses_interface.cc)
-
 	set(CURSES_NEED_NCURSES TRUE)
 	find_package(Curses REQUIRED)
 	include_directories(${CURSES_INCLUDE_DIR})
-else()
-	#set(my_SOURCES ${my_SOURCES} src/display/spi_display.cc)
 
-endif()
+else()
+	set(my_SOURCES ${my_SOURCES} src/spi/linux_spi.cc)
+	set(my_SOURCES ${my_SOURCES} src/spi/switches.cc)
+	include_directories(src/linux_spi)
+
+endif(MOCK_SPI)
 
 #
 # Executable

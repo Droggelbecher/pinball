@@ -33,11 +33,8 @@ void fill_playlist(void) {
 		CursesInterface<DummyInterface>
 		>;
 #else
-	#include "interface/spi_interface.h"
-	#include "spi/linux_spi.h"
-	#include "display/spi_display.h"
-	#include "switches.h"
-	#include "solenoids.h"
+	#include "spi/spi.h"
+	#include "spi/spi_interface.h"
 	#include "game_interface/curses_interface.h"
 
 	Spi spi;

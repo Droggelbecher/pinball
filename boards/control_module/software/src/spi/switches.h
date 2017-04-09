@@ -7,11 +7,7 @@
 
 class Switches {
 	public:
-		enum {
-			DATA_BYTES = 8,
-			DATA_BITS = DATA_BYTES * 8
-		};
-		enum Index {
+		enum class Index {
 			FLIPPER_LEFT = 2,
 			FLIPPER_RIGHT = 5,
 			DTB0_0 = 8,
@@ -27,8 +23,13 @@ class Switches {
 			BUMPER1 = 14,
 			BUMPER2 = 15,
 
+			BALL_OUT = 22,
 			HOLE0 = 23,
-			BALL_OUT = 22
+			MAX = 64
+		};
+		enum {
+			DATA_BYTES = static_cast<int>(Index::MAX) / 8,
+			DATA_BITS = DATA_BYTES * 8
 		};
 
 		typedef std::bitset<DATA_BITS> Bitset;

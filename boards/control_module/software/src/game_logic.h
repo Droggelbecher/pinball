@@ -5,7 +5,6 @@
 #include "audio.h"
 #include "canvas/scrolling_canvas.h"
 #include "canvas/broadcast_canvas.h"
-#include "lamps.h"
 #include "state_buffer.h"
 #include "framer.h"
 #include "pcf_font.h"
