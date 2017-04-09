@@ -23,14 +23,6 @@ namespace solenoids_detail {
 	};
 }
 
-/*
-class Solenoids : public BitActuator<solenoids_detail::Index, Spi::Slave::SOLENOIDS> {
-	public:
-		using Super = BitActuator<solenoids_detail::Index, Spi::Slave::SOLENOIDS>;
-
-		Solenoids(Spi& spi) : Super(spi) { }
-};
-*/
 using Solenoids = BitActuator<solenoids_detail::Index, Spi::Slave::SOLENOIDS>;
 
 #endif // SOLENOIDS_H
