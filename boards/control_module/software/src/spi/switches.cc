@@ -1,5 +1,6 @@
 
 #include "switches.h"
+#include "spi.h"
 
 Switches::Switches(Spi& spi) : spi(spi) {
 }

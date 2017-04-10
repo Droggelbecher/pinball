@@ -28,12 +28,7 @@ include_directories(../../../common_software/include)
 
 option(MOCK_SPI "Substitute SPI interface with debugging implementation" OFF)
 if(MOCK_SPI)
-	#set(my_SOURCES ${my_SOURCES} src/mock_spi/spi.cc)
-	#include_directories(src/mock_spi)
 	add_definitions(-DMOCK_SPI)
-	set(CURSES_NEED_NCURSES TRUE)
-	find_package(Curses REQUIRED)
-	include_directories(${CURSES_INCLUDE_DIR})
 
 else()
 	set(my_SOURCES ${my_SOURCES} src/spi/linux_spi.cc)
@@ -41,6 +36,7 @@ else()
 	include_directories(src/linux_spi)
 
 endif(MOCK_SPI)
+
 
 #
 # Executable
@@ -60,7 +56,7 @@ set_property(TARGET Pinball PROPERTY CXX_STANDARD 11)
 set_property(TARGET Pinball PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Quick and dirty, after all we don't strive for being ultra-portable
-set(CMAKE_CXX_FLAGS "-std=c++11")
+#set(CMAKE_CXX_FLAGS "-std=c++11")
 
 #
 # Sys libs
@@ -91,8 +87,9 @@ target_link_libraries(Pinball ${ALURE_LIBRARIES})
 #
 # Curses lib (if necessary)
 #
-if(MOCK_SPI)
-	target_link_libraries(Pinball ${CURSES_LIBRARY})
-endif()
+set(CURSES_NEED_NCURSES TRUE)
+find_package(Curses REQUIRED)
+include_directories(${CURSES_INCLUDE_DIR})
+target_link_libraries(Pinball ${CURSES_LIBRARY})
 
 

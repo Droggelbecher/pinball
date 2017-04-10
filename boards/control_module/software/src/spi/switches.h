@@ -3,7 +3,8 @@
 #define SWITCHES_H
 
 #include <bitset>
-#include "spi.h"
+
+class Spi;
 
 class Switches {
 	public:

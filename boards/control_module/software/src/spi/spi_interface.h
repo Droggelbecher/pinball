@@ -12,10 +12,10 @@
 
 class SpiInterface {
 	public:
-		using Switches = Switches;
-		using Solenoids = Solenoids;
-		using Lamps = Lamps;
-		using Canvas = SpiDisplay;
+		using Switches = ::Switches;
+		using Solenoids = ::Solenoids;
+		using Lamps = ::Lamps;
+		using Canvas = ::SpiDisplay;
 
 		SpiInterface(Spi& spi, int modules, Coordinate<> module_size) :
 			canvas_(spi, modules, module_size),
