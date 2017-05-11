@@ -27,7 +27,6 @@
 inline void xfer_spi(void);
 
 int spi_xfer = 0;
-int selftest = 0;
 unsigned long phase = 0;
 
 unsigned int palette[][COLORS] = {
@@ -58,6 +57,9 @@ int main(void) {
 	double p = 0.0;
 
 	while(1) {
+		// Activate pullups
+		PORT_TLC5940 |= (1 << P_TEST) | (1 << P_AUX);
+		volatile int selftest = !(PIN_TLC5940 & (1 << P_TEST));
 		if(selftest) {
 			p += PHASE_RATE * (1.0 / FRAME_RATE);
 			if(p >= 1.0) {
@@ -215,7 +217,11 @@ void setup_spi(void) {
 }
 
 void setup_tlc5940(void) {
-	DDR_TLC5940 |= (1 << P_SIN) | (1 << P_SCLK) | (1 << P_XLAT) | (1 << P_BLANK);
+	DDR_TLC5940 = (1 << P_SIN) | (1 << P_SCLK) | (1 << P_XLAT) | (1 << P_BLANK)
+		| (0 << P_TEST) | (0 << P_AUX);
+
+	// Activate pullups
+	PORT_TLC5940 |= (1 << P_TEST) | (1 << P_AUX);
 
 	// Timer sources:
 	// https://sites.google.com/site/qeewiki/books/avr-guide/timers-on-the-atmega328

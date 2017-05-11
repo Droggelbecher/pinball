@@ -5,6 +5,7 @@
 
 #define DDR_TLC5940 DDRC
 #define PORT_TLC5940 PORTC
+#define PIN_TLC5940 PINC
 
 #define DDR_MOSFETS DDRD
 #define PORT_MOSFETS PORTD
@@ -24,6 +25,9 @@ enum {
 	P_SCLK = 4,
 	P_XLAT = 3,
 	P_BLANK = 2,
+
+	P_TEST = 0,
+	P_AUX = 1,
 };
 
 enum {
