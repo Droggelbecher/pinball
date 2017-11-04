@@ -70,13 +70,13 @@ void CursesInterface<TDecorated>::next_frame() {
 	// 
 	int row = 0;
 	for( ; row < canvas().size().row(); ++row) {
+		::move(row, 0);
 		for(int column = 0; column < canvas().size().column(); ++column) {
 			int col = canvas().get_pixel(Coordinate<>(row, column));
 			assert(col >= 0 && col < 8);
 			attrset(COLOR_PAIR(col + 1));
 			::printw("%c%c", color_symbols[col], color_symbols[col]);
 		}
-		::move(row, 0);
 	}
 	row += 2;
 	int column = 2;

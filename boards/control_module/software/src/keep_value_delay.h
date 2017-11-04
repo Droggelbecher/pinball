@@ -18,7 +18,7 @@ class KeepValueDelay {
       bool v = function();
       if(v == active_side) {
         // optimistic in the sense that it assumes it was active the whole frame
-        active_time_ms += framer.get_last_frame_duration_ms();
+        active_time_ms += framer.get_last_frame_duration_us() / 1000;
       }
       else {
         active_time_ms = 0;

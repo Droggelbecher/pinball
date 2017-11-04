@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#include <iostream>
+
 #ifdef __MACH__
 #include <mach/clock.h>
 #include <mach/mach.h>
@@ -12,46 +14,52 @@
 #endif
 
 Framer::Framer(int32_t framerate)
-	: frame_length { 1000 / framerate },
-	frame_start { get_time_ms() } {
+	: frame_length { 1000000 / framerate },
+	frame_start { get_time_us() } {
 
 }
 
 void Framer::next_frame() {
-	frame_start = get_time_ms();
+	frame_start = get_time_us();
 }
 
-int32_t Framer::get_last_frame_duration_ms() {
+int32_t Framer::get_last_frame_duration_us() {
 	return last_frame_duration;
 }
 
 void Framer::wait_frame_end() {
-	int32_t length_so_far = get_time_ms() - frame_start;
-	avg_real_length = avg_real_length * (1.0 - real_length_alpha) + length_so_far * real_length_alpha;
-	if(length_so_far < frame_length) {
-		wait_ms(frame_length - length_so_far);
+	static int32_t error = 0;
+	int32_t diff = (last_frame_duration - frame_length);
+	error += diff;
+
+	int32_t length_so_far = get_time_us() - frame_start;
+	int32_t wait_time = frame_length - length_so_far - 0.5 * diff - 0.1 * error;
+
+	if(wait_time > 0) {
+		wait_us(wait_time);
 	}
-	last_frame_duration = get_time_ms() - frame_start;
+
+	last_frame_duration = get_time_us() - frame_start;
 }
 
-int32_t Framer::get_time_ms() {
-	int32_t ms; // Milliseconds
+int32_t Framer::get_time_us() {
+	int32_t us; // Microseconds
 
 #ifdef __MACH__
 	timeval time;
 	gettimeofday(&time, NULL);
-	ms = time.tv_sec * 1000 + time.tv_usec / 1000;
+	us = time.tv_sec * 1000000 + time.tv_usec;
 #else
 	time_t s;  // Seconds
 	struct timespec spec;
 	clock_gettime(CLOCK_MONOTONIC, &spec);
-	ms = spec.tv_sec * 1000 + (spec.tv_nsec / 1.0e6);
+	us = spec.tv_sec * 1000000 + (spec.tv_nsec / 1.0e3);
 #endif
-	return ms;
+	return us;
 }
 
-void Framer::wait_ms(int32_t ms) {
-	usleep(1000UL * ms);
+void Framer::wait_us(int32_t us) {
+	usleep(us);
 }
 
 

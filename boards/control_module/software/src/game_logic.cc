@@ -1,10 +1,14 @@
 
 #include "game_logic.h"
 #include "canvas/paint.h"
+
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 GAME_LOGIC_TEMPL()::GameLogic(Interface& interface) : interface(interface) {
 	marquee.resize({ 16, 100 });
+
 
 	sound_r2d2_again = audio.sound_load("resources/sounds/r2d2_again.mp3");
 	sound_death_star_explode = audio.sound_load("resources/sounds/death_star_explode.mp3");
@@ -21,10 +25,10 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 	static typename Interface::Lamps& lamps = interface.lamps();
 
 	interface.next_frame();
+	marquee.next_frame();
 	framer.next_frame();
 	switches_delta.next_frame();
 	audio.update();
-
 	ball_return.next_frame();
 
 	//
@@ -71,11 +75,14 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 
 	paint_clear(interface.canvas());
 
-	marquee.next_frame();
-	std::string text = "Hallo, Welt!";
-	font_normal.paint_string(marquee, text.c_str(), Coordinate<>(0, 0), 1);
+	//paint_pattern(marquee);
+
+	std::ostringstream ss;
+	ss << "FPS: " << std::setprecision(3) << (1000000.0 / framer.get_last_frame_duration_us()); //Hallo, Welt!";
+	font_normal.paint_string(marquee, ss.str().c_str(), Coordinate<>(0, 0), 1);
 
 	framer.wait_frame_end();
+	//std::cerr << (1000.0 / framer.get_last_frame_duration_ms()) << "\n";
 	
 }
 
