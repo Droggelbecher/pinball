@@ -9,8 +9,8 @@ ScrollingCanvas::ScrollingCanvas(Canvas& decorated, Coordinate<double> speed)
 {
 }
 
-void ScrollingCanvas::next_frame() {
-	offset_ += speed_;
+void ScrollingCanvas::next_frame(double dt) {
+	offset_ += speed_ * dt;
 	offset_ %= size();
 }
 

@@ -9,6 +9,7 @@
 #include "framer.h"
 #include "pcf_font.h"
 #include "keep_value_delay.h"
+#include "config.h"
 
 #include <memory>
 
@@ -19,14 +20,14 @@ class GameLogic {
     using Interface = InterfaceT;
   public:
     GameLogic(Interface& interface);
-    void next_frame();
+    void next_frame(double dt);
 
   private:
     Interface& interface;
     Audio audio { Audio::instance() };
     PcfFont font_normal { "resources/gohufont-11.pcf" };
 
-    Framer framer { 30 };
+    Framer framer { DISPLAY_TARGET_FPS };
     StateBuffer<typename Interface::Switches> switches_delta { interface.switches() };
 
     // Delay ball return by a bit as to make sure ball has rolled all the way down first.
@@ -35,7 +36,7 @@ class GameLogic {
       framer, false, 1000
     };
 
-    ScrollingCanvas marquee { interface.canvas(), { 0.0, 0.6 } };
+    ScrollingCanvas marquee { interface.canvas(), { 0.0, 10.0 } };
 
     Audio::audio_source_t sound_r2d2_again;
     Audio::audio_source_t sound_death_star_explode;

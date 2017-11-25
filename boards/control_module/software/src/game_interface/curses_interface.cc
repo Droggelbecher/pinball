@@ -44,9 +44,9 @@ CursesInterface<TDecorated>::~CursesInterface() {
 }
 
 template<typename TDecorated>
-void CursesInterface<TDecorated>::next_frame() {
+void CursesInterface<TDecorated>::next_frame(double dt) {
 	using Idx = typename Solenoids::Index;
-	decorated().next_frame();
+	decorated().next_frame(dt);
 
 	struct SolenoidState {
 		const char *str;

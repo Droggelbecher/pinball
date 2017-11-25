@@ -17,7 +17,7 @@ class MemorySensorActuator {
 
 		typedef std::bitset<DATA_BITS> Bitset;
 
-		void next_frame() { }
+		void next_frame(double dt) { }
 
 		void set() {
 			bits.set();

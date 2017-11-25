@@ -9,9 +9,9 @@ class StateBuffer {
 		StateBuffer(T& t) : decorated(t) {
 		}
 
-		void next_frame() {
+		void next_frame(double dt) {
 			previous_state = decorated.get_bits();
-			decorated.next_frame();
+			decorated.next_frame(dt);
 		}
 
 		bool changed() {

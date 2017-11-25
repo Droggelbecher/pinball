@@ -24,11 +24,11 @@ class SpiInterface {
 			lamps_(spi)
 		{ }
 
-		void next_frame() {
-			switches().next_frame();
-			solenoids().next_frame();
-			lamps().next_frame();
-			canvas().next_frame();
+		void next_frame(double dt) {
+			switches().next_frame(dt);
+			solenoids().next_frame(dt);
+			lamps().next_frame(dt);
+			canvas().next_frame(dt);
 		}
 
 		Switches& switches() { return switches_; }

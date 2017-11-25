@@ -11,7 +11,7 @@ class ScrollingCanvas : public Canvas {
 	public:
 		ScrollingCanvas(Canvas&, Coordinate<double>);
 
-		void next_frame() override;
+		void next_frame(double dt) override;
 
 		void set_pixel(Coordinate<> c, uint8_t color) override;
 		uint8_t get_pixel(Coordinate<> c) const override;

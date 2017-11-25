@@ -20,7 +20,7 @@ class BitActuator {
 
 		BitActuator(Spi& spi) : spi(spi) { }
 
-		void next_frame();
+		void next_frame(double dt);
 		void set(Index, bool);
 		bool get(Index) const;
 

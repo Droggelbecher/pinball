@@ -18,9 +18,9 @@ uint8_t BroadcastCanvas::get_pixel(Coordinate<> c) const {
 	return canvas_[0].get().get_pixel(c);
 }
 
-void BroadcastCanvas::next_frame() {
+void BroadcastCanvas::next_frame(double dt) {
 	for(Canvas& canvas: canvas_) {
-		canvas.next_frame();
+		canvas.next_frame(dt);
 	}
 }
 
