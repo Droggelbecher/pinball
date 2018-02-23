@@ -249,11 +249,13 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # to get a full listing.
 #
 #AVRDUDE_PROGRAMMER = avrispv2
-AVRDUDE_PROGRAMMER = arduino
-
+#AVRDUDE_PROGRAMMER = arduino
+AVRDUDE_PROGRAMMER = avrisp
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
 AVRDUDE_PORT = /dev/ttyACM3
+
+AVRDUDE_BAUDRATE = 19200
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
@@ -272,7 +274,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude>
 # to submit bug reports.
 AVRDUDE_VERBOSE = -v -v
-AVRDUDE_BAUDRATE = 115200
+#AVRDUDE_BAUDRATE = 115200
 
 #AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 57600
 AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_BAUDRATE)
