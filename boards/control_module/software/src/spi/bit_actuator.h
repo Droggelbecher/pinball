@@ -18,7 +18,11 @@ class BitActuator {
 			DATA_BITS = DATA_BYTES * 8
 		};
 
-		BitActuator(Spi& spi) : spi(spi) { }
+		BitActuator(Spi& spi) : spi(spi) {
+			for(int i = 0; i < DATA_BYTES + 1; i++) {
+				state[i] = 0xff;
+			}
+		}
 
 		void next_frame();
 		void set(Index, bool);

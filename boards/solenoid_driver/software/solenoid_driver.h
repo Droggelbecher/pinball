@@ -2,81 +2,6 @@
 #ifndef SOLENOID_DRIVER_H
 #define SOLENOID_DRIVER_H
 
-// Pins
-
-//#define FLIPPER_LEFT_POWER_PORT PORTC
-//#define FLIPPER_LEFT_POWER_DDR DDRC
-//#define FLIPPER_LEFT_POWER_PIN PINC0
-
-//#define FLIPPER_LEFT_HOLD_PORT PORTC
-//#define FLIPPER_LEFT_HOLD_DDR DDRC
-//#define FLIPPER_LEFT_HOLD_PIN PINC1
-
-//#define FLIPPER_RIGHT_POWER_PORT PORTC
-//#define FLIPPER_RIGHT_POWER_DDR DDRC
-//#define FLIPPER_RIGHT_POWER_PIN PINC2
-
-//#define FLIPPER_RIGHT_HOLD_PORT PORTC
-//#define FLIPPER_RIGHT_HOLD_DDR DDRC
-//#define FLIPPER_RIGHT_HOLD_PIN PINC3
-
-//#define DROP_TARGET_BANK_0_PORT PORTC
-//#define DROP_TARGET_BANK_0_DDR DDRC
-//#define DROP_TARGET_BANK_0_PIN PINC4
-
-//#define SLINGSHOT_LEFT_PORT PORTC
-//#define SLINGSHOT_LEFT_DDR DDRC
-//#define SLINGSHOT_LEFT_PIN PINC5
-
-//#define SLINGSHOT_RIGHT_PORT PORTB
-//#define SLINGSHOT_RIGHT_DDR DDRB
-//#define SLINGSHOT_RIGHT_PIN PINB1
-
-//#define BUMPER_0_PORT PORTD
-//#define BUMPER_0_DDR DDRD
-//#define BUMPER_0_PIN PIND7
-
-//#define BUMPER_1_PORT PORTD
-//#define BUMPER_1_DDR DDRD
-//#define BUMPER_1_PIN PIND6
-
-//#define BUMPER_2_PORT PORTD
-//#define BUMPER_2_DDR DDRD
-//#define BUMPER_2_PIN PIND5
-
-//// how long do coils need to "cool down" (in 1/1024 secodns)?
-//#define FLIPPER_LEFT_COOLDOWN_TIME 1
-//#define FLIPPER_RIGHT_COOLDOWN_TIME 1
-//#define DROP_TARGET_BANK_0_COOLDOWN_TIME 100
-//#define SLINGSHOT_LEFT_COOLDOWN_TIME 100
-//#define SLINGSHOT_RIGHT_COOLDOWN_TIME 100
-//#define BUMPER_0_COOLDOWN_TIME 100
-//#define BUMPER_1_COOLDOWN_TIME 100
-//#define BUMPER_2_COOLDOWN_TIME 100
-
-
-//// how long can coils be active before cooldown must start?
-//#define FLIPPER_LEFT_ACTIVE_TIME 10
-//#define FLIPPER_RIGHT_ACTIVE_TIME 10
-//#define DROP_TARGET_BANK_0_ACTIVE_TIME 100
-//#define SLINGSHOT_LEFT_ACTIVE_TIME 100
-//#define SLINGSHOT_RIGHT_ACTIVE_TIME 100
-//#define BUMPER_0_ACTIVE_TIME 100
-//#define BUMPER_1_ACTIVE_TIME 100
-//#define BUMPER_2_ACTIVE_TIME 100
-
-//// cycle times
-
-//#define FLIPPER_LEFT_CYCLE_TIME (FLIPPER_LEFT_COOLDOWN_TIME + FLIPPER_LEFT_ACTIVE_TIME)
-//#define FLIPPER_RIGHT_CYCLE_TIME (FLIPPER_RIGHT_COOLDOWN_TIME + FLIPPER_RIGHT_ACTIVE_TIME)
-//#define DROP_TARGET_BANK_0_CYCLE_TIME (DROP_TARGET_BANK_0_COOLDOWN_TIME + DROP_TARGET_BANK_0_ACTIVE_TIME)
-//#define SLINGSHOT_LEFT_CYCLE_TIME (SLINGSHOT_LEFT_COOLDOWN_TIME + SLINGSHOT_LEFT_ACTIVE_TIME)
-//#define SLINGSHOT_RIGHT_CYCLE_TIME (SLINGSHOT_RIGHT_COOLDOWN_TIME + SLINGSHOT_RIGHT_ACTIVE_TIME)
-//#define BUMPER_0_CYCLE_TIME (BUMPER_0_COOLDOWN_TIME + BUMPER_0_ACTIVE_TIME)
-//#define BUMPER_1_CYCLE_TIME (BUMPER_1_COOLDOWN_TIME + BUMPER_1_ACTIVE_TIME)
-//#define BUMPER_2_CYCLE_TIME (BUMPER_2_COOLDOWN_TIME + BUMPER_2_ACTIVE_TIME)
-
-
 #define BAUD 9600UL
 // Berechnungen
 #define UBRR_VAL ((F_CPU+BAUD*8)/(BAUD*16)-1)   // clever runden
@@ -111,9 +36,12 @@ uint8_t solenoid_spi_state_idx = 0;
 
 //uint8_t cooldown_time[16];
 
+uint8_t in_selftest = 0;
+uint16_t selftest_delay = 0;
+uint8_t selftest_pos = 0;
 
 int main(void);
-void run_selftest(void);
+void toggle_selftest(void);
 void run_main(void);
 void setup_timer(void);
 void setup_spi(void);
@@ -132,6 +60,16 @@ inline uint8_t get_state(uint8_t idx) {
 	return !(solenoid_spi_state[idx / 8] & (1 << (idx % 8)));
 }
 
+void clear_state(void);
+
+inline void clear_state() {
+	solenoid_spi_state[0] = 0xff;
+	solenoid_spi_state[1] = 0xff;
+}
+
+inline void set_state(uint8_t idx) {
+	solenoid_spi_state[idx / 8] &= (0xff - (1 << (idx % 8)));
+}
 
 #endif // SOLENOID_DRIVER_H
 

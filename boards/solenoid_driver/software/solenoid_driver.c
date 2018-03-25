@@ -1,11 +1,10 @@
 
 // SPI tutorial:
 // http://www.engineersgarage.com/embedded/avr-microcontroller-projects/spi-serial-peripheral-interface-tutorial-circuit
-//
+// 
 //http://www.elecdude.com/2012/12/avr-spi-serial-pheripheral-interface.html
 //
-// UART:
-//https://www.mikrocontroller.net/articles/AVR-GCC-Tutorial/Der_UART
+// UART: //https://www.mikrocontroller.net/articles/AVR-GCC-Tutorial/Der_UART
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -21,13 +20,13 @@ Solenoid solenoids[] = {
 	// port, ddr, pin, cooldown, active, t
 	
 	// Flipper left power
-	{ &PORTC, &DDRC, PINC0,   1,  10, 0 },
+	{ &PORTC, &DDRC, PINC0, 1, 10, 0 },
 	// Flipper left hold
-	{ &PORTC, &DDRC, PINC1,   1, 255, 0 },
+	{ &PORTC, &DDRC, PINC1, 1, 255, 0 },
 	// Flipper right power
-	{ &PORTC, &DDRC, PINC2,   1,  10, 0 },
+	{ &PORTC, &DDRC, PINC2, 1, 10, 0 },
 	// Flipper right hold
-	{ &PORTC, &DDRC, PINC3,   1, 255, 0 },
+	{ &PORTC, &DDRC, PINC3, 1, 255, 0 },
 
 	// Drop Target Bank 0
 	{ &PORTC, &DDRC, PINC4, 100, 100, 0 },
@@ -47,11 +46,11 @@ Solenoid solenoids[] = {
 	// Bumper 2
 	{ &PORTD, &DDRD, PIND5, 100, 100, 0 },
 
-	// Ball return
+	// Aux 0 (transistor broken?)
 	{ &PORTD, &DDRD, PIND2, 100, 100, 0 },
 
-	// Aux 0
-	{ &PORTD, &DDRD, PIND3, 100, 100, 0 },
+	// Ball return
+	{ &PORTD, &DDRD, PIND3, 500, 200, 0 },
 
 	// Aux 1
 	{ &PORTD, &DDRD, PIND4, 100, 100, 0 }
@@ -69,8 +68,8 @@ enum {
 	SN_BUMPER_0,
 	SN_BUMPER_1,
 	SN_BUMPER_2,
-	SN_BALL_RETURN,
 	SN_AUX_0,
+	SN_BALL_RETURN,
 	SN_AUX_1
 };
 
@@ -166,6 +165,12 @@ void check_solenoid(int state_index, int spi_index) {
 
 
 int main(void) {
+	for(int i = 0; i < sizeof(solenoids) / sizeof(solenoids[0]); i++) {
+		*(solenoids[i].ddr) |= (1 << solenoids[i].pin);
+		*(solenoids[i].port) |= (1 << solenoids[i].pin);
+		solenoids[i].t = 0;
+	}
+	
 	setup_spi();
 	setup_uart();
 	setup_timer();
@@ -174,11 +179,6 @@ int main(void) {
 
 	// Make all solenoids output and turn all solenoids off (high)
 	
-	for(int i = 0; i < sizeof(solenoids) / sizeof(solenoids[0]); i++) {
-		*(solenoids[i].ddr) |= (1 << solenoids[i].pin);
-		*(solenoids[i].port) |= (1 << solenoids[i].pin);
-		solenoids[i].t = 0;	
-	}
 
 
 	// PB0 low --> selftest
@@ -192,12 +192,11 @@ int main(void) {
 	
 }
 
+void check_selftest(void);
+
 void run_main(void) {
 	while(1) {
-		if((PINB & (1 << PB0)) == 0) {
-			uart_puts("starting selftest\r\n");
-			run_selftest();
-		}
+		check_selftest();
 
 		// Special treatment for flipper double-coils
 
@@ -217,22 +216,18 @@ void run_main(void) {
 	} // while
 }
 
-void run_selftest(void) {
-	// turn off all solenoids
-	for(int i = 0; i < sizeof(solenoids) / sizeof(solenoids[0]); i++) {
-		*(solenoids[i].port) |= (1 << solenoids[i].pin);
+void check_selftest(void) {
+	//if(selftest_delay <= 10) {
+		in_selftest = ((PINB & (1 << PB0)) == 0);
+	//}
+	if(in_selftest) {
+		clear_state();
+		set_state(selftest_pos);
 	}
+}
 
-	while(1) {
-		/*usleep(5UL * 1000000UL);*/
-		_delay_ms(1000);
-		if((PINB & (1 << PB0)) == 0) {
-			uart_puts("exiting selftest\r\n");
-			return;
-		}
+void toggle_selftest(void) {
 
-		// TODO: re-implement self-test
-	}
 }
 
 void setup_timer(void) {
@@ -247,7 +242,7 @@ void setup_timer(void) {
 	// that 1ms)
 	OCR0A = 16;
 
-	TIMSK0 |= (1 << OCIE0A);    //Set the ISR COMPA vect
+	TIMSK0 |= (1 << OCIE0A); //Set the ISR COMPA vect
 
 	sei();
 
@@ -257,7 +252,7 @@ void setup_timer(void) {
 
 void setup_spi(void) {
 	// MISO = output,
-	// PB1, PB4 = output 
+	// PB1, PB4 = output
 	// others input
 	DDRB = (1<<PB1) | (1<<PB4);
 	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 1
@@ -266,7 +261,7 @@ void setup_spi(void) {
 
 
 	// https://sites.google.com/site/qeewiki/books/avr-guide/external-interrupts-on-the-atmega328
-	PCICR |= (1 << PCIE0);    // set PCIE0 to enable PCMSK0 scan
+	PCICR |= (1 << PCIE0); // set PCIE0 to enable PCMSK0 scan
 	// Generate interrupt on SS pin change
 	PCMSK0 |= (1 << PCINT2);
 
@@ -277,7 +272,7 @@ void setup_uart(void) {
 	UBRR0H = UBRR_VAL >> 8;
 	UBRR0L = UBRR_VAL & 0xFF;
 
-	UCSR0B |= (1<<TXEN0);                           // UART TX einschalten
+	UCSR0B |= (1<<TXEN0); // UART TX einschalten
 	UCSR0A = (1 << UDRE0);
 	UCSR0C = (1<<UCSZ01)|(1 << UCSZ00); // Asynchron 8N1
 }
@@ -286,6 +281,17 @@ ISR(TIMER0_COMPA_vect) {
 	for(int i = 0; i < sizeof(solenoids) / sizeof(solenoids[0]); i++) {
 		if(solenoids[i].t > 0) {
 			--(solenoids[i].t);
+		}
+	}
+
+	if(selftest_delay > 0) {
+		--selftest_delay;
+	}
+	else {
+		selftest_delay = 1000;
+		++selftest_pos;
+		if(selftest_pos >= 16) {
+			selftest_pos = 0;
 		}
 	}
 }
@@ -299,6 +305,8 @@ ISR(SPI_STC_vect) {
 	static uint8_t spi_buf[] = { 0xff, 0xff, 0xff };
 
 	char ch = SPDR;
+
+	if(in_selftest) { return; }
 
 	/*uart_putc('s');*/
 
@@ -326,7 +334,7 @@ ISR(SPI_STC_vect) {
 void uart_putc(char x) {
 #if ENABLE_UART
 	// bei neueren AVRs steht der Status in UCSRA/UCSR0A/UCSR1A, hier z.B. fuer ATmega16:
-	while (!(UCSR0A & (1<<UDRE0)))  /* warten bis Senden moeglich                   */
+	while (!(UCSR0A & (1<<UDRE0))) /* warten bis Senden moeglich */
 	{
 	}
 	UDR0 = x;
