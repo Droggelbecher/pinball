@@ -13,7 +13,7 @@ class SensorActuator {
 
 		typedef std::bitset<DATA_BITS> Bitset;
 
-		virtual void next_frame() { };
+		virtual void next_frame(double dt) { };
 		virtual void set() = 0;
 		virtual void set(Index i, bool v) = 0;
 		virtual bool get(Index i) = 0;

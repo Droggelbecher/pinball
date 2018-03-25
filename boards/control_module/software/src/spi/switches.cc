@@ -28,7 +28,7 @@ namespace {
 	}
 }
 
-void Switches::next_frame() {
+void Switches::next_frame(double dt) {
 	read();
 }
 

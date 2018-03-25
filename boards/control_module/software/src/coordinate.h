@@ -3,6 +3,7 @@
 #define COORDINATE_H
 
 #include <cmath>
+#include <iostream>
 
 /**
  *
@@ -47,6 +48,11 @@ class Coordinate {
 		template<typename C>
 		Coordinate<decltype(T() * typename C::Ordinate())> operator*(const C& other) const {
 			return { row() * other.row(), column() * other.column() };
+		}
+
+		template<typename S>
+		Coordinate<decltype(T() * S())> operator*(const S& scalar) const {
+			return { row() * scalar, column() * scalar };
 		}
 
 		Coordinate& operator+=(const Coordinate& other) {
@@ -96,5 +102,11 @@ class Coordinate {
 		T row_;
 		T column_;
 };
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const Coordinate<T>& coord) {
+	os << "<" << coord.row() << ", " << coord.column() << ">";
+	return os;
+}
 
 #endif // COORDINATE_H

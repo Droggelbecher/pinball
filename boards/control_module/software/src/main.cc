@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <glob.h>
 
+#include "config.h"
 #include "game_logic.h"
 
 
@@ -28,7 +29,11 @@ void fill_playlist(void) {
 	#include "game_interface/dummy_interface.h"
 	#include "game_interface/curses_interface.h"
 	DummyInterface dummy_interface;
-	CursesInterface<DummyInterface> interface { Coordinate<>(16, 5 * 8), dummy_interface  };
+	CursesInterface<DummyInterface> interface {
+		Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS),
+		dummy_interface
+	};
+
 	using GameLogic_t = GameLogic<
 		CursesInterface<DummyInterface>
 		>;
@@ -38,8 +43,15 @@ void fill_playlist(void) {
 	#include "game_interface/curses_interface.h"
 
 	Spi spi;
-	SpiInterface spi_interface { spi, 3, Coordinate<>(16, 8) };
-	CursesInterface<SpiInterface> interface { Coordinate<>(16, 5 * 8), spi_interface };
+	SpiInterface spi_interface {
+		spi,
+		DISPLAY_MODULE_COUNT,
+		Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COLUMNS)
+	};
+	CursesInterface<SpiInterface> interface {
+		Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS),
+		spi_interface
+	};
 	using GameLogic_t = GameLogic<
 		CursesInterface<SpiInterface>
 		>;
@@ -47,17 +59,15 @@ void fill_playlist(void) {
 
 int main(int argc, const char **argv) {
 
-
+	Framer framer(DISPLAY_TARGET_FPS);
 	GameLogic_t game_logic(interface);
 
 	fill_playlist();
-
 	Audio::instance().playlist_play();
 
 	while(true) {
-		game_logic.next_frame();
-
-		//usleep(10UL * 1000UL); // nanoseconds!
+		framer.next_frame();
+		game_logic.next_frame(framer.get_last_frame_duration_us() / 1000000.0f);
 	}
 
 }

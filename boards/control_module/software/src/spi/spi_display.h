@@ -25,7 +25,7 @@ class SpiDisplay : public Canvas {
 		~SpiDisplay();
 
 		Coordinate<> size() const override;
-		void next_frame() override;
+		void next_frame(double dt) override;
 
 		void set_pixel(Coordinate<> c, uint8_t color) override;
 		uint8_t get_pixel(Coordinate<> c) const override;

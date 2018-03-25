@@ -7,14 +7,13 @@
 class Framer {
 	public:
 
-		Framer(int framerate);
+		Framer(double framerate);
 
 		void next_frame();
 		void wait_frame_end();
 		int32_t get_last_frame_duration_us();
 
 	private:
-
 		static int get_time_us();
 		static void wait_us(int32_t);
 

@@ -4,7 +4,7 @@
 #include "checksum.h"
 
 template<typename Index_, Spi::Slave SLAVE_>
-void BitActuator<Index_, SLAVE_>::next_frame() {
+void BitActuator<Index_, SLAVE_>::next_frame(double dt) {
 	state[DATA_BYTES] = checksum(state, DATA_BYTES);
 	spi.transfer_and_check(SLAVE, std::vector<uint8_t>(state, state + DATA_BYTES + 1));
 }

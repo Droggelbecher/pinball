@@ -37,7 +37,7 @@ class Switches {
 
 		Switches(Spi& spi);
 
-		void next_frame();
+		void next_frame(double dt);
 		bool get(Index);
 		const Bitset& get_bits() { return bits; }
 

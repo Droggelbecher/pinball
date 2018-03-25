@@ -49,7 +49,7 @@ class DummyInterface {
 		using Solenoids = MemorySensorActuator<SolenoidsIndex>;
 		using Lamps = MemorySensorActuator<LampsIndex>;
 
-		void next_frame() { }
+		void next_frame(double dt) { }
 
 		Canvas& canvas() { return canvas_; }
 

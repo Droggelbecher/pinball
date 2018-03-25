@@ -19,7 +19,7 @@ Coordinate<> SpiDisplay::size() const {
 	return module_size_ * Coordinate<>(1, modules_);
 }
 
-void SpiDisplay::next_frame() {
+void SpiDisplay::next_frame(double dt) {
 	spi_.enable_only(Spi::DISPLAY);
 
 	int i;

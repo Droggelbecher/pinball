@@ -3,7 +3,7 @@
 // Display
 //
 
-#define DISPLAY_TARGET_FPS 60.0f
+#define DISPLAY_TARGET_FPS 30.0f
 
 #define DISPLAY_MODULE_COUNT 5
 #define DISPLAY_MODULE_ROWS 16

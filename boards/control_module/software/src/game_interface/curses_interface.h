@@ -37,7 +37,7 @@ class CursesInterface {
 		CursesInterface(Coordinate<> display_size, TDecorated& decorated);
 		~CursesInterface();
 
-		void next_frame();
+		void next_frame(double dt);
 
 		TDecorated& decorated() { return decorated_; }
 		Switches& switches() { return switches_; }

@@ -14,7 +14,7 @@ GAME_LOGIC_TEMPL()::GameLogic(Interface& interface) : interface(interface) {
 	sound_death_star_explode = audio.sound_load("resources/sounds/death_star_explode.mp3");
 }
 
-GAME_LOGIC_TEMPL(void)::next_frame() {
+GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 	using Sw = typename Interface::Switches::Index;
 	using Sol = typename Interface::Solenoids::Index;
 	using std::cout;
@@ -24,12 +24,12 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 	static typename Interface::Solenoids& solenoids = interface.solenoids();
 	static typename Interface::Lamps& lamps = interface.lamps();
 
-	interface.next_frame();
-	marquee.next_frame();
-	framer.next_frame();
-	switches_delta.next_frame();
+	interface.next_frame(dt);
+	marquee.next_frame(dt);
+	switches_delta.next_frame(dt);
+	ball_return.next_frame(dt);
+
 	audio.update();
-	ball_return.next_frame();
 
 	//
 	// Playfield logic
@@ -78,11 +78,9 @@ GAME_LOGIC_TEMPL(void)::next_frame() {
 	//paint_pattern(marquee);
 
 	std::ostringstream ss;
-	ss << "FPS: " << std::setprecision(3) << (1000000.0 / framer.get_last_frame_duration_us()); //Hallo, Welt!";
+	ss << "FPS: " << std::setprecision(3) << (1.0 / dt); //Hallo, Welt!";
 	font_normal.paint_string(marquee, ss.str().c_str(), Coordinate<>(0, 0), 1);
 
-	framer.wait_frame_end();
-	//std::cerr << (1000.0 / framer.get_last_frame_duration_ms()) << "\n";
 	
 }
 

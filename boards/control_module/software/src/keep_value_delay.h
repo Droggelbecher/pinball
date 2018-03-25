@@ -14,11 +14,11 @@ class KeepValueDelay {
       : function(f), framer(framer), active_side(active_side), delay_ms(delay_ms), active_time_ms(0) {
     }
 
-    void next_frame() {
+    void next_frame(double dt) {
       bool v = function();
       if(v == active_side) {
         // optimistic in the sense that it assumes it was active the whole frame
-        active_time_ms += framer.get_last_frame_duration_us() / 1000;
+        active_time_ms += static_cast<int32_t>(dt * 1000.0);
       }
       else {
         active_time_ms = 0;

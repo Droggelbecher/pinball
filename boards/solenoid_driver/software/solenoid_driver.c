@@ -17,7 +17,7 @@
 #define ENABLE_UART 0
 
 Solenoid solenoids[] = {
-	// port, ddr, pin, cooldown, active, t
+	// port,  ddr,   pin, cooldown, active, t
 	
 	// Flipper left power
 	{ &PORTC, &DDRC, PINC0, 1, 10, 0 },

@@ -24,7 +24,7 @@ class BitActuator {
 			}
 		}
 
-		void next_frame();
+		void next_frame(double dt);
 		void set(Index, bool);
 		bool get(Index) const;
 

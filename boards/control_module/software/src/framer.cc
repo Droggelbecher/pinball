@@ -13,13 +13,14 @@
 #include <sys/time.h>
 #endif
 
-Framer::Framer(int32_t framerate)
-	: frame_length { 1000000 / framerate },
+Framer::Framer(double framerate)
+: frame_length { static_cast<int32_t>(1000000 / framerate) },
 	frame_start { get_time_us() } {
 
 }
 
 void Framer::next_frame() {
+	wait_frame_end();
 	frame_start = get_time_us();
 }
 
@@ -28,12 +29,24 @@ int32_t Framer::get_last_frame_duration_us() {
 }
 
 void Framer::wait_frame_end() {
+	// error = integrated part of error in control loop
 	static int32_t error = 0;
+
+	// By how much was the last frame too long? (proportional part)
 	int32_t diff = (last_frame_duration - frame_length);
 	error += diff;
 
 	int32_t length_so_far = get_time_us() - frame_start;
-	int32_t wait_time = frame_length - length_so_far - 0.5 * diff - 0.1 * error;
+
+	// Ideally we would neet to wait (frame_length - length_so_far) and be done with it.
+	// However there is some overhead which is neglected by this
+	// (loop, this calculation, sleep inacuracy, etc..).
+	// Model this as a PI control problem
+	// 
+	// 0.5 * P + 0.1 * I
+	int32_t wait_time = frame_length - length_so_far
+		- 0.3 * diff
+		- 0.7 * error;
 
 	if(wait_time > 0) {
 		wait_us(wait_time);
