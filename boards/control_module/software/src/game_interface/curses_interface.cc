@@ -107,6 +107,7 @@ void CursesInterface<TDecorated>::handle_keys() {
 	};
 
 	static Key key_table[] = {
+		// Dvorak Keyboard Layout
 		{ '1', '!', "FL_L ", Idx::FLIPPER_LEFT,  true },
 		{ '2', '@', "FL_R ", Idx::FLIPPER_RIGHT, true },
 		{ '3', '#', "DTB00", Idx::DTB0_0, true },
@@ -121,6 +122,7 @@ void CursesInterface<TDecorated>::handle_keys() {
 		{ ']', '}', "BMP_2", Idx::BUMPER2, true },
 
 		{ '\'', '"', "BLO ", Idx::BALL_OUT, true },
+		{ ',',  '<', "HOL0", Idx::HOLE0, true },
 	};
 
 	::printw("  ");
