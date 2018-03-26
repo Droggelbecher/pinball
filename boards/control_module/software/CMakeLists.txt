@@ -1,7 +1,11 @@
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 2.8)
+
+set(CMAKE_INCLUDE_PATH "/usr/include")
 
 project(Pinball)
+
+set(CMAKE_BUILD_TYPE Debug)
 
 set(my_SOURCES
 	src/audio.cc
@@ -48,7 +52,9 @@ add_executable(Pinball ${my_SOURCES})
 # Force C++11
 #
 
-# Requires cmake >= ???
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+# Requires cmake >= ??? (does not seem to work with 2.8)
 #target_compile_features(Pinball PRIVATE cxx_uniform_initialization)
 
 # Requires cmake >= 3.1.0
@@ -87,9 +93,12 @@ target_link_libraries(Pinball ${ALURE_LIBRARIES})
 #
 # Curses lib (if necessary)
 #
-set(CURSES_NEED_NCURSES TRUE)
-find_package(Curses REQUIRED)
-include_directories(${CURSES_INCLUDE_DIR})
-target_link_libraries(Pinball ${CURSES_LIBRARY})
-
+option(CURSES_UI "Add a curses UI for debugging" OFF)
+if(CURSES_UI)
+	add_definitions(-DCURSES_UI)
+	set(CURSES_NEED_NCURSES TRUE)
+	find_package(Curses REQUIRED)
+	include_directories(${CURSES_INCLUDE_DIR})
+	target_link_libraries(Pinball ${CURSES_LIBRARY})
+endif(CURSES_UI)
 
