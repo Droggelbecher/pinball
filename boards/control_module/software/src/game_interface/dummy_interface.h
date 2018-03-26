@@ -17,7 +17,7 @@ class DummyInterface {
 			SLINGSHOT0 = 3,
 			SLINGSHOT1 = 4,
 
-			BUMPER0 = 13, // ?
+			BUMPER0 = 13,
 			BUMPER1 = 14,
 			BUMPER2 = 15,
 
@@ -28,7 +28,7 @@ class DummyInterface {
 
 		enum class LampsIndex {
 			// TODO
-			MAX
+			MAX = 64
 		};
 
 		enum class SolenoidsIndex {

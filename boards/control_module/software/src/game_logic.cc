@@ -24,6 +24,9 @@ GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 	static typename Interface::Solenoids& solenoids = interface.solenoids();
 	static typename Interface::Lamps& lamps = interface.lamps();
 
+	static const int max_lamps = 8;
+	static int current_lamp = 0;
+
 	interface.next_frame(dt);
 	marquee.next_frame(dt);
 	switches_delta.next_frame(dt);
@@ -39,6 +42,14 @@ GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 
 	solenoids.set(Sol::FLIPPER_LEFT, !switches.get(Sw::FLIPPER_LEFT));
 	solenoids.set(Sol::FLIPPER_RIGHT, !switches.get(Sw::FLIPPER_RIGHT));
+
+	// For testing: FL LEFT cycles through lamps
+	if(!switches.get(Sw::FLIPPER_LEFT)) {
+		++current_lamp;
+		current_lamp %= max_lamps;
+		lamps.set(false);
+		lamps.set(static_cast<typename Interface::Lamps::Index>(current_lamp), true);
+	}
 
 	//
 	if(switches_delta.falling(Sw::HOLE0)) {
@@ -66,8 +77,26 @@ GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 		!switches.get(Sw::DTB0_3) &&
 		!switches.get(Sw::DTB0_4));
 
+	/*
+	std::cerr
+		<< "DTB0: "
+		<< switches.get(Sw::DTB0_0)
+		<< switches.get(Sw::DTB0_1)
+		<< switches.get(Sw::DTB0_2)
+		<< switches.get(Sw::DTB0_3)
+		<< switches.get(Sw::DTB0_4)
+		<< std::endl;
+	*/
+
 	// Ball return
 	solenoids.set(Sol::BALL_RETURN, !ball_return.get());
+
+	/*
+	std::cerr
+		<< "BALL: "
+		<< ball_return.get()
+		<< std::endl;
+	*/
 
 	//
 	// Display
