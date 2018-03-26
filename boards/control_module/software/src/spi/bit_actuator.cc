@@ -10,6 +10,11 @@ void BitActuator<Index_, SLAVE_>::next_frame(double dt) {
 }
 
 template<typename Index_, Spi::Slave SLAVE_>
+void BitActuator<Index_, SLAVE_>::set(bool value) {
+	memset(state, value ? 0x00 : 0xff, DATA_BYTES);
+}
+
+template<typename Index_, Spi::Slave SLAVE_>
 void BitActuator<Index_, SLAVE_>::set(Index index, bool value) {
 	int idx = static_cast<int>(index);
 	if(value) {

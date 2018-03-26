@@ -19,8 +19,13 @@ class MemorySensorActuator {
 
 		void next_frame(double dt) { }
 
-		void set() {
-			bits.set();
+		void set(bool v) {
+			if(v) {
+				bits.set();
+			}
+			else {
+				bits.reset();
+			}
 		}
 		void set(Index i, bool v) {
 			bits[(int)i] = v;
