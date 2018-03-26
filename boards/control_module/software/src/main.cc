@@ -27,20 +27,12 @@ void fill_playlist(void) {
 
 #if MOCK_SPI
 	#include "game_interface/dummy_interface.h"
-	#include "game_interface/curses_interface.h"
-	DummyInterface dummy_interface;
-	CursesInterface<DummyInterface> interface {
-		Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS),
-		dummy_interface
-	};
+	DummyInterface spi_interface;
+	using SpiInterface = DummyInterface;
 
-	using GameLogic_t = GameLogic<
-		CursesInterface<DummyInterface>
-		>;
 #else
 	#include "spi/spi.h"
 	#include "spi/spi_interface.h"
-	#include "game_interface/curses_interface.h"
 
 	Spi spi;
 	SpiInterface spi_interface {
@@ -48,14 +40,24 @@ void fill_playlist(void) {
 		DISPLAY_MODULE_COUNT,
 		Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COLUMNS)
 	};
-	CursesInterface<SpiInterface> interface {
+#endif
+
+
+#if CURSES_UI
+	#include "game_interface/curses_interface.h"
+
+	using Interface = CursesInterface<SpiInterface>;
+	Interface interface {
 		Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS),
 		spi_interface
 	};
-	using GameLogic_t = GameLogic<
-		CursesInterface<SpiInterface>
-		>;
+
+#else
+	using Interface = SpiInterface;
+	Interface& interface = spi_interface;
 #endif
+
+using GameLogic_t = GameLogic<Interface>;
 
 int main(int argc, const char **argv) {
 
