@@ -5,13 +5,16 @@
 #include <functional>
 #include <cassert>
 
-#include "framer.h"
-
+/**
+ * Wrap a boolean value-getter function $f such that
+ * $this->get() yields only $active (true/false) if $f() returned
+ * $active for at least $delay_ms milliseconds (according to observations in the previous frames)
+ */
 class KeepValueDelay {
   
   public:
-    KeepValueDelay(std::function<bool()> f, Framer& framer, bool active_side, int32_t delay_ms)
-      : function(f), framer(framer), active_side(active_side), delay_ms(delay_ms), active_time_ms(0) {
+    KeepValueDelay(std::function<bool()> f, bool active_side, int32_t delay_ms)
+      : function(f), active_side(active_side), delay_ms(delay_ms), active_time_ms(0) {
     }
 
     void next_frame(double dt) {
@@ -31,7 +34,6 @@ class KeepValueDelay {
 
   private:
     std::function<bool()> function;
-    Framer& framer;
     bool active_side;
     int32_t delay_ms;
     int32_t active_time_ms;
