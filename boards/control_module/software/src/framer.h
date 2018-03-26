@@ -11,15 +11,15 @@ class Framer {
 
 		void next_frame();
 		void wait_frame_end();
-		int32_t get_last_frame_duration_us();
+		int64_t get_last_frame_duration_us();
 
 	private:
-		static int get_time_us();
-		static void wait_us(int32_t);
+		static int64_t get_time_us();
+		static void wait_us(int64_t);
 
-		int32_t frame_length;
-		int32_t frame_start;
-		int32_t last_frame_duration;
+		int64_t frame_length;
+		int64_t frame_start;
+		int64_t last_frame_duration;
 
 		double avg_real_length;
 		static constexpr double real_length_alpha = .01;
