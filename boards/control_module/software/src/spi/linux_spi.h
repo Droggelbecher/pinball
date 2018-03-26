@@ -20,6 +20,7 @@
 
 #define GPIO_GET *(gpio_map+13)
 
+
 class Spi {
 
 	public:

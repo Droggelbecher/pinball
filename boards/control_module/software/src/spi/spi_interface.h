@@ -7,9 +7,6 @@
 #include "spi/lamps.h"
 #include "canvas/canvas.h"
 
-// TODO
-// Make this work, take DummyInterface and CursesInterface as example.
-
 class SpiInterface {
 	public:
 		using Switches = ::Switches;
