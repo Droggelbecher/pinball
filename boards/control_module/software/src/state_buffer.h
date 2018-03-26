@@ -4,36 +4,53 @@
 
 template<typename T>
 class StateBuffer {
+
+	private:
+		void swap_buffers() {
+			state_idx = 1 - state_idx;
+		}
+
+		typename T::Bitset& current() {
+			return state[state_idx];
+		}
+
+		typename T::Bitset& previous() {
+			return state[1 - state_idx];
+		}
+
 	
 	public:
 		StateBuffer(T& t) : decorated(t) {
 		}
 
 		void next_frame(double dt) {
-			previous_state = decorated.get_bits();
+			swap_buffers();
+			current() = decorated.get_bits();
 			decorated.next_frame(dt);
 		}
 
 		bool changed() {
-			return previous_state != decorated.get_bits();
+			return previous() != current();
 		}
 
 		bool rising(typename T::Index idx) {
-			return !previous_state[static_cast<int>(idx)] && decorated.get(idx);
-			
+			int i = static_cast<int>(idx);
+			return !previous()[i] && current()[i];
 		}
 
 		bool falling(typename T::Index idx) {
-			return previous_state[static_cast<int>(idx)] && !decorated.get(idx);
+			int i = static_cast<int>(idx);
+			return previous()[i] && !current()[i];
 		}
 
 		const typename T::Bitset& get_previous_state() {
-			return previous_state;
+			return previous();
 		}
 
 	private:
 		T& decorated;
-		typename T::Bitset previous_state;
+		int state_idx = 0;
+		typename T::Bitset state[2];
 };
 
 #endif // STATE_BUFFER_H
