@@ -51,6 +51,7 @@ void setup_spi(void);
 void setup_uart(void);
 void setup_lamps(void);
 
+void set_column(uint8_t);
 void reset_sr(void);
 void shift_one(void);
 void shift_zero(void);

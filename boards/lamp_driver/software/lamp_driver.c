@@ -38,6 +38,11 @@ void setup_lamps(void) {
 	DDRD |= (1 << PD7);
 	DDRB |= (1 << PB1);
 
+	// PB0 = selftest
+	PORTB |= (1 << PB0);
+	DDRB &= ~(1 << PB0);
+	PORTB |= (1 << PB0);
+
 	SR_DDR |= SR_DS | SR_STCP | SR_SHCP;
 
 	memset(lamp_state_buffer, 0, sizeof(lamp_state_buffer));
@@ -50,10 +55,6 @@ void setup_spi(void) {
 
 	// SS = input
 	DDRB &= ~(1 << PB2);
-
-	// ERROR LED
-	DDRD |= (1 << PD7) | (1 << PD5);
-	PORTD &= ~((1 << PD7) | (1 << PD5));
 
 	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 0
 	// http://maxembedded.com/2013/11/the-spi-of-the-avr/
@@ -144,6 +145,10 @@ void mainloop(void) {
 		xfer_spi();
 		reset_sr();
 
+		if(!(PINB & (1 << PB0))) {
+			run_selftest();
+		}
+
 		for(i = 0; i < 8; i++) {
 			uint8_t c = lamp_states[i];
 			set_column(c);
@@ -167,20 +172,26 @@ void mainloop(void) {
 }
 
 void set_column(uint8_t c) {
-			PORTC = (c & 0x3f) | (1 << PC6); // lower 6 bits of c, reset pin (PC6) high
 
-			if(c & (1 << 6)) {
-				PORTB |= (1 << PB1);
-			}
-			else {
-				PORTB &= ~(1 << PB1);
-			}
-			if(c & (1 << 7)) {
-				PORTD |= (1 << PD7);
-			}
-			else {
-				PORTD &= ~(1 << PD7);
-			}
+	// Colum ports:
+	// Pin: PC0 PC1 PC2 PC3 PC4 PC5 PB1 PD7
+	// Bit:   0   1   2   3   4   5   6   7
+
+	// PORTC = 01cccccc 
+	PORTC = (c & 0x3f) | (1 << PC6); // lower 6 bits of c, reset pin (PC6) high
+
+	if(c & (1 << 6)) {
+		PORTB |= (1 << PB1);
+	}
+	else {
+		PORTB &= ~(1 << PB1);
+	}
+	if(c & (1 << 7)) {
+		PORTD |= (1 << PD7);
+	}
+	else {
+		PORTD &= ~(1 << PD7);
+	}
 }
 
 
@@ -188,7 +199,6 @@ void run_selftest(void) {
 	int i;
 	int j;
 	int k;
-	int l;
 
 	memset(lamp_state_buffer, 0, sizeof(lamp_state_buffer));
 	while(1) {
