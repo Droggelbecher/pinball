@@ -1,9 +1,10 @@
 
-//#include "spi_display.h"
 
 #include <cassert>
 #include <string>
+#include <cstring> // memset
 
+#include "spi_display.h"
 
 SpiDisplay::SpiDisplay(Spi& spi, uint8_t modules, Coordinate<> module_size)
 	: spi_(spi), modules_(modules), module_size_(module_size) {
@@ -33,9 +34,19 @@ void SpiDisplay::next_frame(double dt) {
 	spi_.disable_all();
 }
 
+void SpiDisplay::clear() {
+	static const unsigned char size = modules_ * module_size_.area();
+	memset(display_screen_, 0x00, size);
+}
+
+
 void SpiDisplay::set_pixel(Coordinate<> c, uint8_t color) {
-	const unsigned char module = c.column() / module_size_.column();
-	const unsigned char col = c.column() % module_size_.column();
+	static const unsigned char module_area = module_size_.area();
+	static const unsigned char module_cols = module_size_.column();
+	static const unsigned char module_rows = module_size_.row();
+
+	const unsigned char module = c.column() / module_cols;
+	static const unsigned char col = c.column() % module_cols;
 
 	// screen[module][colors][rows][columns]
 	
@@ -44,9 +55,9 @@ void SpiDisplay::set_pixel(Coordinate<> c, uint8_t color) {
 	assert(0 <= module && module < modules_);
 
 	uint8_t *r = display_screen_ +
-		(modules_ - module - 1) * (module_size_.column() * module_size_.row()) +
-		c.row() * (module_size_.column()) +
-		(module_size_.column() - col - 1);
+		(modules_ - module - 1) * module_area +
+		c.row() * module_cols +
+		(module_cols - col - 1);
 
 	assert(r >= display_screen_);
 	assert(r < (display_screen_ + modules_ * module_size_.area()));

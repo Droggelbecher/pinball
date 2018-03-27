@@ -6,12 +6,11 @@
 #include <cstring>
 
 #include "coordinate.h"
-#include "canvas/canvas.h"
 
 /**
  *
  */
-class CanvasBuffer : public Canvas {
+class CanvasBuffer {
 	public:
 		CanvasBuffer(Coordinate<> size);
 
@@ -19,10 +18,11 @@ class CanvasBuffer : public Canvas {
 			memset(buffer_.get(), c, size_.row() * size_.column());
 		}
 
-		void set_pixel(Coordinate<> c, uint8_t color) override;
-		uint8_t get_pixel(Coordinate<> c) const override;
+		void clear();
+		void set_pixel(Coordinate<> c, uint8_t color) ;
+		uint8_t get_pixel(Coordinate<> c) const ;
 
-		Coordinate<> size() const override { return size_; }
+		Coordinate<> size() const  { return size_; }
 
 		// Raw access
 

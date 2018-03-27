@@ -30,6 +30,7 @@ class CursesInterface {
 		};
 
 	public:
+		using Canvas = BroadcastCanvas<CanvasBuffer, typename TDecorated::Canvas>;
 		using Switches = SensorActuatorOverride<typename TDecorated::Switches>;
 		using Solenoids = typename TDecorated::Solenoids;
 		using Lamps = SensorActuatorOverride<typename TDecorated::Lamps>;
@@ -55,7 +56,7 @@ class CursesInterface {
 
 		TDecorated &decorated_;
 		CanvasBuffer internal_canvas_;
-		BroadcastCanvas canvas_;
+		Canvas canvas_;
 		Switches switches_;
 		Lamps lamps_;
 };

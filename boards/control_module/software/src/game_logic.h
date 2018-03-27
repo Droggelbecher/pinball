@@ -36,7 +36,7 @@ class GameLogic {
       true, 1000
     };
 
-    ScrollingCanvas marquee { interface.canvas(), { 0.0, 10.0 } };
+    ScrollingCanvas<typename Interface::Canvas> marquee { interface.canvas(), { 0.0, 10.0 } };
 
     Audio::audio_source_t sound_r2d2_again;
     Audio::audio_source_t sound_death_star_explode;

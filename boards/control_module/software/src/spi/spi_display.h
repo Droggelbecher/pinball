@@ -6,7 +6,7 @@
 #include "spi/spi.h"
 #include "coordinate.h"
 
-class SpiDisplay : public Canvas {
+class SpiDisplay /*: public Canvas*/ {
 	public:
 		enum Color {
 			C_BLACK = 0,
@@ -24,19 +24,20 @@ class SpiDisplay : public Canvas {
 		SpiDisplay(Spi&, uint8_t, Coordinate<>);
 		~SpiDisplay();
 
-		Coordinate<> size() const override;
-		void next_frame(double dt) override;
+		Coordinate<> size() const;
+		void next_frame(double dt);
 
-		void set_pixel(Coordinate<> c, uint8_t color) override;
-		uint8_t get_pixel(Coordinate<> c) const override;
+		void clear();
+		void set_pixel(Coordinate<> c, uint8_t color);
+		uint8_t get_pixel(Coordinate<> c) const;
 
 		int buffer_length() const;
 		uint8_t* buffer();
 
 	private:
 		Spi& spi_;
-		uint8_t modules_;
-		Coordinate<> module_size_;
+		const uint8_t modules_;
+		const Coordinate<> module_size_;
 		uint8_t *display_screen_;
 };
 

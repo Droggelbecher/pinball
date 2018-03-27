@@ -9,8 +9,6 @@ project(Pinball)
 
 set(my_SOURCES
 	src/canvas/canvas_buffer.cc
-	src/canvas/scrolling_canvas.cc
-	src/canvas/broadcast_canvas.cc
 	src/framer.cc
 	src/main.cc
 	src/pcf_font.cc

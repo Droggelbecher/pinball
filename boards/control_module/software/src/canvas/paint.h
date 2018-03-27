@@ -11,9 +11,6 @@ void paint_random(C& canvas) {
 			canvas.set_pixel(Coordinate<>(row, column), rand() % 8);
 		}
 	}
-	//for(int i = 0; i < canvas.buffer_length(); i++) {
-		//canvas.buffer()[i] = rand() % 8;
-	//}
 }
 
 template<typename C>
@@ -23,11 +20,15 @@ void paint_pattern(C& canvas) {
 			canvas.set_pixel(Coordinate<>(row, column), (row + column) % 8);
 		}
 	}
-	//for(int i = 0; i < canvas.buffer_length(); i++) {
-		//canvas.buffer()[i] = rand() % 8;
-	//}
 }
 
+template<typename C>
+auto paint_clear(C& canvas) -> decltype(canvas.clear(), void()) {
+	canvas.clear();
+}
+
+
+/*
 template<typename C>
 void paint_clear(C& canvas) {
 	for(int row = 0; row < canvas.size().row(); ++row) {
@@ -36,6 +37,7 @@ void paint_clear(C& canvas) {
 		}
 	}
 }
+*/
 
 #endif // PAINT_H
 

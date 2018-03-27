@@ -3,7 +3,7 @@
 #define PCF_FONT_H
 
 #include <string>
-#include "canvas/canvas.h"
+#include "coordinate.h"
 
 class PcfFont {
 
@@ -77,8 +77,55 @@ class PcfFont {
 
 		Coordinate<> size(const std::string& text);
 
-		bool paint_char(Canvas& canvas, char ch, Coordinate<> c, uint8_t color);
-		bool paint_string(Canvas& canvas, const char *s, Coordinate<> c, uint8_t color);
+		template<typename Canvas>
+		bool paint_char(Canvas& canvas, char ch, Coordinate<> c, uint8_t color) {
+			uint16_t offs = transformed_.offsets[(uint8_t)ch];
+			const uint16_t end = transformed_.offsets[(uint8_t)ch + 1];
+
+			Coordinate<uint16_t> cb = c;
+
+			bool r = false;
+			if(offs == 0xffff) { return r; }
+
+			//for(uint16_t row = c.row(); offs < end; offs += 2, row++) {
+			for( ; offs < end; offs += 2, cb.row()++) {
+				cb.column() = c.column();
+
+				uint8_t bits0 = transformed_.bitmap_data[offs];
+				uint8_t bits1 = transformed_.bitmap_data[offs + 1];
+				int bit;
+				for(bit = 0; bit < 8; bit++, cb.column()++) {
+					//cb.column()++;
+
+					//Coordinate<> cb(row, c.column() + bit);
+					if((bits0 & (1 << bit)) && canvas.size().contains(cb)) {
+						canvas.set_pixel(cb, color);
+						r = true;
+					}
+
+					//cb = Coordinate<>(row + 1, c.column() + bit);
+					Coordinate<> cb1 = cb + Coordinate<>(1, 0);
+					if((bits1 & (1 << bit)) && canvas.size().contains(cb1)) {
+						canvas.set_pixel(cb1, color);
+						r = true;
+					}
+				}
+			}
+			return r;
+		}
+
+		template<typename Canvas>
+		bool paint_string(Canvas& canvas, const char *s,  Coordinate<> start, uint8_t color) {
+
+			uint16_t width = 8;
+			uint8_t r;
+
+			for( ; *s != '\0'; s++) {
+				r = paint_char(canvas, *s, start, color) || r;
+				start += Coordinate<>(0, width);
+			}
+			return r;
+		}
 
 	private:
 

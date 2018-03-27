@@ -6,20 +6,48 @@
 #include <memory>
 #include <functional>
 
-#include "canvas/canvas.h"
-
-class BroadcastCanvas : public Canvas {
+template<typename... Cs>
+class BroadcastCanvas {
 	public:
-		BroadcastCanvas(std::initializer_list<std::reference_wrapper<Canvas> > cs);
+		void clear() { };
+		void set_pixel(Coordinate<>, uint8_t) { };
+		void next_frame(double) { };
+};
 
-		void set_pixel(Coordinate<> c, uint8_t color) override;
-		uint8_t get_pixel(Coordinate<> c) const override;
-		void next_frame(double dt) override;
-		Coordinate<> size() const override;
+template<typename C, typename... Cs>
+class BroadcastCanvas<C, Cs...> : BroadcastCanvas<Cs...> {
+		using Parent = BroadcastCanvas<Cs...>;
+
+	public:
+		BroadcastCanvas(C& canvas, Cs&... cs)
+			: Parent(cs...), canvas_(canvas) { }
+
+		void clear() {
+			canvas_.clear();
+			Parent::clear();
+		}
+
+		void set_pixel(Coordinate<> c, uint8_t color) {
+			canvas_.set_pixel(c, color);
+			Parent::set_pixel(c, color);
+		}
+
+		uint8_t get_pixel(Coordinate<> c) const {
+			return canvas_.get_pixel(c);
+		}
+
+		void next_frame(double dt) {
+			canvas_.next_frame(dt);
+			Parent::next_frame(dt);
+		}
+
+		Coordinate<> size() const {
+			return canvas_.size();
+		}
 
 	private:
-		std::vector<std::reference_wrapper<Canvas> > canvas_;
-
+		//std::vector<std::reference_wrapper<Canvas> > canvas_;
+		C& canvas_;
 };
 
 #endif // BROADCAST_CANVAS_H

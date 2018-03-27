@@ -266,41 +266,6 @@ Coordinate<> PcfFont::size(const std::string& text) {
 	return Coordinate<>();
 }
 
-bool PcfFont::paint_char(Canvas& canvas, char ch, Coordinate<> c, uint8_t color) {
-	uint16_t offs = transformed_.offsets[(uint8_t)ch];
-	bool r = false;
-	if(offs == 0xffff) { return r; }
 
-	for(uint16_t row = c.row(); offs < transformed_.offsets[(uint8_t)ch + 1]; offs += 2, row++) {
-		int bit;
-		for(bit = 0; bit < 8; bit++) {
-
-			Coordinate<> cb(row, c.column() + bit);
-			if((transformed_.bitmap_data[offs] & (1 << bit)) && canvas.size().contains(cb)) {
-				canvas.set_pixel(cb, color);
-				r = true;
-			}
-
-			cb = Coordinate<>(row + 1, c.column() + bit);
-			if((transformed_.bitmap_data[offs + 1] & (1 << bit)) && canvas.size().contains(cb)) {
-				canvas.set_pixel(cb, color);
-				r = true;
-			}
-		}
-	}
-	return r;
-}
-
-bool PcfFont::paint_string(Canvas& canvas, const char *s,  Coordinate<> start, uint8_t color) {
-
-	uint16_t width = 8;
-	uint8_t r;
-
-	for( ; *s != '\0'; s++) {
-		r = paint_char(canvas, *s, start, color) || r;
-		start += Coordinate<>(0, width);
-	}
-	return r;
-}
 
 /* vim: set ts=2 sw=2 tw=78 noexpandtab :*/

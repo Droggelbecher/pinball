@@ -35,6 +35,9 @@ class Coordinate {
 		T row() const { return row_; }
 		T column() const { return column_; }
 
+		T& row() { return row_; }
+		T& column() { return column_; }
+
 		template<typename C>
 		Coordinate<decltype(T() + typename C::Ordinate())> operator+(const C& other) {
 			return { row() + other.row(), column() + other.column() };

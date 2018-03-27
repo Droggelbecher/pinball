@@ -4,6 +4,13 @@
 #include "memory_sensor_actuator.h"
 
 class DummyInterface {
+		struct DummyCanvas {
+			void clear() { };
+			void set_pixel(Coordinate<> c, uint8_t co) { };
+			uint8_t get_pixel(Coordinate<> c) const { return 0; }
+			Coordinate<> size() const { return { 0, 0 }; }
+		};
+
 	public:
 		enum class SwitchesIndex {
 			FLIPPER_LEFT = 2,
@@ -45,6 +52,7 @@ class DummyInterface {
 			MAX
 		};
 
+		using Canvas = DummyCanvas;
 		using Switches = MemorySensorActuator<SwitchesIndex>;
 		using Solenoids = MemorySensorActuator<SolenoidsIndex>;
 		using Lamps = MemorySensorActuator<LampsIndex>;
@@ -58,11 +66,6 @@ class DummyInterface {
 		Lamps& lamps() { return lamps_; }
 
 	private:
-		struct DummyCanvas : public Canvas {
-			void set_pixel(Coordinate<> c, uint8_t co) override { };
-			uint8_t get_pixel(Coordinate<> c) const override { return 0; }
-			Coordinate<> size() const override { return { 0, 0 }; }
-		};
 
 		DummyCanvas canvas_;
 		Switches switches_;
