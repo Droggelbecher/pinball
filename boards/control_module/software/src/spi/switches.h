@@ -14,13 +14,15 @@ class Switches {
 			DTB0_0 = 8,
 			DTB0_1 = 9,
 			DTB0_2 = 10,
-			DTB0_3 = 11,
-			DTB0_4 = 12,
+			// yes the contacts for these are actually swapped,
+			// less work to just correct it here in software :-)
+			DTB0_4 = 11,
+			DTB0_3 = 12,
 
 			SLINGSHOT0 = 3,
 			SLINGSHOT1 = 4,
 
-			BUMPER0 = 13, // ?
+			BUMPER0 = 13,
 			BUMPER1 = 14,
 			BUMPER2 = 15,
 
