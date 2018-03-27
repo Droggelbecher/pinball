@@ -62,7 +62,7 @@ void Spi::open_gpio() {
 
 	gpio_map = (volatile unsigned *)m;
 
-	std::cout << "gpio set up." << std::endl;
+//	std::cout << "gpio set up." << std::endl;
 }
 
 void Spi::open_spi() {
@@ -110,7 +110,7 @@ void Spi::open_spi() {
 		exit(1);
 	}
 
-	std::cout << "spi open " << spi_cs_fd << std::endl;
+//	std::cout << "spi open " << spi_cs_fd << std::endl;
 }
 
 std::vector<uint8_t> Spi::transfer_and_check(Slave slave, std::vector<uint8_t> input) {

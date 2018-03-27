@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 #set(CMAKE_INCLUDE_PATH "/usr/include")
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE Debug CACHE STRING "CMake Build Type (Debug/Release)")
 
 project(Pinball)
 
@@ -49,7 +49,6 @@ if(WITH_OPENAL_AUDIO)
 	set(my_SOURCES ${my_SOURCES} src/audio/openal_audio.cc)
 
 	add_definitions(-DWITH_OPENAL_AUDIO)
-	find_package(OpenAL REQUIRED)
 endif(WITH_OPENAL_AUDIO)
 
 #
@@ -91,6 +90,8 @@ if(WITH_CURSES_UI)
 endif(WITH_CURSES_UI)
 
 if(WITH_OPENAL_AUDIO)
+	find_package(OpenAL REQUIRED)
+
 	include_directories(${OPENAL_INCLUDE_DIRS})
 	target_link_libraries(Pinball ${OPENAL_LIBRARY})
 
