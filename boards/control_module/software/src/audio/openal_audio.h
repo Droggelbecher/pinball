@@ -1,6 +1,6 @@
 
-#ifndef AUDIO_H
-#define AUDIO_H
+#ifndef OPENAL_AUDIO_H
+#define OPENAL_AUDIO_H
 
 #include <cstdint>
 #include <vector>
@@ -45,5 +45,5 @@ class Audio {
 };
 
 
-#endif // AUDIO_H
+#endif // OPENAL_AUDIO_H
 

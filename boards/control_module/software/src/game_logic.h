@@ -2,7 +2,7 @@
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
 
-#include "audio.h"
+#include "audio/audio.h"
 #include "canvas/scrolling_canvas.h"
 #include "canvas/broadcast_canvas.h"
 #include "state_buffer.h"
