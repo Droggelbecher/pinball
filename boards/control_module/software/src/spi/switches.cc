@@ -45,7 +45,7 @@ void Switches::read() {
 }
 
 bool Switches::get(Index index) {
-	return bits[static_cast<int>(index)];
+	return !bits[static_cast<int>(index)];
 }
 
 

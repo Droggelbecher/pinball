@@ -10,7 +10,7 @@
 /**
  * Decorate a given SensorActutator in the following way:
  * - set()ing is intercepted and sets the state of the decorator
- * - get()ing returns the state of decorated XOR state of of decorator.
+ * - get()ing returns (bool)(decorated == decorator).
  */
 template<typename TSensorActuator>
 class SensorActuatorOverride {
@@ -42,7 +42,7 @@ class SensorActuatorOverride {
 			bits[(int)i] = v;
 		}
 		bool get(Index i) {
-			return bits[(int)i] ^ decorated_.get(i);
+			return bits[(int)i] != decorated_.get(i);
 		}
 		const Bitset get_bits() {
 			return bits ^ decorated_.get_bits();

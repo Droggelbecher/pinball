@@ -33,7 +33,7 @@ class GameLogic {
     // Delay (debounce) ball return by a bit as to make sure ball has rolled all the way down first.
     KeepValueDelay ball_return {
       [this]() -> bool { return interface.switches().get(Interface::Switches::Index::BALL_OUT); },
-      false, 1000
+      true, 1000
     };
 
     ScrollingCanvas marquee { interface.canvas(), { 0.0, 10.0 } };

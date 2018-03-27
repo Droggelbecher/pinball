@@ -108,27 +108,29 @@ void CursesInterface<TDecorated>::handle_keys() {
 
 	static Key key_table[] = {
 		// Dvorak Keyboard Layout
-		{ '1', '!', "FL_L ", Idx::FLIPPER_LEFT,  true },
-		{ '2', '@', "FL_R ", Idx::FLIPPER_RIGHT, true },
-		{ '3', '#', "DTB00", Idx::DTB0_0, true },
-		{ '4', '$', "DTB01", Idx::DTB0_1, true },
-		{ '5', '%', "DTB02", Idx::DTB0_2, true },
-		{ '6', '^', "DTB03", Idx::DTB0_3, true },
-		{ '7', '&', "DTB04", Idx::DTB0_4, true },
-		{ '8', '*', "SS_0 ", Idx::SLINGSHOT0, true },
-		{ '9', '(', "SS_1 ", Idx::SLINGSHOT1, true },
-		{ '0', ')', "BMP_0", Idx::BUMPER0, true },
-		{ '[', '{', "BMP_1", Idx::BUMPER1, true },
-		{ ']', '}', "BMP_2", Idx::BUMPER2, true },
+		// tog flip name     idx                 state
+		{ '1', '!', "FL_L ", Idx::FLIPPER_LEFT,  false },
+		{ '2', '@', "FL_R ", Idx::FLIPPER_RIGHT, false },
+		{ '3', '#', "DTB00", Idx::DTB0_0,        false },
+		{ '4', '$', "DTB01", Idx::DTB0_1,        false },
+		{ '5', '%', "DTB02", Idx::DTB0_2,        false },
+		{ '6', '^', "DTB03", Idx::DTB0_3,        false },
+		{ '7', '&', "DTB04", Idx::DTB0_4,        false },
+		{ '8', '*', "SS_0 ", Idx::SLINGSHOT0,    false },
+		{ '9', '(', "SS_1 ", Idx::SLINGSHOT1,    false },
+		{ '0', ')', "BMP_0", Idx::BUMPER0,       false },
+		{ '[', '{', "BMP_1", Idx::BUMPER1,       false },
+		{ ']', '}', "BMP_2", Idx::BUMPER2,       false },
 
-		{ '\'', '"', "BLO ", Idx::BALL_OUT, true },
-		{ ',',  '<', "HOL0", Idx::HOLE0, true },
+		{ '\'', '"', "BLO ", Idx::BALL_OUT,      false },
+		{ ',',  '<', "HOL0", Idx::HOLE0,         false },
 	};
 
 	::printw("  ");
 	int i = 0;
 	for(const Key& key: key_table) {
-		attrset(!key.state ? (COLOR_PAIR(0) | A_REVERSE) : COLOR_PAIR(0));
+		//attrset(key.state ? (COLOR_PAIR(0) | A_REVERSE) : COLOR_PAIR(0));
+		attrset(switches().get(key.idx) ? (COLOR_PAIR(0) | A_REVERSE) : COLOR_PAIR(0));
 		::printw(" %c%c:%s ", (char)key.toggle, (char)key.flip, key.str);
 		attrset(COLOR_PAIR(0));
 		::printw(" ");

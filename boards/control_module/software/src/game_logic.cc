@@ -40,11 +40,11 @@ GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 
 	// Flipper switches control flippers
 
-	solenoids.set(Sol::FLIPPER_LEFT, !switches.get(Sw::FLIPPER_LEFT));
-	solenoids.set(Sol::FLIPPER_RIGHT, !switches.get(Sw::FLIPPER_RIGHT));
+	solenoids.set(Sol::FLIPPER_LEFT, switches.get(Sw::FLIPPER_LEFT));
+	solenoids.set(Sol::FLIPPER_RIGHT, switches.get(Sw::FLIPPER_RIGHT));
 
 	// For testing: FL LEFT cycles through lamps
-	if(!switches.get(Sw::FLIPPER_LEFT)) {
+	if(switches.get(Sw::FLIPPER_LEFT)) {
 		++current_lamp;
 		current_lamp %= max_lamps;
 		lamps.set(false);
@@ -52,30 +52,30 @@ GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 	}
 
 	//
-	if(switches_delta.falling(Sw::HOLE0)) {
+	if(switches_delta.rising(Sw::HOLE0)) {
 		audio.sound_play(sound_death_star_explode);
 	}
 
 
 	// Slingshot switches control slingshots
 
-	solenoids.set(Sol::SLINGSHOT0, !switches.get(Sw::SLINGSHOT0));
-	solenoids.set(Sol::SLINGSHOT1, !switches.get(Sw::SLINGSHOT1));
+	solenoids.set(Sol::SLINGSHOT0, switches.get(Sw::SLINGSHOT0));
+	solenoids.set(Sol::SLINGSHOT1, switches.get(Sw::SLINGSHOT1));
 
 	// Bumper
 	
-	solenoids.set(Sol::BUMPER0, !switches.get(Sw::BUMPER0));
-	solenoids.set(Sol::BUMPER1, !switches.get(Sw::BUMPER1));
-	solenoids.set(Sol::BUMPER2, !switches.get(Sw::BUMPER2));
+	solenoids.set(Sol::BUMPER0, switches.get(Sw::BUMPER0));
+	solenoids.set(Sol::BUMPER1, switches.get(Sw::BUMPER1));
+	solenoids.set(Sol::BUMPER2, switches.get(Sw::BUMPER2));
 
 	// If all drop targets are down, re-set them.
 
 	solenoids.set(Sol::DTB0,
-		!switches.get(Sw::DTB0_0) &&
-		!switches.get(Sw::DTB0_1) &&
-		!switches.get(Sw::DTB0_2) &&
-		!switches.get(Sw::DTB0_3) &&
-		!switches.get(Sw::DTB0_4));
+		switches.get(Sw::DTB0_0) &&
+		switches.get(Sw::DTB0_1) &&
+		switches.get(Sw::DTB0_2) &&
+		switches.get(Sw::DTB0_3) &&
+		switches.get(Sw::DTB0_4));
 
 	/*
 	std::cerr
@@ -89,7 +89,7 @@ GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 	*/
 
 	// Ball return
-	solenoids.set(Sol::BALL_RETURN, !ball_return.get());
+	solenoids.set(Sol::BALL_RETURN, ball_return.get());
 
 	/*
 	std::cerr

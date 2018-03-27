@@ -28,6 +28,6 @@ void BitActuator<Index_, SLAVE_>::set(Index index, bool value) {
 template<typename Index_, Spi::Slave SLAVE_>
 bool BitActuator<Index_, SLAVE_>::get(Index index) const {
 	int idx = static_cast<int>(index);
-	return (state[idx / 8] >> (idx % 8)) & 0x01;
+	return !((state[idx / 8] >> (idx % 8)) & 0x01);
 }
 
