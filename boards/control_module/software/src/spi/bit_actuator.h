@@ -2,6 +2,7 @@
 #ifndef BIT_ACTUATOR_H
 #define BIT_ACTUATOR_H
 
+#include <cstring> // memset
 #include "spi.h"
 
 template<

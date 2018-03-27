@@ -4,6 +4,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <glob.h>
+#include <signal.h>
 
 #include "config.h"
 #include "game_logic.h"
@@ -59,7 +60,16 @@ void fill_playlist(void) {
 
 using GameLogic_t = GameLogic<Interface>;
 
+void sig_handler(int signum) {
+	exit(1);
+}
+
+
 int main(int argc, const char **argv) {
+
+	// When aborted w/ Ctrl-C, make sure to still call exit(),
+	// such that gprof will generate its gmon.out
+	signal(SIGINT, sig_handler);
 
 	Framer framer(DISPLAY_TARGET_FPS);
 	GameLogic_t game_logic(interface);
