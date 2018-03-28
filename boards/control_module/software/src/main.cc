@@ -8,6 +8,7 @@
 
 #include "config.h"
 #include "game_logic.h"
+#include "interval_stats.h"
 
 
 void fill_playlist(void) {
@@ -67,6 +68,8 @@ void sig_handler(int signum) {
 
 int main(int argc, const char **argv) {
 
+	static IntervalStats fps_reporter("FPS", 5.0);
+
 	// When aborted w/ Ctrl-C, make sure to still call exit(),
 	// such that gprof will generate its gmon.out
 	signal(SIGINT, sig_handler);
@@ -79,7 +82,12 @@ int main(int argc, const char **argv) {
 
 	while(true) {
 		framer.next_frame();
-		game_logic.next_frame(framer.get_last_frame_duration_us() / 1000000.0f);
+
+		double dt = framer.get_last_frame_duration_us() / 1000000.0f;
+		fps_reporter.next_frame(dt);
+		fps_reporter.add_value(1.0 / dt);
+
+		game_logic.next_frame(dt);
 	}
 
 }
