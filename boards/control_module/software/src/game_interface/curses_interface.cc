@@ -19,7 +19,8 @@ CursesInterface<TDecorated>::CursesInterface(Coordinate<> size_, TDecorated& dec
 		internal_canvas_(size_),
 		canvas_ { internal_canvas_, decorated_.canvas() },
 		switches_(decorated_.switches()),
-		lamps_(decorated_.lamps())
+		lamps_(decorated_.lamps()),
+		solenoids_(decorated_.solenoids(), Solenoids::PASS_THROUGH)
 {
 
 
@@ -28,9 +29,12 @@ CursesInterface<TDecorated>::CursesInterface(Coordinate<> size_, TDecorated& dec
 
 	::initscr();
 	::nodelay(stdscr, TRUE); // allow non-blocking keyboard input
+	::cbreak(); // do not buffer keys
+	::keypad(stdscr, TRUE); // Read eg F-keys as well
+	::noecho();
 	::start_color();
 
-	for(int i = 0; i < sizeof(color_fg)/sizeof(color_fg[0]); i++) {
+	for(size_t i = 0; i < sizeof(color_fg)/sizeof(color_fg[0]); i++) {
 		::init_pair(i + 1, color_fg[i], color_bg[i]);
 	}
 
@@ -45,26 +49,65 @@ CursesInterface<TDecorated>::~CursesInterface() {
 
 template<typename TDecorated>
 void CursesInterface<TDecorated>::next_frame(double dt) {
-	using Idx = typename Solenoids::Index;
+	using Sol = typename Solenoids::Index;
+	using Sw = typename Switches::Index;
+
 	decorated().next_frame(dt);
 
+	// Direct control & feedback over solenoids
+
 	struct SolenoidState {
+		const int key;
 		const char *str;
-		Idx index;
+		Sol index;
 	};
 
+	static const int enable_solenoid_control_key = KEY_F(1);
+	static bool enable_solenoid_control = false;
 	static SolenoidState solenoid_states[] = {
-		{ "FL L", Idx::FLIPPER_LEFT },
-		{ "FL R", Idx::FLIPPER_RIGHT },
-		{ "DTB0", Idx::DTB0 },
-		{ "SS 0", Idx::SLINGSHOT0 },
-		{ "SS 1", Idx::SLINGSHOT1 },
-		{ "BMP0", Idx::BUMPER0 },
-		{ "BMP1", Idx::BUMPER1 },
-		{ "BMP2", Idx::BUMPER2 },
-		{ "BLRT", Idx::BALL_RETURN },
+		// Dvorak lower key row
+		{ 'a', "FL L", Sol::FLIPPER_LEFT },
+		{ 'o', "FL R", Sol::FLIPPER_RIGHT },
+		{ 'e', "DTB0", Sol::DTB0 },
+		{ 'u', "SS 0", Sol::SLINGSHOT0 },
+		{ 'i', "SS 1", Sol::SLINGSHOT1 },
+		{ 'd', "BMP0", Sol::BUMPER0 },
+		{ 'h', "BMP1", Sol::BUMPER1 },
+		{ 't', "BMP2", Sol::BUMPER2 },
+		{ 'n', "BLRT", Sol::BALL_RETURN },
+		{ 's', "AUX0", Sol::AUX0 },
+		{ '-', "AUX1", Sol::AUX1 }
 	};
 
+	// Direct control & feedback over switch states
+
+	struct Key {
+		int toggle;
+		int flip;
+		const char *str;
+		Sw idx;
+		bool state;
+	};
+
+	static Key key_table[] = {
+		// Dvorak Keyboard Layout
+		// tog flip name     idx                 state
+		{ '1', '!', "FL_L ", Sw::FLIPPER_LEFT,  false },
+		{ '2', '@', "FL_R ", Sw::FLIPPER_RIGHT, false },
+		{ '3', '#', "DTB00", Sw::DTB0_0,        false },
+		{ '4', '$', "DTB01", Sw::DTB0_1,        false },
+		{ '5', '%', "DTB02", Sw::DTB0_2,        false },
+		{ '6', '^', "DTB03", Sw::DTB0_3,        false },
+		{ '7', '&', "DTB04", Sw::DTB0_4,        false },
+		{ '8', '*', "SS_0 ", Sw::SLINGSHOT0,    false },
+		{ '9', '(', "SS_1 ", Sw::SLINGSHOT1,    false },
+		{ '0', ')', "BMP_0", Sw::BUMPER0,       false },
+		{ '[', '{', "BMP_1", Sw::BUMPER1,       false },
+		{ ']', '}', "BMP_2", Sw::BUMPER2,       false },
+
+		{ '\'', '"', "BLO ", Sw::BALL_OUT,      false },
+		{ ',',  '<', "HOL0", Sw::HOLE0,         false },
+	};
 
 	// Display emulation
 	// 
@@ -78,55 +121,9 @@ void CursesInterface<TDecorated>::next_frame(double dt) {
 			::printw("%c%c", color_symbols[col], color_symbols[col]);
 		}
 	}
-	row += 2;
-	int column = 2;
+	::printw("\n\n  ");
 
-	// Display Solenoid states
-	for(SolenoidState& s: solenoid_states) {
-		::move(row, column);
-		attrset(solenoids().get(s.index) ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
-		::printw(" %s ", s);
-		column += 7;
-	}
-	attrset(COLOR_PAIR(0));
-	row += 2;
-	::move(row, 0);
-	::refresh();
-	handle_keys();
-}
-
-template<typename TDecorated>
-void CursesInterface<TDecorated>::handle_keys() {
-	using Idx = typename Switches::Index;
-	struct Key {
-		int toggle;
-		int flip;
-		const char *str;
-		Idx idx;
-		bool state;
-	};
-
-	static Key key_table[] = {
-		// Dvorak Keyboard Layout
-		// tog flip name     idx                 state
-		{ '1', '!', "FL_L ", Idx::FLIPPER_LEFT,  false },
-		{ '2', '@', "FL_R ", Idx::FLIPPER_RIGHT, false },
-		{ '3', '#', "DTB00", Idx::DTB0_0,        false },
-		{ '4', '$', "DTB01", Idx::DTB0_1,        false },
-		{ '5', '%', "DTB02", Idx::DTB0_2,        false },
-		{ '6', '^', "DTB03", Idx::DTB0_3,        false },
-		{ '7', '&', "DTB04", Idx::DTB0_4,        false },
-		{ '8', '*', "SS_0 ", Idx::SLINGSHOT0,    false },
-		{ '9', '(', "SS_1 ", Idx::SLINGSHOT1,    false },
-		{ '0', ')', "BMP_0", Idx::BUMPER0,       false },
-		{ '[', '{', "BMP_1", Idx::BUMPER1,       false },
-		{ ']', '}', "BMP_2", Idx::BUMPER2,       false },
-
-		{ '\'', '"', "BLO ", Idx::BALL_OUT,      false },
-		{ ',',  '<', "HOL0", Idx::HOLE0,         false },
-	};
-
-	::printw("  ");
+	// Display switch states
 	int i = 0;
 	for(const Key& key: key_table) {
 		//attrset(key.state ? (COLOR_PAIR(0) | A_REVERSE) : COLOR_PAIR(0));
@@ -139,6 +136,27 @@ void CursesInterface<TDecorated>::handle_keys() {
 			i = 0;
 		}
 	}
+	::printw("\n\n  ");
+
+	// Display Solenoid states
+	attrset(enable_solenoid_control ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
+	::printw(" F1:ENABLE ");
+	attrset(COLOR_PAIR(0));
+	::printw(" ");
+	for(SolenoidState& s: solenoid_states) {
+		attrset(solenoids().decorated().get(s.index) ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
+		::printw(" %c:%s ", s.key, s.str);
+		attrset(COLOR_PAIR(0));
+		::printw(" ");
+	}
+	attrset(COLOR_PAIR(0));
+	::printw("\n\n");
+
+	for(std::string line: logger_) {
+		::printw("   %s\n", line.c_str());
+	}
+
+	::refresh();
 
 	// reset all key states
 	for(const Key& key: key_table) {
@@ -147,10 +165,18 @@ void CursesInterface<TDecorated>::handle_keys() {
 
 	// read & process key
 	int ch = getch();
-	if(ch == ERR) {
-		return;
+
+	if(ch == enable_solenoid_control_key) {
+		enable_solenoid_control = !enable_solenoid_control;
+		if(enable_solenoid_control) {
+			solenoids().set_mode(Solenoids::READ_ONLY);
+		}
+		else {
+			solenoids().set_mode(Solenoids::PASS_THROUGH);
+		}
 	}
 
+	// Is this a switch-emulating key?
 	for(Key& key: key_table) {
 		if(ch == key.toggle) {
 			switches().set(key.idx, !key.state);
@@ -163,16 +189,17 @@ void CursesInterface<TDecorated>::handle_keys() {
 		}
 	}
 
+	// Is this a solenoid-controlling key?
+	if(enable_solenoid_control) {
+		for(SolenoidState& solenoid: solenoid_states) {
+			if(ch == solenoid.key) {
+				solenoids().decorated().set(solenoid.index, true);
+				//break;
+			}
+			else {
+				solenoids().decorated().set(solenoid.index, false);
+			}
+		}
+	}
 }
-
-//template<typename TDecorated>
-//void CursesInterface<TDecorated>::set_pixel(Coordinate<> c, uint8_t color) {
-	//decorated().set_pixel(c, color);
-	//canvas().set_pixel(c, color);
-//}
-
-//template<typename TDecorated>
-//uint8_t CursesInterface<TDecorated>::get_pixel(Coordinate<> c) const {
-	//return canvas().get_pixel(c);
-//}
 

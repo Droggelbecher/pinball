@@ -26,7 +26,7 @@ namespace {
 		is.read(reinterpret_cast<char*>(buffer), sizeof(buffer));
 
 		R r = 0;
-		for(int i = 0; i < sizeof(buffer); i++) {
+		for(size_t i = 0; i < sizeof(buffer); i++) {
 			r |= buffer[i] << OrderTrait::shift(i, sizeof(buffer));
 		}
 		return r;
@@ -108,7 +108,7 @@ void PcfFont::load_font(const char *filename) {
 	const int bytes_per_row = 1 << (bitmaps.format & PCF_GLYPH_PAD_MASK);
 	const float size_factor = 2.0 / bytes_per_row;
 
-	for(int glyph = 0; glyph < bitmaps.glyph_count - 1; glyph++) {
+	for(size_t glyph = 0; glyph < bitmaps.glyph_count - 1; glyph++) {
 		int offset_start = bitmaps.offsets[glyph];
 		int offset_end = bitmaps.offsets[glyph + 1];
 
@@ -222,10 +222,10 @@ PcfFont::Bitmaps::Bitmaps(std::ifstream& pcf)
 	format = read_lsb_u32(pcf);
 	glyph_count = read_u32(pcf, format);
 	offsets = new uint32_t[glyph_count];
-	for(int i = 0; i < glyph_count; i++) {
+	for(size_t i = 0; i < glyph_count; i++) {
 		offsets[i] = read_u32(pcf, format);
 	}
-	for(int i = 0; i < 4; i++) {
+	for(size_t i = 0; i < 4; i++) {
 		bitmap_sizes[i] = read_u32(pcf, format);
 	}
 	uint32_t sz = bitmap_sizes[format & PCF_GLYPH_PAD_MASK];

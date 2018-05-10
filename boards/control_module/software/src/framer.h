@@ -20,10 +20,6 @@ class Framer {
 		int64_t frame_length;
 		int64_t frame_start;
 		int64_t last_frame_duration;
-
-		double avg_real_length;
-		static constexpr double real_length_alpha = .01;
-
 };
 
 

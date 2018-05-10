@@ -7,6 +7,7 @@
 #include "canvas/canvas_buffer.h"
 #include "canvas/broadcast_canvas.h"
 #include "sensor_actuator_override.h"
+#include "buffer_logger.h"
 
 /**
  * Interface wrapper that displays current state
@@ -32,8 +33,9 @@ class CursesInterface {
 	public:
 		using Canvas = BroadcastCanvas<CanvasBuffer, typename TDecorated::Canvas>;
 		using Switches = SensorActuatorOverride<typename TDecorated::Switches>;
-		using Solenoids = typename TDecorated::Solenoids;
+		using Solenoids = SensorActuatorOverride<typename TDecorated::Solenoids>;
 		using Lamps = SensorActuatorOverride<typename TDecorated::Lamps>;
+		using Logger = BufferLogger<10>;
 
 		CursesInterface(Coordinate<> display_size, TDecorated& decorated);
 		~CursesInterface();
@@ -42,9 +44,10 @@ class CursesInterface {
 
 		TDecorated& decorated() { return decorated_; }
 		Switches& switches() { return switches_; }
-		Solenoids& solenoids() { return decorated().solenoids(); }
+		Solenoids& solenoids() { return solenoids_; }
 		Lamps& lamps() { return lamps_; }
 		Canvas& canvas() { return canvas_; }
+		Logger& logger() { return logger_; }
 
 	private:
 		void print_state(const char *s, bool active, int row, int column);
@@ -59,6 +62,8 @@ class CursesInterface {
 		Canvas canvas_;
 		Switches switches_;
 		Lamps lamps_;
+		Solenoids solenoids_;
+		Logger logger_;
 };
 
 #include "game_interface/curses_interface.cc"

@@ -18,7 +18,7 @@ class Audio {
 		void playlist_play() { };
 		void playlist_stop() { };
 
-		audio_source_t sound_load(const char *filename) { };
+		audio_source_t sound_load(const char *filename) { return 0; };
 		void sound_play(audio_source_t) { };
 		void sound_stop(audio_source_t) { };
 

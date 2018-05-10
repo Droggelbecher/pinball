@@ -49,6 +49,8 @@ class DummyInterface {
 			BUMPER2 = 7,//SPI_SOLENOIDS_BUMPER_2_IDX
 
 			BALL_RETURN = 8,
+			AUX0 = 9,
+			AUX1 = 10,
 			MAX
 		};
 

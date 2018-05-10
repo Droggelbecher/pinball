@@ -68,7 +68,7 @@ void sig_handler(int signum) {
 
 int main(int argc, const char **argv) {
 
-	static IntervalStats fps_reporter("FPS", 5.0);
+	IntervalStats<Interface::Logger> fps_reporter("FPS", 10.0, interface.logger());
 
 	// When aborted w/ Ctrl-C, make sure to still call exit(),
 	// such that gprof will generate its gmon.out

@@ -10,12 +10,21 @@
 /**
  * Decorate a given SensorActutator in the following way:
  * - set()ing is intercepted and sets the state of the decorator
- * - get()ing returns (bool)(decorated == decorator).
+ * - get()ing returns decorated XOR decorator iff enabled, else it shows state of decorated
+ * 
+ * Thus, enable_xor gives a masking behavior, whereas disabled will just
+ * throw away all set() calls and pass through get().
  */
 template<typename TSensorActuator>
 class SensorActuatorOverride {
 	public:
 		using Index = typename TSensorActuator::Index;
+
+		enum Mode {
+			PASS_THROUGH, // set() -> decorated,      get() = decorated
+			MASK_GET,     // set() -> internal state, get() = internal state XOR decorated
+			READ_ONLY     // set() -> internal state, get() = decorated
+		};
 
 		enum {
 			DATA_BITS = static_cast<int>(Index::MAX),
@@ -24,28 +33,55 @@ class SensorActuatorOverride {
 
 		typedef std::bitset<DATA_BITS> Bitset;
 
-		SensorActuatorOverride(TSensorActuator& decorated)
-			: decorated_(decorated) {
+		SensorActuatorOverride(TSensorActuator& decorated, Mode mode = MASK_GET)
+			: decorated_(decorated), mode_(mode) {
 
+		}
+
+		void set_mode(Mode mode) {
+			mode_ = mode;
 		}
 
 		void next_frame(double dt) { }
 		void set(bool v) {
-			if(v) {
-				bits.set();
+			if(mode_ == PASS_THROUGH) {
+				decorated_.set(v);
 			}
 			else {
-				bits.reset();
+				if(v) {
+					bits.set();
+				}
+				else {
+					bits.reset();
+				}
 			}
 		}
+
 		void set(Index i, bool v) {
-			bits[(int)i] = v;
+			if(mode_ == PASS_THROUGH) {
+				decorated_.set(i, v);
+			}
+			else {
+				bits[(int)i] = v;
+			}
 		}
+
 		bool get(Index i) {
-			return bits[(int)i] != decorated_.get(i);
+			if(mode_ == MASK_GET) {
+				return bits[(int)i] != decorated_.get(i);
+			}
+			else {
+				return decorated_.get(i);
+			}
 		}
+
 		const Bitset get_bits() {
-			return bits ^ decorated_.get_bits();
+			if(mode_ == MASK_GET) {
+				return bits ^ decorated_.get_bits();
+			}
+			else {
+				return decorated_.get_bits();
+			}
 		}
 
 		TSensorActuator& decorated() {
@@ -54,6 +90,7 @@ class SensorActuatorOverride {
 
 	private:
 		TSensorActuator& decorated_;
+		Mode mode_;
 		Bitset bits;
 };
 

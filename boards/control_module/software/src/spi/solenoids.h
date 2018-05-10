@@ -5,20 +5,26 @@
 #include "spi.h"
 #include "bit_actuator.h"
 
-//#include <spi_protocols/solenoids.h>
+#include <spi_protocols/solenoids.h>
 
 namespace solenoids_detail {
 	enum class Index {
-		FLIPPER_LEFT = 0,
-		FLIPPER_RIGHT = 1,
-		DTB0 = 2,
-		SLINGSHOT0 = 3,
-		SLINGSHOT1 = 4,
-		BUMPER0 = 5,
-		BUMPER1 = 6,
-		BUMPER2 = 7,
+		FLIPPER_LEFT = SPI_SOLENOIDS_FLIPPER_LEFT_IDX,
+		FLIPPER_RIGHT = SPI_SOLENOIDS_FLIPPER_RIGHT_IDX,
+		DTB0 = SPI_SOLENOIDS_DROP_TARGET_BANK_0_IDX,
+		SLINGSHOT0 = SPI_SOLENOIDS_SLINGSHOT_LEFT_IDX,
+		SLINGSHOT1 = SPI_SOLENOIDS_SLINGSHOT_RIGHT_IDX,
+		BUMPER0 = SPI_SOLENOIDS_BUMPER_0_IDX,
+		BUMPER1 = SPI_SOLENOIDS_BUMPER_1_IDX,
+		BUMPER2 = SPI_SOLENOIDS_BUMPER_2_IDX,
 
-		BALL_RETURN = 8,
+		// Hardware problems currently in both port BALL_RETURN and AUX_1,
+		// luckily we currently have 2 spares anyway, use AUX_0 for ball return
+		AUX0 = SPI_SOLENOIDS_BALL_RETURN_IDX,
+		BALL_RETURN = SPI_SOLENOIDS_AUX_0_IDX,
+
+		AUX1 = SPI_SOLENOIDS_AUX_1_IDX,
+
 		MAX = 16
 	};
 }

@@ -15,7 +15,9 @@
 
 Framer::Framer(double framerate)
 : frame_length { static_cast<int64_t>(1000000 / framerate) },
-	frame_start { get_time_us() } {
+	frame_start { get_time_us() },
+	last_frame_duration { frame_length }
+{
 
 }
 
@@ -74,7 +76,6 @@ int64_t Framer::get_time_us() {
 	gettimeofday(&time, NULL);
 	us = time.tv_sec * 1000000 + time.tv_usec;
 #else
-	time_t s;  // Seconds
 	struct timespec spec;
 	clock_gettime(CLOCK_MONOTONIC, &spec);
 	us = spec.tv_sec * 1000000 + (spec.tv_nsec / 1.0e3);

@@ -3,9 +3,10 @@
 
 #include <iostream>
 
+template<typename Logger>
 class IntervalStats {
 	public:
-		IntervalStats(const char *name, double interval) : name_(name), interval_(interval) {
+		IntervalStats(const char *name, double interval, Logger& logger) : name_(name), interval_(interval), logger_(logger) {
 		}
 
 		void next_frame(double dt) {
@@ -17,12 +18,12 @@ class IntervalStats {
 		}
 
 		void report() {
-			std::cout << name_
+			logger_ << name_
 				<< " min:" << value_min
 				<< " avg:" << value_avg
 				<< " max:" << value_max
 				<< " count:" << value_count
-				<< std::endl;
+				<< '\n';
 			value_count = 0;
 		}
 
@@ -53,6 +54,7 @@ class IntervalStats {
 		double value_min = 0;
 		double value_max = 0;
 		double value_avg = 0;
+		Logger& logger_;
 };
 
 #endif // interval_stats_h_INCLUDED

@@ -40,7 +40,6 @@ class GameLogic {
 
     Audio::audio_source_t sound_r2d2_again;
     Audio::audio_source_t sound_death_star_explode;
-
 };
 
 #include "game_logic.cc"

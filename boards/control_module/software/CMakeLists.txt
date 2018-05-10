@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 #set(CMAKE_INCLUDE_PATH "/usr/include")
 set(CMAKE_BUILD_TYPE Debug CACHE STRING "CMake Build Type (Debug/Release)")
@@ -15,6 +15,14 @@ set(my_SOURCES
 	../../../common_software/src/checksum.c
 	../../../common_software/src/utils.c
 	)
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+
+if(CMAKE_BUILD_TYPE MATCHES "^Debug$")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+	SET(CMAKE_SHALED_LINKER_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+endif()
 
 #
 # For profiling (gprof)
@@ -83,13 +91,13 @@ add_executable(Pinball ${my_SOURCES})
 #
 
 # Not very portable but works for old cmake versions
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Requires cmake >= ??? (does not seem to work with 2.8)
 #target_compile_features(Pinball PRIVATE cxx_uniform_initialization)
 
 # Requires cmake >= 3.1.0
-set_property(TARGET Pinball PROPERTY CXX_STANDARD 11)
+set_property(TARGET Pinball PROPERTY CXX_STANDARD 14)
 set_property(TARGET Pinball PROPERTY CXX_STANDARD_REQUIRED ON)
 
 

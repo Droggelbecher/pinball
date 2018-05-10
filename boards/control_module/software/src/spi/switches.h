@@ -30,6 +30,7 @@ class Switches {
 			HOLE0 = 23,
 			MAX = 64
 		};
+
 		enum {
 			DATA_BYTES = static_cast<int>(Index::MAX) / 8,
 			DATA_BITS = DATA_BYTES * 8
@@ -42,6 +43,10 @@ class Switches {
 		void next_frame(double dt);
 		bool get(Index);
 		const Bitset& get_bits() { return bits; }
+
+		void set(bool) { }
+		void set(Index, bool) { }
+
 
 	private:
 		void read();
