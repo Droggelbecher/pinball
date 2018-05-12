@@ -15,6 +15,8 @@
 
 #define GAME_LOGIC_TEMPL(TTT) template<typename InterfaceT> TTT GameLogic<InterfaceT>
 
+namespace pinball {
+
 template<typename InterfaceT>
 class GameLogic {
     using Interface = InterfaceT;
@@ -36,11 +38,13 @@ class GameLogic {
       true, 1000
     };
 
-    ScrollingCanvas<typename Interface::Canvas> marquee { interface.canvas(), { 0.0, 10.0 } };
+    canvas::ScrollingCanvas<typename Interface::Canvas> marquee { interface.canvas(), { 0.0, 10.0 } };
 
     Audio::audio_source_t sound_r2d2_again;
     Audio::audio_source_t sound_death_star_explode;
 };
+
+} // ns pinball
 
 #include "game_logic.cc"
 

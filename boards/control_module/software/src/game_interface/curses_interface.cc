@@ -4,6 +4,8 @@
 #include <ncurses.h>
 #include <cassert>
 
+namespace pinball {
+
 template<typename TDecorated>
 const char CursesInterface<TDecorated>::color_symbols[] = "    ####";
 
@@ -199,7 +201,8 @@ void CursesInterface<TDecorated>::next_frame(double dt) {
 			else {
 				solenoids().decorated().set(solenoid.index, false);
 			}
-		}
-	}
-}
+		} // for solenoid
+	} // if enable solenoid contral
+} // next_frame()
 
+} // ns pinball

@@ -3,6 +3,8 @@
 
 #include <cstdio> // perror
 
+namespace pinball {
+
 Audio::Audio() {
 	if(!alureInitDevice(0, 0)) {
 		perror("Couldnt init default audio device.");
@@ -79,4 +81,6 @@ void Audio::sound_play(audio_source_t source) {
 void Audio::sound_stop(audio_source_t source) {
 	alSourceStop(source);
 }
+
+} // ns pinball
 

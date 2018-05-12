@@ -3,6 +3,8 @@
 
 #include "memory_sensor_actuator.h"
 
+namespace pinball {
+
 class DummyInterface {
 		struct DummyCanvas {
 			void clear() { };
@@ -74,6 +76,8 @@ class DummyInterface {
 		Solenoids solenoids_;
 		Lamps lamps_;
 };
+
+} // ns pinball
 
 #endif // game_interface__dummy_interface_h_INCLUDED
 

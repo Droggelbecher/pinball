@@ -13,6 +13,8 @@
 #include <sys/time.h>
 #endif
 
+namespace pinball {
+
 Framer::Framer(double framerate)
 : frame_length { static_cast<int64_t>(1000000 / framerate) },
 	frame_start { get_time_us() },
@@ -87,4 +89,4 @@ void Framer::wait_us(int64_t us) {
 	usleep(us);
 }
 
-
+} // ns pinball

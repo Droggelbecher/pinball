@@ -8,6 +8,8 @@
 
 #include <alure.h>
 
+namespace pinball {
+
 class Audio {
 		static const int MUSIC_BUFFERS = 2;
 		static const int MUSIC_CHUNK_SIZE = (512 * 1024);
@@ -44,6 +46,7 @@ class Audio {
 		std::vector<std::string> playlist_;
 };
 
+} // ns pinball
 
 #endif // OPENAL_AUDIO_H
 

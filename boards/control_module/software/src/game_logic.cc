@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <sstream>
 
+namespace pinball {
+
 GAME_LOGIC_TEMPL()::GameLogic(Interface& interface) : interface(interface) {
 	marquee.resize({ 16, 100 });
 
@@ -102,7 +104,9 @@ GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 	// Display
 	//
 
-	paint_clear(interface.canvas());
+
+	// TODO
+	//clear(interface.canvas());
 
 	//paint_pattern(marquee);
 
@@ -114,4 +118,5 @@ GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 	
 }
 
+} // ns pinball
 

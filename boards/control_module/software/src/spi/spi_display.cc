@@ -6,6 +6,8 @@
 
 #include "spi_display.h"
 
+namespace pinball {
+
 SpiDisplay::SpiDisplay(Spi& spi, uint8_t modules, Coordinate<> module_size)
 	: spi_(spi), modules_(modules), module_size_(module_size) {
 
@@ -76,4 +78,6 @@ int SpiDisplay::buffer_length() const {
 uint8_t* SpiDisplay::buffer() {
 	return display_screen_;
 }
+
+} // ns pinball
 

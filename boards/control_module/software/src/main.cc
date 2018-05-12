@@ -10,6 +10,7 @@
 #include "game_logic.h"
 #include "interval_stats.h"
 
+namespace pinball {
 
 void fill_playlist(void) {
 	glob_t pglob;
@@ -27,39 +28,51 @@ void fill_playlist(void) {
 	globfree(&pglob);
 }
 
+} // ns pinball
+
 #if MOCK_SPI
 	#include "game_interface/dummy_interface.h"
-	DummyInterface spi_interface;
-	using SpiInterface = DummyInterface;
+
+	namespace pinball {
+		DummyInterface spi_interface;
+		using SpiInterface = DummyInterface;
+	}
 
 #else
 	#include "spi/spi.h"
 	#include "spi/spi_interface.h"
 
-	Spi spi;
-	SpiInterface spi_interface {
-		spi,
-		DISPLAY_MODULE_COUNT,
-		Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COLUMNS)
-	};
+	namespace pinball {
+		Spi spi;
+		SpiInterface spi_interface {
+			spi,
+			DISPLAY_MODULE_COUNT,
+			Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COLUMNS)
+		};
+	}
 #endif
 
 
 #if CURSES_UI
 	#include "game_interface/curses_interface.h"
 
-	using Interface = CursesInterface<SpiInterface>;
-	Interface interface {
-		Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS),
-		spi_interface
-	};
-
+	namespace pinball {
+		using Interface = CursesInterface<SpiInterface>;
+		Interface interface {
+			Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS),
+			spi_interface
+		};
+	}
 #else
-	using Interface = SpiInterface;
-	Interface& interface = spi_interface;
+	namespace pinball {
+		using Interface = SpiInterface;
+		Interface& interface = spi_interface;
+	}
 #endif
 
-using GameLogic_t = GameLogic<Interface>;
+namespace pinball {
+	using GameLogic_t = GameLogic<Interface>;
+} // ns pinball
 
 void sig_handler(int signum) {
 	exit(1);
@@ -67,6 +80,8 @@ void sig_handler(int signum) {
 
 
 int main(int argc, const char **argv) {
+
+	using namespace pinball;
 
 	IntervalStats<Interface::Logger> fps_reporter("FPS", 10.0, interface.logger());
 

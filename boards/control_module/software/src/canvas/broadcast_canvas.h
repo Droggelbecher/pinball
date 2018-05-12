@@ -6,6 +6,8 @@
 #include <memory>
 #include <functional>
 
+namespace pinball { namespace canvas {
+
 template<typename... Cs>
 class BroadcastCanvas {
 	public:
@@ -49,6 +51,8 @@ class BroadcastCanvas<C, Cs...> : BroadcastCanvas<Cs...> {
 		//std::vector<std::reference_wrapper<Canvas> > canvas_;
 		C& canvas_;
 };
+
+} } // Pinball::canvas
 
 #endif // BROADCAST_CANVAS_H
 

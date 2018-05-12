@@ -2,6 +2,8 @@
 #ifndef STATE_BUFFER_H
 #define STATE_BUFFER_H
 
+namespace pinball {
+
 template<typename T>
 class StateBuffer {
 
@@ -53,6 +55,7 @@ class StateBuffer {
 		typename T::Bitset state[2];
 };
 
+} // ns pinball
+
 #endif // STATE_BUFFER_H
 
-/* vim: set ts=2 sw=2 tw=78 noexpandtab :*/

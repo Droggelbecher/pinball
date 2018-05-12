@@ -5,6 +5,8 @@
 #include <cstring> // memset
 #include "spi.h"
 
+namespace pinball {
+
 template<
 	typename Index_,
 	Spi::Slave SLAVE_
@@ -35,6 +37,8 @@ class BitActuator {
 		uint8_t state[DATA_BYTES + 1];
 
 };
+
+} // ns pinball
 
 #include "bit_actuator.cc"
 

@@ -5,6 +5,8 @@
 #include <functional>
 #include <cassert>
 
+namespace pinball {
+
 /**
  * Wrap a boolean value-getter function $f such that
  * $this->get() yields only $active (true/false) if $f() returned
@@ -38,6 +40,8 @@ class KeepValueDelay {
     int32_t delay_ms;
     int32_t active_time_ms;
 };
+
+} // ns pinball
 
 #endif // KEEP_VALUE_DELAY_H
 

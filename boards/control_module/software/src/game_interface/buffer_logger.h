@@ -5,6 +5,8 @@
 
 #include "ring_buffer.h"
 
+namespace pinball {
+
 template<int N_>
 class BufferLogger {
 		using Buffer = RingBuffer<std::string, N_>;
@@ -43,6 +45,8 @@ class BufferLogger {
 		RingBuffer<std::string, N_> lines_;
 		std::stringstream line_buffer_;
 };
+
+} // ns pinball
 
 #endif // buffer_logger_h_INCLUDED
 

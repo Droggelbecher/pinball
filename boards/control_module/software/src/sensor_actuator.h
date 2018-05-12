@@ -1,6 +1,8 @@
 #ifndef sensor_actuator_h_INCLUDED
 #define sensor_actuator_h_INCLUDED
 
+namespace pinball {
+
 template<typename TIndex>
 class SensorActuator {
 	public:
@@ -19,6 +21,8 @@ class SensorActuator {
 		virtual bool get(Index i) = 0;
 		const Bitset& get_bits() = 0;
 };
+
+} // ns pinball
 
 #endif // sensor_actuator_h_INCLUDED
 

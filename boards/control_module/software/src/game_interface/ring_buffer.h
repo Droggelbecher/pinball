@@ -3,6 +3,8 @@
 
 #include <array>
 
+namespace pinball {
+
 template<typename T, int N_>
 class RingBuffer {
 	public:
@@ -57,6 +59,8 @@ class RingBuffer {
 		int begin_ = 0;
 		int end_ = 0;
 };
+
+} // ns pinball
 
 #endif // ring_buffer_h_INCLUDED
 

@@ -128,6 +128,25 @@ if(WITH_OPENAL_AUDIO)
 	target_link_libraries(Pinball ${ALURE_LIBRARIES})
 endif(WITH_OPENAL_AUDIO)
 
+
+#
+# Tests
+#
+enable_testing()
+find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+add_executable(test_canvas test/test_canvas.cc src/canvas/canvas_buffer.cc)
+target_link_libraries(test_canvas
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      )
+include_directories(${Boost_INCLUDE_DIRS})
+add_test(
+	NAME test_canvas
+	COMMAND test_canvas
+)
+set_property(TARGET test_canvas PROPERTY CXX_STANDARD 14)
+set_property(TARGET test_canvas PROPERTY CXX_STANDARD_REQUIRED ON)
+
+
 #
 # Sys libs
 #

@@ -4,6 +4,7 @@
 #include <bitset>
 #include <cassert>
 
+namespace pinball {
 
 template<typename TIndex>
 class MemorySensorActuator {
@@ -40,6 +41,8 @@ class MemorySensorActuator {
 	private:
 		Bitset bits;
 };
+
+} // ns pinball
 
 #endif // MEMORY_SENSOR_H_INCLUDED
 

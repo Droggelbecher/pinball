@@ -20,6 +20,7 @@
 
 #define GPIO_GET *(gpio_map+13)
 
+namespace pinball {
 
 class Spi {
 
@@ -67,6 +68,8 @@ class Spi {
 		int spi_cs_fd;
 		int gpio_mem_fd;
 };
+
+} // ns pinball
 
 #endif // SPI_H
 

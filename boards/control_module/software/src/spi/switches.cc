@@ -2,8 +2,10 @@
 #include "switches.h"
 #include "spi.h"
 
-Switches::Switches(Spi& spi) : spi(spi) {
-}
+namespace pinball {
+	Switches::Switches(Spi& spi) : spi(spi) {
+	}
+} // ns pinball
 
 #include <cassert>
 #include <vector>
@@ -13,7 +15,9 @@ Switches::Switches(Spi& spi) : spi(spi) {
 
 #include "utils.h"
 
-namespace {
+namespace pinball {
+
+namespace switches_detail {
 
 	// TODO: move this somewhere more central (utils?)
 
@@ -26,7 +30,7 @@ namespace {
 		}
 		return r;
 	}
-}
+} // ns switches_detail
 
 void Switches::next_frame(double dt) {
 	read();
@@ -48,5 +52,5 @@ bool Switches::get(Index index) {
 	return !bits[static_cast<int>(index)];
 }
 
-
+} // ns pinball
 

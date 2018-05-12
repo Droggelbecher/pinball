@@ -31,10 +31,14 @@
 
 //#define GET_GPIO(g) (*(gpio+13)&(1<<g)) // 0 if LOW, (1<<g) if HIGH
 
+namespace pinball {
+
 extern int gpio_mem_fd;
 extern volatile unsigned *gpio_map;
 
 void gpio_setup(void);
 void gpio_set_output(int n);
+
+} // ns pinball
 
 #endif // __RASPBERRY_GPIO_H__

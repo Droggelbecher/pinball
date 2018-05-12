@@ -6,7 +6,9 @@
 #include "spi/spi.h"
 #include "coordinate.h"
 
-class SpiDisplay /*: public Canvas*/ {
+namespace pinball {
+
+class SpiDisplay {
 	public:
 		enum Color {
 			C_BLACK = 0,
@@ -40,6 +42,8 @@ class SpiDisplay /*: public Canvas*/ {
 		const Coordinate<> module_size_;
 		uint8_t *display_screen_;
 };
+
+} // ns pinball
 
 #if !MOCK_SPI
 	#include "spi_display.cc"

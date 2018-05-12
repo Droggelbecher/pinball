@@ -7,6 +7,8 @@
 
 #include "coordinate.h"
 
+namespace pinball { namespace canvas {
+
 /**
  *
  */
@@ -88,5 +90,7 @@ class ScrollingCanvas {
 		Coordinate<double> speed_;
 		Coordinate<double> offset_;
 };
+
+} } // pinball::canvas
 
 #endif // SCROLLING_CANVAS_H

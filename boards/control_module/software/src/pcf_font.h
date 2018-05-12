@@ -4,6 +4,9 @@
 
 #include <string>
 #include "coordinate.h"
+#include "canvas/canvas_buffer.h"
+
+namespace pinball {
 
 class PcfFont {
 
@@ -134,6 +137,11 @@ class PcfFont {
 		static uint32_t read_u32(std::istream& is, unsigned char format);
 		static uint16_t read_u16(std::istream& is, unsigned char format);
 
+		//static canvas::CanvasBuffer<> render_char(uint8_t *source_begin, uint8_t *source_end, uint32_t format);
+
+
+
+
 		static void transform_bytes(uint8_t *source_start, uint8_t *source_end, uint8_t *target_start, uint32_t format);
 
 		const std::string& filename_;
@@ -149,6 +157,7 @@ class PcfFont {
 
 };
 
+} // namespace pinball
 
 #endif // PCF_FONT_H
 

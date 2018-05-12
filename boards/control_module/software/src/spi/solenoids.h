@@ -7,6 +7,8 @@
 
 #include <spi_protocols/solenoids.h>
 
+namespace pinball {
+
 namespace solenoids_detail {
 	enum class Index {
 		FLIPPER_LEFT = SPI_SOLENOIDS_FLIPPER_LEFT_IDX,
@@ -27,9 +29,11 @@ namespace solenoids_detail {
 
 		MAX = 16
 	};
-}
+} // ns solenoids_detail
 
 using Solenoids = BitActuator<solenoids_detail::Index, Spi::Slave::SOLENOIDS>;
+
+} // ns pinball
 
 #endif // SOLENOIDS_H
 

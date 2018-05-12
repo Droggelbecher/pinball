@@ -6,6 +6,8 @@
 
 #include <utils.h>
 
+namespace pinball {
+
 namespace {
 
 	struct LSB {
@@ -100,6 +102,28 @@ void PcfFont::load_font(const char *filename) {
 	} // for i
 
 
+	// TODO: Instead of transforming into some internal format,
+	// render onto CanvasBuffer's (one per char),
+	// later blit those
+
+
+	for(size_t glyph = 0; glyph < bitmaps.glyph_count - 1; glyph++) {
+		int offset_start = bitmaps.offsets[glyph];
+		int offset_end = bitmaps.offsets[glyph + 1];
+
+
+// TODO
+/*
+		render_char(
+			bitmaps.bitmap_data + offset_start,
+			bitmaps.bitmap_data + offset_end,
+			bitmaps.format
+		);
+		*/
+	}
+
+
+
 	// Transform into internal format
 	
 	transformed_.bitmap_data = new uint8_t[bitmaps.bitmap_sizes[1]];
@@ -132,6 +156,44 @@ void PcfFont::load_font(const char *filename) {
 	}
 
 } // load_font()
+
+
+/* TODO
+CanvasBuffer PcfFont::render_char(uint8_t *source_begin, uint8_t *source_end, uint32_t format) {
+	const int reverse_bits = !!(format & PCF_BIT_MASK);
+	const int reverse_bytes = !!(format & PCF_BYTE_MASK);
+	const int bytes_per_row1 = format & PCF_GLYPH_PAD_MASK;
+	const int bytes_per_row = 1 << (format & PCF_GLYPH_PAD_MASK);
+
+	const int rows = (source_end - source_begin) / bytes_per_row;
+
+	//                        1         2        4
+	int select_bytes[][2] = { { 0, 0 }, { 0, 1}, { 0, 1 }, { 1, 2 } };
+	int byte0;
+	int byte1;
+
+	if(reverse_bytes) {
+		byte0 = select_bytes[bytes_per_row1][1];
+		byte1 = select_bytes[bytes_per_row1][0];
+	}
+	else {
+		byte0 = select_bytes[bytes_per_row1][0];
+		byte1 = select_bytes[bytes_per_row1][1];
+	}
+
+	CanvasBuffer r(rows, 8);
+	for(int row; source_start < source_end; source_start += bytes_per_row, ++row) {
+
+		int b = source_start[byte0];
+		if(reverse_bits) { b = reverse_byte(b); }
+		for(int column; column < 8; column++) {
+			r.set_pixel(row, column, ((b >> column) & 0x01) ? 0xff : 0x00);
+		}
+
+
+	}
+} // render_char
+*/
 
 void PcfFont::transform_bytes(uint8_t *source_start, uint8_t *source_end, uint8_t *target_start, uint32_t format) {
 	const int reverse_bits = !!(format & PCF_BIT_MASK);
@@ -266,6 +328,6 @@ Coordinate<> PcfFont::size(const std::string& text) {
 	return Coordinate<>();
 }
 
-
+} // ns pinball
 
 /* vim: set ts=2 sw=2 tw=78 noexpandtab :*/

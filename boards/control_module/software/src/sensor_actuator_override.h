@@ -6,6 +6,7 @@
 
 #include "memory_sensor_actuator.h"
 
+namespace pinball {
 
 /**
  * Decorate a given SensorActutator in the following way:
@@ -93,6 +94,8 @@ class SensorActuatorOverride {
 		Mode mode_;
 		Bitset bits;
 };
+
+} // ns pinball
 
 #endif // MEMORY_SENSOR_H_INCLUDED
 

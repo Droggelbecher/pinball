@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+namespace pinball {
+
 template<typename Logger>
 class IntervalStats {
 	public:
@@ -56,6 +58,8 @@ class IntervalStats {
 		double value_avg = 0;
 		Logger& logger_;
 };
+
+} // ns pinball
 
 #endif // interval_stats_h_INCLUDED
 

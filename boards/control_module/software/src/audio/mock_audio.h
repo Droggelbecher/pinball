@@ -2,6 +2,7 @@
 #ifndef MOCK_AUDIO_H
 #define MOCK_AUDIO_H
 
+namespace pinball {
 
 class Audio {
 
@@ -29,6 +30,7 @@ class Audio {
 		Audio() { };
 };
 
+} // ns pinball
 
 #endif // MOCK_AUDIO_H
 

@@ -9,6 +9,8 @@
 #include "sensor_actuator_override.h"
 #include "buffer_logger.h"
 
+namespace pinball {
+
 /**
  * Interface wrapper that displays current state
  * using curses in the terminal and allows manipulation
@@ -31,7 +33,7 @@ class CursesInterface {
 		};
 
 	public:
-		using Canvas = BroadcastCanvas<CanvasBuffer, typename TDecorated::Canvas>;
+		using Canvas = canvas::BroadcastCanvas<canvas::CanvasBuffer, typename TDecorated::Canvas>;
 		using Switches = SensorActuatorOverride<typename TDecorated::Switches>;
 		using Solenoids = SensorActuatorOverride<typename TDecorated::Solenoids>;
 		using Lamps = SensorActuatorOverride<typename TDecorated::Lamps>;
@@ -58,13 +60,15 @@ class CursesInterface {
 		static const uint8_t color_bg[];
 
 		TDecorated &decorated_;
-		CanvasBuffer internal_canvas_;
+		canvas::CanvasBuffer internal_canvas_;
 		Canvas canvas_;
 		Switches switches_;
 		Lamps lamps_;
 		Solenoids solenoids_;
 		Logger logger_;
 };
+
+} // ns pinball
 
 #include "game_interface/curses_interface.cc"
 

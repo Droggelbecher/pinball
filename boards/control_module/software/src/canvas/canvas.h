@@ -4,8 +4,7 @@
 
 #include <cstdlib>
 
-namespace pinball {
-	namespace canvas {
+namespace pinball::canvas {
 
 template<typename C>
 void fill_random(C& canvas) {
@@ -30,10 +29,33 @@ auto clear(C& canvas) -> decltype(canvas.buffer(), void()) {
 	memset(canvas.buffer(), 0, canvas.buffer_length());
 }
 
-//void set_pi
+template<typename C>
+uint8_t get_pixel(const C& canvas, Coordinate<> c, uint8_t color) {
+	return canvas.get_pixel(c, color);
+}
+
+template<typename C>
+void set_pixel(C& canvas, Coordinate<> c, uint8_t color) {
+	canvas.set_pixel(c, color);
+}
+
+template<typename C>
+void next_frame(C& canvas, double dt) {
+	canvas.next_frame(dt);
+}
+
+template<typename C>
+Coordinate<> size(const C& canvas) {
+	return canvas.size();
+}
+
+template<typename C>
+void resize(C& canvas, Coordinate<> new_size) {
+	canvas.resize(new_size);
+}
 
 
-} } // ns pinball::canvas
+} // namespace::canvas
 
 #endif // PAINT_H
 

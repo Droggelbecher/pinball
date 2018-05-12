@@ -4,6 +4,8 @@
 
 #include <bitset>
 
+namespace pinball {
+
 class Spi;
 
 class Switches {
@@ -54,6 +56,8 @@ class Switches {
 		Bitset bits;
 		Spi& spi;
 };
+
+} // ns pinball
 
 #endif // SWITCHES_H
 

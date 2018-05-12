@@ -16,6 +16,8 @@
 #include <cstring>
 #include <iostream>
 
+namespace pinball {
+
 extern "C" {
 	volatile unsigned *gpio_map;
 }
@@ -167,4 +169,6 @@ int Spi::transfer(int size, unsigned char *wr, unsigned char *rd) {
 
 	return 0;
 }
+
+} // ns pinball
 

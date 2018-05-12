@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+namespace pinball {
+
 class Framer {
 	public:
 
@@ -22,6 +24,7 @@ class Framer {
 		int64_t last_frame_duration;
 };
 
+} // ns pinball
 
 #endif // FRAMER_H
 

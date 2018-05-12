@@ -5,6 +5,8 @@
 #include <cmath>
 #include <iostream>
 
+namespace pinball {
+
 /**
  *
  */
@@ -111,5 +113,7 @@ std::ostream& operator<<(std::ostream& os, const Coordinate<T>& coord) {
 	os << "<" << coord.row() << ", " << coord.column() << ">";
 	return os;
 }
+
+} // ns pinball
 
 #endif // COORDINATE_H

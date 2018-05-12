@@ -7,6 +7,8 @@
 #include "spi/lamps.h"
 #include "canvas/canvas.h"
 
+namespace pinball {
+
 class SpiInterface {
 	public:
 		using Switches = ::Switches;
@@ -39,6 +41,8 @@ class SpiInterface {
 		Solenoids solenoids_;
 		Lamps lamps_;
 };
+
+} // ns pinball
 
 
 #endif // SPI_INTERFACE_H_INCLUDED
