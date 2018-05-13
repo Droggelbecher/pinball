@@ -3,7 +3,7 @@
 #define GAMELOGIC_H
 
 #include "audio/audio.h"
-#include "canvas/scrolling_canvas.h"
+#include "canvas/scrolling.h"
 #include "canvas/broadcast_canvas.h"
 #include "state_buffer.h"
 #include "framer.h"
@@ -38,7 +38,7 @@ class GameLogic {
       true, 1000
     };
 
-    canvas::ScrollingCanvas<typename Interface::Canvas> marquee { interface.canvas(), { 0.0, 10.0 } };
+    canvas::Scrolling<typename Interface::Canvas> marquee { interface.canvas(), { 0.0, 10.0 } };
 
     Audio::audio_source_t sound_r2d2_again;
     Audio::audio_source_t sound_death_star_explode;

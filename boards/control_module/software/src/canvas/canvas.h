@@ -1,10 +1,13 @@
 
-#ifndef PAINT_H
-#define PAINT_H
+#ifndef CANVAS_H
+#define CANVAS_H
 
 #include <cstdlib>
+#include <iostream>
+#include <iomanip>
 
-namespace pinball::canvas {
+namespace pinball {
+namespace canvas {
 
 template<typename C>
 void fill_random(C& canvas) {
@@ -30,8 +33,8 @@ auto clear(C& canvas) -> decltype(canvas.buffer(), void()) {
 }
 
 template<typename C>
-uint8_t get_pixel(const C& canvas, Coordinate<> c, uint8_t color) {
-	return canvas.get_pixel(c, color);
+uint8_t get_pixel(const C& canvas, Coordinate<> c) {
+	return canvas.get_pixel(c);
 }
 
 template<typename C>
@@ -54,8 +57,82 @@ void resize(C& canvas, Coordinate<> new_size) {
 	canvas.resize(new_size);
 }
 
+template<typename Ca, typename Cb>
+bool operator==(const Ca& a, const Cb& b) {
+	if(a.size() != b.size()) {
+		return false;
+	}
 
-} // namespace::canvas
+	for(int row = 0; row < a.size().row(); row++) {
+		for(int column = 0; column < a.size().column(); column++) {
+			if(a.get_pixel({row, column}) != b.get_pixel({row, column})) {
+				return false;
+			}
+		}
+	}
 
-#endif // PAINT_H
+	return true;
+
+	/*
+	if(a.buffer_length() != b.buffer_length()) {
+		return false;
+	}
+	int c = memcmp(a.buffer(), b.buffer(), a.buffer_length());
+	return c == 0;
+	*/
+}
+
+template<typename Ca, typename Cb>
+bool operator!=(const Ca& a, const Cb& b) {
+	return !(a == b);
+}
+
+template<typename C>
+auto operator<<(std::ostream& os, const C& c) -> decltype(c.size(), c.get_pixel({0, 0}), os) {
+	os << "Canvas(" << c.size() << "):\n";
+	for(int row = 0; row < c.size().row(); row++) {
+		for(int column = 0; column < c.size().column(); column++) {
+			os << " " << std::setw(3) << (int)get_pixel(c, {row, column});
+		}
+		os << "\n";
+	}
+	os << std::endl;
+	return os;
+}
+
+typedef enum {
+	COLUMN_FIRST,
+	ROW_FIRST
+} DataOrder;
+
+/**
+ * Copy the rectangle ($start, $end) from $a to $b at location $target.
+ */
+template<typename CanvasA, typename CanvasB>
+void blit(const CanvasA& a, CanvasB& b, Coordinate<> start, Coordinate<> end, Coordinate<> target) {
+
+	static_assert(CanvasA::data_order == CanvasB::data_order, "Can only blit with equal data orders");
+
+	static_assert(CanvasA::data_order == COLUMN_FIRST, "Blit only implemented for COLUMN_FIRST currently");
+
+	int n_a = a.size().column();
+	int n_b = b.size().column();
+	int len = end.column() - start.column();
+
+	const uint8_t *buf_a = a.buffer() + start.column();
+	uint8_t *buf_b = b.buffer() + target.column();
+
+	// copy row by row
+	for(int row = start.row(); row < end.row(); ++row) {
+		memcpy(
+			buf_b + row * n_a,
+			buf_a + row * n_b,
+			len
+			);
+	}
+} // blit()
+
+} } // ns pinball::canvas
+
+#endif // CANVAS_H
 

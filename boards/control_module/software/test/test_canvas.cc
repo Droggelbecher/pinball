@@ -1,8 +1,7 @@
 
 #include "coordinate.h"
 
-#include "canvas/util.h"
-#include "canvas/paint.h"
+#include "canvas/canvas.h"
 #include "canvas/canvas_buffer.h"
 #include "canvas/scrolling.h"
 
@@ -51,9 +50,30 @@ BOOST_AUTO_TEST_CASE(test_scrolling) {
 
 	using namespace canvas;
 
-	MockCanvas mock_canvas;
+	MockCanvas mock_canvas {
+		{ 3, 5 }, {
+		00, 01, 02, 03, 04,
+		10, 11, 12, 13, 14,
+		20, 21, 22, 23, 24
+	} };
+
+
 	Scrolling<MockCanvas> scrolling(mock_canvas, { 1.0, 0.0 });
 
+	std::cout << "mock_canvas = " << mock_canvas;
+	std::cout << "scrolling = " << scrolling;
+
+	BOOST_CHECK(
+		scrolling == mock_canvas
+	);
+
+	scrolling.next_frame(1.0);
+
+	std::cout << "scrolling = " << scrolling;
+
+	BOOST_CHECK(
+		scrolling != mock_canvas
+	);
 }
 
 } } // ns pinball::test

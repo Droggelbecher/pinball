@@ -6,7 +6,8 @@
 #include <cstring>
 
 #include "coordinate.h"
-#include "util.h"
+
+#include "canvas/canvas.h" // DataOrder
 
 namespace pinball {
 	namespace canvas {
@@ -19,10 +20,8 @@ class CanvasBuffer {
 		static const DataOrder data_order = COLUMN_FIRST;
 
 		CanvasBuffer(Coordinate<> size);
-
 		void set_pixel(Coordinate<> c, uint8_t color) ;
 		uint8_t get_pixel(Coordinate<> c) const ;
-
 		Coordinate<> size() const  { return size_; }
 
 		int buffer_length() const { return size_.row() * size_.column(); }

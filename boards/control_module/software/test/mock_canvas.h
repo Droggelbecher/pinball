@@ -1,21 +1,17 @@
 #ifndef mock_canvas_h_INCLUDED
 #define mock_canvas_h_INCLUDED
 
+#include <vector>
+
 namespace pinball {
 namespace test {
 
 	class MockCanvas {
-		private:
-
-			const Coordinate<> size_ = { 3, 5 };
-
-			uint8_t data[3 * 5] = {
-				00, 01, 02, 03, 04,
-				10, 11, 12, 13, 14,
-				20, 21, 22, 23, 24
-			};
-
 		public:
+
+			MockCanvas(Coordinate<> size, std::initializer_list<uint8_t> l)
+				: size_(size), data(l) {
+			}
 
 			void set_pixel(Coordinate<> c, uint8_t color) {
 			}
@@ -24,18 +20,25 @@ namespace test {
 				return data[c.column() + size_.column() * c.row()];
 			}
 
+			Coordinate<> size() const {
+				return size_;
+			}
+
 			uint8_t* buffer() {
-				return static_cast<uint8_t*>(data);
+				return static_cast<uint8_t*>(data.data());
+			}
+
+			const uint8_t* buffer() const {
+				return static_cast<const uint8_t*>(data.data());
 			}
 
 			size_t buffer_length() const {
 				return size_.row() * size_.column();
 			}
 
-			Coordinate<> size() {
-				return size_;
-			}
-
+		private:
+			Coordinate<> size_;
+			std::vector<uint8_t> data;
 	};
 
 } } // ns pinball::test

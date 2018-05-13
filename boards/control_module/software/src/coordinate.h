@@ -67,30 +67,13 @@ class Coordinate {
 		}
 
 		template<typename C>
-		Coordinate<decltype(T() % typename C::Ordinate())> operator%(const C& other) {
-			 return { row() % other.row(), column() % other.column() };
+		auto operator%(const C& other) {
+			return mod(other, 0); // 0 is for prioritizing overloads
 		}
 
 		template<typename C>
-		Coordinate<double> operator%(const C& other) {
-			 return { fmod(row(), other.row()), fmod(column(), other.column()) };
-		}
-
-		template<typename C>
-		Coordinate<decltype(T() % typename C::Ordinate())>& operator%=(const C& other) {
-			row_ %= other.row();
-			column_ %= other.column();
-			if(row_ < 0) { row_ += other.row(); }
-			if(column_ < 0) { column_ += other.column(); }
-			return *this;
-		}
-
-		template<typename C>
-		Coordinate<double>& operator%=(const C& other) {
-			row_ = fmod(row_, other.row());
-			column_ = fmod(column_, other.column());
-			if(row_ < 0) { row_ += other.row(); }
-			if(column_ < 0) { column_ += other.column(); }
+		Coordinate& operator%=(const C& other) {
+			*this = (*this % other);
 			return *this;
 		}
 
@@ -104,6 +87,29 @@ class Coordinate {
 		}
 
 	private:
+		// % for Ordinate types that support %
+		// int -> try to use this first
+		template<typename C>
+		auto mod(const C& other, int) -> Coordinate<decltype(T() % typename C::Ordinate())> {
+			auto row = row_ % other.row();
+			auto column = column_ % other.column();
+			return {
+				(row >= 0) ? row : row + other.row(),
+				(column >= 0) ? column : column + other.column(),
+			};
+		}
+
+		// % for types compatible with fmod
+		template<typename C>
+		auto mod(const C& other, long) -> Coordinate<decltype(fmod(T(), typename C::Ordinate()))> {
+			auto row = fmod(row_, other.row());
+			auto column = fmod(column_, other.column());
+			return {
+				row >= 0 ? row : row + other.row(),
+				column >= 0 ? column : column + other.column(),
+			};
+		}
+
 		T row_;
 		T column_;
 };
@@ -112,6 +118,16 @@ template<typename T>
 std::ostream& operator<<(std::ostream& os, const Coordinate<T>& coord) {
 	os << "<" << coord.row() << ", " << coord.column() << ">";
 	return os;
+}
+
+template<typename A, typename B>
+bool operator==(const Coordinate<A>& a, const Coordinate<B>& b) {
+	return a.row() == b.row() && a.column() == b.column();
+}
+
+template<typename A, typename B>
+bool operator!=(const Coordinate<A>& a, const Coordinate<B>& b) {
+	return !(a == b);
 }
 
 } // ns pinball

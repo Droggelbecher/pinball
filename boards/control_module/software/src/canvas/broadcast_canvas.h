@@ -48,7 +48,6 @@ class BroadcastCanvas<C, Cs...> : BroadcastCanvas<Cs...> {
 		}
 
 	private:
-		//std::vector<std::reference_wrapper<Canvas> > canvas_;
 		C& canvas_;
 };
 

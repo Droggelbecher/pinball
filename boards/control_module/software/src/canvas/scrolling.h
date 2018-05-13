@@ -24,21 +24,10 @@ namespace canvas {
 			}
 
 			void next_frame(double dt) {
-				next_frame_<TDecorated>(dt);
+				next_frame_<TDecorated>(dt, 0);
 				offset_ += speed_ * dt;
 				offset_ %= size();
 			}
-
-			/*
-			void next_frame(double dt) {
-				next_frame_(dt);
-			}
-
-			void next_frame_(double dt) {
-				offset_ += speed_ * dt;
-				offset_ %= size();
-			}
-			*/
 
 			Coordinate<> offset() const {
 				return offset_;
@@ -48,19 +37,35 @@ namespace canvas {
 				return decorated_.size();
 			}
 
+			/*
 			void resize(Coordinate<> new_size) {
 				decorated_.resize(new_size);
 				offset_ %= size();
 			}
+			*/
 
 			void set_pixel(Coordinate<> c, uint8_t color) {
-				decorated_.set_pixel(c, color);
+				decorated_.set_pixel((c + offset()) % size(), color);
 			}
 
 			uint8_t get_pixel(Coordinate<> c) const {
-				return decorated_.get_pixel(c);
+				return decorated_.get_pixel((c + offset()) % decorated_.size());
 			}
 
+			// Semantics of our buffer are a little different,
+			// make sure we don't unintentionally use normal free functions for canvases here (by making buffer access private)
+			// unless explicitely greenlighted by friends
+
+			// We provide a specialized blit() that takes offset into account
+			template<typename C, typename T>
+			friend void blit(const Scrolling<T>&, C&, Coordinate<>, Coordinate<>, Coordinate<>);
+
+			// clear() can not possibly do something wrong
+			// (clearing the whole buffer by whatever means will always also clear the whole shifted buffer)
+			template<typename C>
+			friend void clear(C&);
+
+		private:
 			uint8_t* buffer() {
 				return decorated_.buffer();
 			}
@@ -73,10 +78,9 @@ namespace canvas {
 				return decorated_.buffer_length();
 			}
 
-		private:
 			TDecorated& decorated_;
 			Coordinate<double> speed_;
-			Coordinate<> offset_;
+			Coordinate<double> offset_;
 	};
 
 	template<typename C, typename T>

@@ -1,6 +1,6 @@
 
 #include "game_logic.h"
-#include "canvas/paint.h"
+#include "canvas/canvas.h"
 
 #include <iostream>
 #include <iomanip>
@@ -9,7 +9,8 @@
 namespace pinball {
 
 GAME_LOGIC_TEMPL()::GameLogic(Interface& interface) : interface(interface) {
-	marquee.resize({ 16, 100 });
+	//marquee.resize({ 16, 100 });
+	// TODO
 
 
 	sound_r2d2_again = audio.sound_load("resources/sounds/r2d2_again.mp3");
