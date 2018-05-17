@@ -4,7 +4,7 @@
 
 #include <bitset>
 
-#include "canvas/canvas_buffer.h"
+#include "canvas/buffer.h"
 #include "canvas/broadcast_canvas.h"
 #include "sensor_actuator_override.h"
 #include "buffer_logger.h"
@@ -33,7 +33,7 @@ class CursesInterface {
 		};
 
 	public:
-		using Canvas = canvas::BroadcastCanvas<canvas::CanvasBuffer, typename TDecorated::Canvas>;
+		using Canvas = canvas::BroadcastCanvas<canvas::Buffer, typename TDecorated::Canvas>;
 		using Switches = SensorActuatorOverride<typename TDecorated::Switches>;
 		using Solenoids = SensorActuatorOverride<typename TDecorated::Solenoids>;
 		using Lamps = SensorActuatorOverride<typename TDecorated::Lamps>;
@@ -60,7 +60,7 @@ class CursesInterface {
 		static const uint8_t color_bg[];
 
 		TDecorated &decorated_;
-		canvas::CanvasBuffer internal_canvas_;
+		canvas::Buffer internal_canvas_;
 		Canvas canvas_;
 		Switches switches_;
 		Lamps lamps_;

@@ -1,12 +1,11 @@
 
-#ifndef CANVAS_BUFFER_H
-#define CANVAS_BUFFER_H
+#ifndef BUFFER_H
+#define BUFFER_H
 
 #include <memory>
 #include <cstring>
 
 #include "coordinate.h"
-
 #include "canvas/canvas.h" // DataOrder
 
 namespace pinball {
@@ -15,11 +14,26 @@ namespace pinball {
 /**
  *
  */
-class CanvasBuffer {
+class Buffer {
 	public:
 		static const DataOrder data_order = COLUMN_FIRST;
 
-		CanvasBuffer(Coordinate<> size);
+		Buffer();
+		Buffer(Coordinate<> size);
+
+		Buffer(Buffer&& other) {
+			size_ = other.size_;
+			buffer_ = std::move(other.buffer_);
+			other.size_ = { 0, 0 };
+		}
+
+		Buffer& operator=(Buffer&& other) {
+			size_ = other.size_;
+			buffer_ = std::move(other.buffer_);
+			other.size_ = { 0, 0 };
+			return *this;
+		}
+
 		void set_pixel(Coordinate<> c, uint8_t color) ;
 		uint8_t get_pixel(Coordinate<> c) const ;
 		Coordinate<> size() const  { return size_; }
@@ -35,5 +49,5 @@ class CanvasBuffer {
 
 } } // ns pinball::canvas
 
-#endif // CANVAS_BUFFER_H
+#endif // BUFFER_H
 

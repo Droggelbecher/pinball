@@ -6,14 +6,17 @@ set(CMAKE_BUILD_TYPE Debug CACHE STRING "CMake Build Type (Debug/Release)")
 
 project(Pinball)
 
-
-set(my_SOURCES
-	src/canvas/canvas_buffer.cc
+set(common_sources
+	src/canvas/buffer.cc
 	src/framer.cc
-	src/main.cc
 	src/pcf_font.cc
 	../../../common_software/src/checksum.c
 	../../../common_software/src/utils.c
+)
+
+set(my_SOURCES
+	${common_sources}
+	src/main.cc
 	)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
@@ -129,30 +132,16 @@ if(WITH_OPENAL_AUDIO)
 endif(WITH_OPENAL_AUDIO)
 
 
+add_subdirectory(src)
+add_subdirectory(tools)
+
 #
 # Tests
 #
-enable_testing()
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-add_executable(test_canvas test/test_canvas.cc src/canvas/canvas_buffer.cc)
-target_link_libraries(test_canvas
-                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                      )
-include_directories(${Boost_INCLUDE_DIRS})
-add_test(
-	NAME test_canvas
-	COMMAND test_canvas
-)
-set_property(TARGET test_canvas PROPERTY CXX_STANDARD 14)
-set_property(TARGET test_canvas PROPERTY CXX_STANDARD_REQUIRED ON)
+
+add_subdirectory(test)
 
 
-#
-# Sys libs
-#
-
-#target_link_libraries(Pinball -lrt)
-#target_link_libraries(Pinball -lm)
 
 
 

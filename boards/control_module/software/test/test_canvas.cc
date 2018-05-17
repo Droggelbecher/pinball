@@ -2,7 +2,7 @@
 #include "coordinate.h"
 
 #include "canvas/canvas.h"
-#include "canvas/canvas_buffer.h"
+#include "canvas/buffer.h"
 #include "canvas/scrolling.h"
 
 #include "mock_canvas.h"
@@ -23,8 +23,8 @@ BOOST_AUTO_TEST_CASE(test_blit_full) {
 
 	Coordinate<> sz(10, 5);
 
-	CanvasBuffer a(sz);
-	CanvasBuffer b(sz);
+	Buffer a(sz);
+	Buffer b(sz);
 	clear(a);
 	clear(b);
 

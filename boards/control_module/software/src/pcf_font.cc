@@ -6,6 +6,8 @@
 
 #include <utils.h>
 
+#include "canvas/buffer.h"
+
 namespace pinball {
 
 namespace {
@@ -105,61 +107,29 @@ void PcfFont::load_font(const char *filename) {
 	// TODO: Instead of transforming into some internal format,
 	// render onto CanvasBuffer's (one per char),
 	// later blit those
-
-
-	for(size_t glyph = 0; glyph < bitmaps.glyph_count - 1; glyph++) {
-		int offset_start = bitmaps.offsets[glyph];
-		int offset_end = bitmaps.offsets[glyph + 1];
-
-
-// TODO
-/*
-		render_char(
-			bitmaps.bitmap_data + offset_start,
-			bitmaps.bitmap_data + offset_end,
-			bitmaps.format
-		);
-		*/
-	}
-
-
-
-	// Transform into internal format
-	
-	transformed_.bitmap_data = new uint8_t[bitmaps.bitmap_sizes[1]];
-
-	int target_offset = 0;
-	const int bytes_per_row = 1 << (bitmaps.format & PCF_GLYPH_PAD_MASK);
-	const float size_factor = 2.0 / bytes_per_row;
-
-	for(size_t glyph = 0; glyph < bitmaps.glyph_count - 1; glyph++) {
-		int offset_start = bitmaps.offsets[glyph];
-		int offset_end = bitmaps.offsets[glyph + 1];
-
-		transform_bytes(bitmaps.bitmap_data + offset_start,
-				bitmaps.bitmap_data + offset_end,
-				transformed_.bitmap_data + target_offset,
-				bitmaps.format);
-		target_offset += (offset_end - offset_start) * size_factor;
-	}
-
-	for(int j = encoding.min_char_or_byte2; j <= encoding.max_char_or_byte2; j++) {
+	std::map<int, uint16_t> character_offsets;
+	for(int j = encoding.min_char_or_byte2; j < encoding.max_char_or_byte2; j++) {
+		// j = character ascii value
 		uint16_t glyph_idx = encoding.glyphindeces[j - encoding.min_char_or_byte2];
 		uint16_t offs = 0xffff;
 		if(glyph_idx != 0xffff) {
 			offs = bitmaps.offsets[glyph_idx];
 		}
 		if(offs != 0xffff) {
-			offs *= size_factor;
-		}
-		transformed_.offsets[j] = offs;
-	}
+			int offs_end = bitmaps.offsets[glyph_idx + 1];
 
+//std::cerr << "c=" << (char)j << std::endl;
+			characters[j] = render_char(
+				bitmaps.bitmap_data + offs,
+				bitmaps.bitmap_data + offs_end,
+				bitmaps.format
+			);
+		}
+	}
 } // load_font()
 
 
-/* TODO
-CanvasBuffer PcfFont::render_char(uint8_t *source_begin, uint8_t *source_end, uint32_t format) {
+canvas::Buffer PcfFont::render_char(uint8_t *source_begin, uint8_t *source_end, uint32_t format) {
 	const int reverse_bits = !!(format & PCF_BIT_MASK);
 	const int reverse_bytes = !!(format & PCF_BYTE_MASK);
 	const int bytes_per_row1 = format & PCF_GLYPH_PAD_MASK;
@@ -181,19 +151,20 @@ CanvasBuffer PcfFont::render_char(uint8_t *source_begin, uint8_t *source_end, ui
 		byte1 = select_bytes[bytes_per_row1][1];
 	}
 
-	CanvasBuffer r(rows, 8);
-	for(int row; source_start < source_end; source_start += bytes_per_row, ++row) {
+	canvas::Buffer r({rows, 5});
+	for(int row = 0; source_begin < source_end; source_begin += bytes_per_row, ++row) {
 
-		int b = source_start[byte0];
+		int b = source_begin[byte1];
+		//std::cerr << "b0=" << (int)b << " b1=" << (int)source_begin[byte1] << std::endl;
 		if(reverse_bits) { b = reverse_byte(b); }
-		for(int column; column < 8; column++) {
-			r.set_pixel(row, column, ((b >> column) & 0x01) ? 0xff : 0x00);
+		for(int column = 0; column < 5; column++) {
+			//std::cerr << "row=" << row << " col=" << column << " b=" << (int)((b >> column) & 0x01) << std::endl;
+			set_pixel(r, {row, column}, ((b >> column) & 0x01) ? 0xff : 0x00);
 		}
-
-
 	}
+
+	return r;
 } // render_char
-*/
 
 void PcfFont::transform_bytes(uint8_t *source_start, uint8_t *source_end, uint8_t *target_start, uint32_t format) {
 	const int reverse_bits = !!(format & PCF_BIT_MASK);
