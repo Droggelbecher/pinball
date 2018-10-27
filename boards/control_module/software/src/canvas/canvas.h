@@ -129,9 +129,6 @@ auto blit(const CanvasA& a, CanvasB& b, Coordinate<> start, Coordinate<> end, Co
 	assert(0 < target_end.row() && target_end.row() <= b.size().row());
 	assert(0 < target_end.column() && target_end.column() <= b.size().column());
 
-	// TODO: Fix this shit, doesn't even use target.row,
-	// so it is guaranteed to be wrong!
-
 	int n_a = a.size().column();
 	int n_b = b.size().column();
 	int len = end.column() - start.column();
@@ -139,11 +136,22 @@ auto blit(const CanvasA& a, CanvasB& b, Coordinate<> start, Coordinate<> end, Co
 	const uint8_t *buf_a = a.buffer() + start.column();
 	uint8_t *buf_b = b.buffer() + target.column();
 
+	/*
+	 * +-----------+
+	 * |           |
+	 * |    S---+  |
+	 * |    |   |  |
+	 * |    +---E  |
+	 * |           |
+	 * +-----------+
+	 */
+
 	// copy row by row
 	for(int row = start.row(); row < end.row(); ++row) {
+		// dest, src, n
 		memcpy(
-			buf_b + row * n_a,
-			buf_a + row * n_b,
+			buf_b + (row - start.row() + target.row()) * n_b,
+			buf_a + row * n_a,
 			len
 			);
 	}

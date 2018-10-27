@@ -66,11 +66,11 @@ class Font {
 
 		template<typename Canvas>
 		void paint_string(Canvas& canvas, const char *s,  Coordinate<> start, uint8_t color) {
-			paint_char(canvas, 'a', start, 1);
-			//for( ; *s; ++s) {
-				//paint_char(canvas, *s, start, 1);
+			//paint_char(canvas, 'a', start, 1);
+			for( ; *s; ++s) {
+				paint_char(canvas, *s, start, 1);
 				//start.column() += SIZE.column();
-			//}
+			}
 		}
 
 	private:
