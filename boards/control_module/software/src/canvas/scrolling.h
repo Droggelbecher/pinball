@@ -2,12 +2,15 @@
 #define SCROLLING_BUFFER_H
 
 #include "coordinate.h"
+#include "canvas.h"
 
 namespace pinball {
 namespace canvas {
 
 	template<typename TDecorated>
 	class Scrolling {
+
+		private:
 
 			template<typename T>
 			auto next_frame_(double dt, int) -> decltype(T().next_frame(dt), void()) {
@@ -19,6 +22,9 @@ namespace canvas {
 			}
 
 		public:
+
+			static const DataOrder data_order = DataOrder::COLUMN_FIRST;
+
 			Scrolling(TDecorated& decorated, Coordinate<double> speed)
 				: decorated_(decorated), speed_(speed) {
 			}
@@ -37,13 +43,6 @@ namespace canvas {
 				return decorated_.size();
 			}
 
-			/*
-			void resize(Coordinate<> new_size) {
-				decorated_.resize(new_size);
-				offset_ %= size();
-			}
-			*/
-
 			void set_pixel(Coordinate<> c, uint8_t color) {
 				decorated_.set_pixel((c + offset()) % size(), color);
 			}
@@ -60,13 +59,17 @@ namespace canvas {
 			template<typename C, typename T>
 			friend void blit(const Scrolling<T>&, C&, Coordinate<>, Coordinate<>, Coordinate<>);
 
+			template<typename C, typename T>
+			friend void blit(const C&, Scrolling<T>&, Coordinate<>, Coordinate<>, Coordinate<>);
+
 			// clear() can not possibly do something wrong
 			// (clearing the whole buffer by whatever means will always also clear the whole shifted buffer)
 			template<typename C>
 			friend void clear(C&);
 
-		private:
-			uint8_t* buffer() {
+			/*
+			template<>
+			auto buffer() -> decltype(TDecorated().buffer()) {
 				return decorated_.buffer();
 			}
 
@@ -77,17 +80,24 @@ namespace canvas {
 			size_t buffer_length() const {
 				return decorated_.buffer_length();
 			}
+			*/
 
+		private:
 			TDecorated& decorated_;
 			Coordinate<double> speed_;
 			Coordinate<double> offset_;
 	};
 
+	/**
+	 * Blit this onto some other canvas C
+	 */
 	template<typename C, typename T>
 	void blit(
 		const Scrolling<T>& source, C& target,
 		Coordinate<> start, Coordinate<> end, Coordinate<> offset
 	) {
+		interface().logger()
+			<< "blit(Scr->, " << start << end << offset << ")\n";
 		assert(source.size().contains(start));
 		assert(source.size().contains(end));
 
@@ -95,6 +105,16 @@ namespace canvas {
 		Coordinate<> to = end + source.offset();
 
 		blit_rect(source, target, from, to, offset);
+	}
+
+	template<typename C, typename T>
+	void blit(
+		const C& source, Scrolling<T>& target,
+		Coordinate<> start, Coordinate<> end, Coordinate<> offset
+	) {
+		interface().logger()
+			<< "blit(->Scr, " << start << end << offset << ")\n";
+		blit(source, target.decorated_, start, end, offset);
 	}
 
 	namespace scrolling_detail {

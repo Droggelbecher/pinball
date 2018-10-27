@@ -5,6 +5,9 @@
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
+#include <cassert>
+#include <cstring> // memcpy
+#include "coordinate.h"
 
 namespace pinball {
 namespace canvas {
@@ -30,6 +33,11 @@ void pattern(C& canvas) {
 template<typename C>
 auto clear(C& canvas) -> decltype(canvas.buffer(), void()) {
 	memset(canvas.buffer(), 0, canvas.buffer_length());
+}
+
+template<typename C>
+auto clear(C& canvas) -> decltype(canvas.clear(), void()) {
+	canvas.clear();
 }
 
 template<typename C>
@@ -72,14 +80,6 @@ bool operator==(const Ca& a, const Cb& b) {
 	}
 
 	return true;
-
-	/*
-	if(a.buffer_length() != b.buffer_length()) {
-		return false;
-	}
-	int c = memcmp(a.buffer(), b.buffer(), a.buffer_length());
-	return c == 0;
-	*/
 }
 
 template<typename Ca, typename Cb>
@@ -102,18 +102,35 @@ auto operator<<(std::ostream& os, const C& c) -> decltype(c.size(), c.get_pixel(
 
 typedef enum {
 	COLUMN_FIRST,
-	ROW_FIRST
+	ROW_FIRST,
+	NONE,
+	OTHER
 } DataOrder;
 
 /**
  * Copy the rectangle ($start, $end) from $a to $b at location $target.
  */
 template<typename CanvasA, typename CanvasB>
-void blit(const CanvasA& a, CanvasB& b, Coordinate<> start, Coordinate<> end, Coordinate<> target) {
+auto blit(const CanvasA& a, CanvasB& b, Coordinate<> start, Coordinate<> end, Coordinate<> target) -> decltype(a.buffer(), b.buffer(), void()) {
 
 	static_assert(CanvasA::data_order == CanvasB::data_order, "Can only blit with equal data orders");
 
 	static_assert(CanvasA::data_order == COLUMN_FIRST, "Blit only implemented for COLUMN_FIRST currently");
+
+	assert(0 <= start.row() && start.row() < a.size().row());
+	assert(0 <= start.column() && start.column() < a.size().column());
+	assert(0 < end.row() && end.row() <= a.size().row());
+	assert(0 < end.column() && end.column() <= a.size().column());
+
+	assert(0 <= target.row() && target.row() < b.size().row());
+	assert(0 <= target.column() && target.column() < b.size().column());
+
+	Coordinate<> target_end = target - start + end;
+	assert(0 < target_end.row() && target_end.row() <= b.size().row());
+	assert(0 < target_end.column() && target_end.column() <= b.size().column());
+
+	// TODO: Fix this shit, doesn't even use target.row,
+	// so it is guaranteed to be wrong!
 
 	int n_a = a.size().column();
 	int n_b = b.size().column();

@@ -170,6 +170,36 @@ __/src/canvas/buffer.cc.s:
 	cd /home/henning/repos/pinball/boards/control_module/software && $(MAKE) -f test/CMakeFiles/test_pcf_font.dir/build.make test/CMakeFiles/test_pcf_font.dir/__/src/canvas/buffer.cc.s
 .PHONY : __/src/canvas/buffer.cc.s
 
+__/tools/pcf_font.o: __/tools/pcf_font.cc.o
+
+.PHONY : __/tools/pcf_font.o
+
+# target to build an object file
+__/tools/pcf_font.cc.o:
+	cd /home/henning/repos/pinball/boards/control_module/software && $(MAKE) -f test/CMakeFiles/test_canvas.dir/build.make test/CMakeFiles/test_canvas.dir/__/tools/pcf_font.cc.o
+	cd /home/henning/repos/pinball/boards/control_module/software && $(MAKE) -f test/CMakeFiles/test_pcf_font.dir/build.make test/CMakeFiles/test_pcf_font.dir/__/tools/pcf_font.cc.o
+.PHONY : __/tools/pcf_font.cc.o
+
+__/tools/pcf_font.i: __/tools/pcf_font.cc.i
+
+.PHONY : __/tools/pcf_font.i
+
+# target to preprocess a source file
+__/tools/pcf_font.cc.i:
+	cd /home/henning/repos/pinball/boards/control_module/software && $(MAKE) -f test/CMakeFiles/test_canvas.dir/build.make test/CMakeFiles/test_canvas.dir/__/tools/pcf_font.cc.i
+	cd /home/henning/repos/pinball/boards/control_module/software && $(MAKE) -f test/CMakeFiles/test_pcf_font.dir/build.make test/CMakeFiles/test_pcf_font.dir/__/tools/pcf_font.cc.i
+.PHONY : __/tools/pcf_font.cc.i
+
+__/tools/pcf_font.s: __/tools/pcf_font.cc.s
+
+.PHONY : __/tools/pcf_font.s
+
+# target to generate assembly for a file
+__/tools/pcf_font.cc.s:
+	cd /home/henning/repos/pinball/boards/control_module/software && $(MAKE) -f test/CMakeFiles/test_canvas.dir/build.make test/CMakeFiles/test_canvas.dir/__/tools/pcf_font.cc.s
+	cd /home/henning/repos/pinball/boards/control_module/software && $(MAKE) -f test/CMakeFiles/test_pcf_font.dir/build.make test/CMakeFiles/test_pcf_font.dir/__/tools/pcf_font.cc.s
+.PHONY : __/tools/pcf_font.cc.s
+
 home/henning/repos/pinball/common_software/src/checksum.o: home/henning/repos/pinball/common_software/src/checksum.c.o
 
 .PHONY : home/henning/repos/pinball/common_software/src/checksum.o
@@ -297,6 +327,9 @@ help:
 	@echo "... __/src/canvas/buffer.o"
 	@echo "... __/src/canvas/buffer.i"
 	@echo "... __/src/canvas/buffer.s"
+	@echo "... __/tools/pcf_font.o"
+	@echo "... __/tools/pcf_font.i"
+	@echo "... __/tools/pcf_font.s"
 	@echo "... home/henning/repos/pinball/common_software/src/checksum.o"
 	@echo "... home/henning/repos/pinball/common_software/src/checksum.i"
 	@echo "... home/henning/repos/pinball/common_software/src/checksum.s"

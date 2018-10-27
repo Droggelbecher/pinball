@@ -159,7 +159,7 @@ canvas::Buffer PcfFont::render_char(uint8_t *source_begin, uint8_t *source_end, 
 		if(reverse_bits) { b = reverse_byte(b); }
 		for(int column = 0; column < 5; column++) {
 			//std::cerr << "row=" << row << " col=" << column << " b=" << (int)((b >> column) & 0x01) << std::endl;
-			set_pixel(r, {row, column}, ((b >> column) & 0x01) ? 0xff : 0x00);
+			set_pixel(r, {row, column}, ((b >> column) & 0x01) ? 0x01 : 0x00);
 		}
 	}
 

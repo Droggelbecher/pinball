@@ -5,27 +5,46 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include "coordinate.h"
+#include "canvas.h"
+
+#include "main.h"
 
 namespace pinball { namespace canvas {
 
 template<typename... Cs>
 class BroadcastCanvas {
 	public:
+		static const DataOrder data_order = DataOrder::NONE;
+
 		void clear() { };
 		void set_pixel(Coordinate<>, uint8_t) { };
 		void next_frame(double) { };
+
+	protected:
+		template<typename CC>
+		void blit_onto(const CC& source, Coordinate<> from, Coordinate<> to, Coordinate<> offset) {
+		}
 };
 
 template<typename C, typename... Cs>
 class BroadcastCanvas<C, Cs...> : BroadcastCanvas<Cs...> {
 		using Parent = BroadcastCanvas<Cs...>;
 
+		static const DataOrder data_order =
+			(
+			    (C::data_order == Parent::data_order)
+			 || (Parent::data_order == DataOrder::NONE)
+			)
+			? C::data_order
+			: DataOrder::OTHER;
+
 	public:
 		BroadcastCanvas(C& canvas, Cs&... cs)
 			: Parent(cs...), canvas_(canvas) { }
 
 		void clear() {
-			canvas_.clear();
+			canvas::clear(canvas_);
 			Parent::clear();
 		}
 
@@ -47,9 +66,30 @@ class BroadcastCanvas<C, Cs...> : BroadcastCanvas<Cs...> {
 			return canvas_.size();
 		}
 
+		template<typename C_, typename BC_, typename BCs_>
+		friend void blit(const C_&, BroadcastCanvas<BC_, BCs_>&, Coordinate<>, Coordinate<>, Coordinate<>);
+
+	protected:
+		template<typename CC>
+		void blit_onto(const CC& source, Coordinate<> from, Coordinate<> to, Coordinate<> offset) {
+			blit(source, canvas_, from, to, offset);
+			Parent::blit_onto(source, from, to, offset);
+		}
+
 	private:
 		C& canvas_;
 };
+
+template<typename C, typename BC, typename BCs>
+void blit(
+		const C& source, BroadcastCanvas<BC, BCs>& target,
+		Coordinate<> from, Coordinate<> to, Coordinate<> offset
+) {
+	interface().logger()
+		<< "blit(->BC, " << from << to << offset << ")\n";
+	target.blit_onto(source, from, to, offset);
+}
+
 
 } } // Pinball::canvas
 

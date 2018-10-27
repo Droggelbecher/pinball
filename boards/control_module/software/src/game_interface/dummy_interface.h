@@ -2,6 +2,7 @@
 #define game_interface__dummy_interface_h_INCLUDED
 
 #include "memory_sensor_actuator.h"
+#include "coordinate.h"
 
 namespace pinball {
 
@@ -76,6 +77,14 @@ class DummyInterface {
 		Solenoids solenoids_;
 		Lamps lamps_;
 };
+
+
+template<typename C>
+void blit(
+	const C& source, DummyInterface::DummyCanvas& target,
+	Coordinate<>, Coordinate<>, Coordinate<>
+) {
+}
 
 } // ns pinball
 

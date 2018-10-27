@@ -6,7 +6,6 @@
 #include <glob.h>
 #include <signal.h>
 
-#include "config.h"
 #include "game_logic.h"
 #include "interval_stats.h"
 
@@ -15,7 +14,7 @@ namespace pinball {
 void fill_playlist(void) {
 	glob_t pglob;
 
-	int r = glob("resources/music/*.mp3", 0, 0, &pglob);
+	int r = glob("../resources/music/*.mp3", 0, 0, &pglob);
 	if(r != 0) {
 		perror("glob error on looking for music tracks.");
 	}
@@ -31,20 +30,14 @@ void fill_playlist(void) {
 } // ns pinball
 
 #if MOCK_SPI
-	#include "game_interface/dummy_interface.h"
-
 	namespace pinball {
-		DummyInterface spi_interface;
-		using SpiInterface = DummyInterface;
+		SpiInterface_t spi_interface;
 	}
 
 #else
-	#include "spi/spi.h"
-	#include "spi/spi_interface.h"
-
 	namespace pinball {
 		Spi spi;
-		SpiInterface spi_interface {
+		SpiInterface_t spi_interface {
 			spi,
 			DISPLAY_MODULE_COUNT,
 			Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COLUMNS)
@@ -57,8 +50,7 @@ void fill_playlist(void) {
 	#include "game_interface/curses_interface.h"
 
 	namespace pinball {
-		using Interface = CursesInterface<SpiInterface>;
-		Interface interface {
+		Interface interface_ {
 			Coordinate<>(DISPLAY_MODULE_ROWS, DISPLAY_MODULE_COUNT * DISPLAY_MODULE_COLUMNS),
 			spi_interface
 		};
@@ -66,12 +58,17 @@ void fill_playlist(void) {
 #else
 	namespace pinball {
 		using Interface = SpiInterface;
-		Interface& interface = spi_interface;
+		Interface& interface_ = spi_interface;
 	}
 #endif
 
 namespace pinball {
 	using GameLogic_t = GameLogic<Interface>;
+
+	Interface& interface() {
+		return interface_;
+	}
+
 } // ns pinball
 
 void sig_handler(int signum) {
@@ -83,14 +80,14 @@ int main(int argc, const char **argv) {
 
 	using namespace pinball;
 
-	IntervalStats<Interface::Logger> fps_reporter("FPS", 10.0, interface.logger());
+	IntervalStats<Interface::Logger> fps_reporter("FPS", 10.0, interface().logger());
 
 	// When aborted w/ Ctrl-C, make sure to still call exit(),
 	// such that gprof will generate its gmon.out
 	signal(SIGINT, sig_handler);
 
 	Framer framer(DISPLAY_TARGET_FPS);
-	GameLogic_t game_logic(interface);
+	GameLogic_t game_logic(interface());
 
 	fill_playlist();
 	Audio::instance().playlist_play();

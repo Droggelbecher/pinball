@@ -5,9 +5,16 @@
 #include <bitset>
 
 #include "canvas/buffer.h"
-#include "canvas/broadcast_canvas.h"
+//#include "canvas/broadcast_canvas.h"
 #include "sensor_actuator_override.h"
 #include "buffer_logger.h"
+
+namespace pinball { namespace canvas {
+	template<typename... Cs>
+	class BroadcastCanvas;
+
+} }
+
 
 namespace pinball {
 

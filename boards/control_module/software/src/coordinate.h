@@ -16,26 +16,26 @@ class Coordinate {
 	public:
 		typedef T Ordinate;
 
-		Coordinate()
+		constexpr Coordinate()
 			: row_(0), column_(0) {
 		}
 
-		Coordinate(T row, T column)
+		constexpr Coordinate(T row, T column)
 			: row_(row), column_(column) {
 		}
 
-		Coordinate(const Coordinate& c)
+		constexpr Coordinate(const Coordinate& c)
 			: row_(c.row_), column_(c.column_) {
 		}
 
 		template<typename C>
-		Coordinate(const C& c)
+		constexpr Coordinate(const C& c)
 			: row_(c.row()), column_(c.column()) {
 		}
 
 
-		T row() const { return row_; }
-		T column() const { return column_; }
+		constexpr T row() const { return row_; }
+		constexpr T column() const { return column_; }
 
 		T& row() { return row_; }
 		T& column() { return column_; }
@@ -77,7 +77,7 @@ class Coordinate {
 			return *this;
 		}
 
-		Ordinate area() const {
+		constexpr Ordinate area() const {
 			return row_ * column_;
 		}
 

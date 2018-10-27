@@ -1,12 +1,12 @@
 
 project(font_reader)
 
-string(REGEX REPLACE "([^;]+)" "../\\1" base_sources "${common_sources}")
-
 set(font_reader_sources
-	${base_sources}
 	pcf_font.cc
 	font_reader.cc
+	../src/canvas/buffer.cc
+	../../../../common_software/src/checksum.c
+	../../../../common_software/src/utils.c
 	)
 
 #

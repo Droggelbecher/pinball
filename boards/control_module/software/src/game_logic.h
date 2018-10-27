@@ -7,9 +7,10 @@
 #include "canvas/broadcast_canvas.h"
 #include "state_buffer.h"
 #include "framer.h"
-#include "pcf_font.h"
+#include "font.h"
 #include "keep_value_delay.h"
 #include "config.h"
+#include "gohufont.h"
 
 #include <memory>
 
@@ -27,7 +28,7 @@ class GameLogic {
   private:
     Interface& interface;
     Audio audio { Audio::instance() };
-    PcfFont font_normal { "resources/gohufont-11.pcf" };
+    Font<g_font_size> font_normal { g_font_data };
 
     Framer framer { DISPLAY_TARGET_FPS };
     StateBuffer<typename Interface::Switches> switches_delta { interface.switches() };

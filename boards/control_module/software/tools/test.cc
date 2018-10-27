@@ -1,7 +1,8 @@
 #include <map>
 #include <array>
+#include "coordinate.h"
 
-Coordinate<> size { 11, 5;
+Coordinate<> size { 11, 5 };
 std::map<char, std::array<unsigned char, 55>> font = { 
 { 97, {  // [a]
     0,    0,    0,    0,    0,  

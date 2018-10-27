@@ -5,11 +5,19 @@ set(CMAKE_BUILD_TYPE Debug CACHE STRING "CMake Build Type (Debug/Release)")
 
 project(Pinball)
 
-string(REGEX REPLACE "([^;]+)" "../\\1" base_sources "${common_sources}")
+add_custom_command(
+	OUTPUT ../src/gohufont.cc
+	COMMAND ../tools/font_reader ../resources/gohufont-11.pcf ../src/gohufont.cc ../src/gohufont.h
+	DEPENDS ../tools/font_reader
+)
 
 set(pinball_sources
-	${base_sources}
 	main.cc
+	framer.cc
+	gohufont.cc
+	canvas/buffer.cc
+	../../../../common_software/src/checksum.c
+	../../../../common_software/src/utils.c
 	)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
