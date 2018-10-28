@@ -59,7 +59,7 @@ class Font {
 					CharacterCanvas(font_data.at(ch)),
 					canvas,
 					Coordinate<>(0, 0),
-					SIZE,
+					SIZE, // - Coordinate<>(1, 1),
 					c
 			);
 		}
@@ -69,7 +69,7 @@ class Font {
 			//paint_char(canvas, 'a', start, 1);
 			for( ; *s; ++s) {
 				paint_char(canvas, *s, start, 1);
-				//start.column() += SIZE.column();
+				start.column() += SIZE.column() + 1;
 			}
 		}
 

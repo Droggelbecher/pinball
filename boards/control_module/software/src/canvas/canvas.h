@@ -8,6 +8,7 @@
 #include <cassert>
 #include <cstring> // memcpy
 #include "coordinate.h"
+#include "assertions.h"
 
 namespace pinball {
 namespace canvas {
@@ -117,17 +118,7 @@ auto blit(const CanvasA& a, CanvasB& b, Coordinate<> start, Coordinate<> end, Co
 
 	static_assert(CanvasA::data_order == COLUMN_FIRST, "Blit only implemented for COLUMN_FIRST currently");
 
-	assert(0 <= start.row() && start.row() < a.size().row());
-	assert(0 <= start.column() && start.column() < a.size().column());
-	assert(0 < end.row() && end.row() <= a.size().row());
-	assert(0 < end.column() && end.column() <= a.size().column());
-
-	assert(0 <= target.row() && target.row() < b.size().row());
-	assert(0 <= target.column() && target.column() < b.size().column());
-
-	Coordinate<> target_end = target - start + end;
-	assert(0 < target_end.row() && target_end.row() <= b.size().row());
-	assert(0 < target_end.column() && target_end.column() <= b.size().column());
+	assert_blittable(a, b, start, end, target);
 
 	int n_a = a.size().column();
 	int n_b = b.size().column();

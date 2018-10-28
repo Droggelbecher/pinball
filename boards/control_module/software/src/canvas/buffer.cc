@@ -32,8 +32,6 @@ void Buffer::set_pixel(Coordinate<> c, uint8_t color) {
 	assert(0 <= c.column() && c.column() < size_.column());
 	assert(0 <= c.row() && c.row() < size_.row());
 
-	assert(color == 0 || color == 1);
-
 	buffer_[c.column() + c.row() * size_.column()] = color;
 }
 

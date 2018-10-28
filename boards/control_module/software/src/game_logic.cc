@@ -112,7 +112,8 @@ GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 	//pattern(marquee);
 
 	std::ostringstream ss;
-	ss << "FPS: " << std::setprecision(3) << (1.0 / dt); //Hallo, Welt!";
+	//ss << "FPS: " << std::setprecision(3) << (1.0 / dt); //Hallo, Welt!";
+	ss << "0123456789";
 	font_normal.paint_string(marquee, ss.str().c_str(), Coordinate<>(0, 0), 1);
 	
 }

@@ -7,6 +7,8 @@
 #include <functional>
 #include "coordinate.h"
 #include "canvas.h"
+#include "canvas/scrolling.h"
+#include "assertions.h"
 
 #include "main.h"
 
@@ -85,8 +87,9 @@ void blit(
 		const C& source, BroadcastCanvas<BC, BCs>& target,
 		Coordinate<> from, Coordinate<> to, Coordinate<> offset
 ) {
-	interface().logger()
-		<< "blit(->BC, " << from << to << offset << ")\n";
+	assert_blittable(source, target, from, to, offset);
+	//interface().logger()
+		//<< "blit(->BC, " << from << to << offset << ")\n";
 	target.blit_onto(source, from, to, offset);
 }
 

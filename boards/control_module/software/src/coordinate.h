@@ -41,12 +41,12 @@ class Coordinate {
 		T& column() { return column_; }
 
 		template<typename C>
-		Coordinate<decltype(T() + typename C::Ordinate())> operator+(const C& other) {
+		Coordinate<decltype(T() + typename C::Ordinate())> operator+(const C& other) const {
 			return { row() + other.row(), column() + other.column() };
 		}
 
 		template<typename C>
-		Coordinate<decltype(T() - typename C::Ordinate())> operator-(const C& other) {
+		Coordinate<decltype(T() - typename C::Ordinate())> operator-(const C& other) const {
 			return { row() - other.row(), column() - other.column() };
 		}
 
@@ -84,6 +84,13 @@ class Coordinate {
 		bool contains(const Coordinate& other) const {
 			return (other.row_ >= 0) && (other.column_ >= 0)
 				&& (other.row_ < row_) && (other.column_ < column_);
+		}
+
+		Coordinate crop(const Coordinate& other) const {
+			return {
+				other.row() <= row() ? other.row() : row(),
+				other.column() <= column() ? other.column() : column()
+			};
 		}
 
 	private:
