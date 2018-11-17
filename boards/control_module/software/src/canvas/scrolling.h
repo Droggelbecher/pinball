@@ -71,8 +71,9 @@ namespace canvas {
 
 			// clear() can not possibly do something wrong
 			// (clearing the whole buffer by whatever means will always also clear the whole shifted buffer)
-			template<typename C>
-			friend void clear(C&);
+			void clear() {
+				canvas::clear(decorated_);
+			}
 
 			TDecorated& decorated() { return decorated_; }
 
@@ -81,18 +82,6 @@ namespace canvas {
 			Coordinate<double> speed_;
 			Coordinate<double> offset_;
 	};
-
-	/*
-	template<typename C, typename T>
-	void blit(
-		const C& source, Scrolling<T>& target,
-		Coordinate<> start, Coordinate<> end, Coordinate<> offset
-	) {
-		//interface().logger()
-			//<< "blit(->Scr, " << start << end << offset << ")\n";
-		blit(source, target.decorated_, start, end, offset);
-	}
-	*/
 
 	namespace scrolling_detail {
 
@@ -107,17 +96,14 @@ namespace canvas {
 				Coordinate<> size_b,
 				T f
 		) {
-				//std::cout << "call begin_a=" << begin_a
-					//<< " end_a=" << end_a
-					//<< " begin_b=" << begin_b
-					//<< " size_b=" << size_b
-					//<< "\n";
-
-			begin_a = Coordinate<> { max(0, begin_a.row()),	max(0, begin_a.column()) };
-			end_a = Coordinate<> { max(0, end_a.row()),	max(0, end_a.column()) };
-			begin_b = Coordinate<> { max(0, begin_b.row()),	max(0, begin_b.column()) };
+			//std::cout << begin_a << begin_b << "{" << std::endl;
+			//begin_a = Coordinate<> { max(0, begin_a.row()), max(0, begin_a.column()) };
+			//end_a = Coordinate<>   { max(0, end_a.row()),   max(0, end_a.column()) };
+			//begin_b = Coordinate<> { max(0, begin_b.row()), max(0, begin_b.column()) };
 
 			begin_a = end_a.crop(begin_a);
+			//begin_b = size_b.crop(begin_b);
+
 			Coordinate<> sz_a = end_a - begin_a;
 
 			if(!sz_a.area()) {
@@ -125,14 +111,13 @@ namespace canvas {
 			}
 
 			Coordinate<> end_b = begin_b + sz_a;
-
 			begin_b = end_b.crop(begin_b);
 
 			Coordinate<> offset = begin_b - begin_a;
 
 			if(begin_b.row() < 0) {
 				return blit_crop(
-						{ 0 - offset.row(), begin_a.column() },
+						{ begin_a.row() - begin_b.row(), begin_a.column() },
 						end_a,
 						{ 0, begin_b.column() },
 						size_b, f
@@ -141,49 +126,43 @@ namespace canvas {
 			if(end_b.row() > size_b.row()) {
 				return blit_crop(
 						begin_a,
-						{ size_b.row() - offset.row(), end_b.column() },
+						{ (size_b - offset).row(), end_a.column() },
 						begin_b, size_b, f
 						);
 			}
 			if(begin_b.column() < 0) {
+				//std::cout << begin_a.column() << " - " << begin_b.column() << std::endl;
 				return blit_crop(
-						{ begin_a.row(), 0 - offset.column() },
+						{ begin_a.row(), begin_a.column() - begin_b.column() },
 						end_a,
 						{ begin_b.row(), 0 },
 						size_b, f
 						);
 			}
 			if(end_b.column() > size_b.column()) {
-				//std::cout << "=> begin_a=" << begin_a
-					//<< " end_a=" << end_a
-					//<< " sz_a=" << sz_a
-					//<< " begin_b=" << begin_b
-					//<< " end_b=" << end_b
-					//<< " size_b=" << size_b
-					//<< " offs=" << offset
-					//<< "\n";
 				return blit_crop(
 						begin_a,
-						{ end_b.row(), size_b.column() - offset.column() },
+						{ end_a.row(), (size_b - offset).column() },
 						begin_b, size_b, f
 						);
 			}
 
-			//std::cout << "=> " << begin_a << end_a << begin_b << "\n";
+			//std::cout << begin_a << end_a << begin_b << std::endl;
 			f(begin_a, end_a, begin_b);
+			//std::cout << "}" << std::endl;
 		}
 
 		template<typename T>
 		void blit_wrap(
-				Coordinate<> begin_b,
+				Coordinate<> begin_b, // (virtual) scrolling canvas space
 				Coordinate<> end_b,
-				Coordinate<> begin_c,
+				Coordinate<> begin_c, // target canvas space
 				Coordinate<> size_b,
 				Coordinate<> size_c,
 				T f
 		) {
 			blit_crop(begin_b, end_b, begin_c + begin_b, size_c, f);
-			blit_crop(begin_b, end_b, begin_c + begin_b - size_b, size_c, f);
+			//blit_crop(begin_b, end_b, begin_c + begin_b - size_b, size_c, f);
 			blit_crop(begin_b, end_b, begin_c + begin_b - Coordinate<>(0, size_b.column()), size_c, f);
 		}
 
@@ -192,21 +171,30 @@ namespace canvas {
 			blit_crop(
 					begin_a, end_a,
 					begin_b, cb.virtual_size(),
+
 					// Crop blit from a -> virtual space as necessary
 					// Result is coordinates in a (ba/ea) and virtual space(bb)
 					[&](Coordinate<> ba, Coordinate<> ea, Coordinate<> bb) {
 						// wrap result into target
 						blit_wrap(
-								bb, bb + ea - ba, cb.offset(), cb.virtual_size(), cb.size(),
+								ba, //bb, // start at beginning on virtual space
+								ea, //bb + ea - ba, // size of source
+								bb + cb.offset(),  // target position: current scrolling offset
+								cb.virtual_size(), // wrap on size of virtual canvas
+								cb.size(), // target size (=decorated size)
+								
 								[&](Coordinate<> bb2, Coordinate<> eb2, Coordinate<> bc2) {
 									assert_blittable(
 											ca, cb.decorated(),
-											begin_a, begin_a + eb2 - bb2, bc2
+											bb2, eb2, bc2
 									);
+									
+									// This is the actual copying of pixels from A (source) to C (target)
 									blit(
 											ca, cb.decorated(),
-											begin_a, begin_a + eb2 - bb2,
-											bc2
+											//begin_a, begin_a + eb2 - bb2,
+											//bc2
+											bb2, eb2, bc2
 									);
 								}
 						); // blit_wrap
@@ -322,16 +310,6 @@ namespace canvas {
 		Scrolling<T>& target,
 		Coordinate<> start, Coordinate<> end, Coordinate<> offset
 	) {
-		//interface().logger()
-			//<< "blit(Scr->, " << start << end << offset << ")\n";
-		//assert(source.size().contains(start));
-		//assert(source.size().contains(end));
-
-		//offset += target.offset();
-		//Coordinate<> to = end + target.offset();
-
-		//assert(false);
-		//scrolling_detail::blit_rect(source, target, start, end, offset + target.offset());
 		scrolling_detail::blit_scroll(source, target, start, end, offset); //, offset + target.offset());
 	} // blit
 
