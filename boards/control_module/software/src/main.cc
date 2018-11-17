@@ -9,26 +9,6 @@
 #include "game_logic.h"
 #include "interval_stats.h"
 
-namespace pinball {
-
-void fill_playlist(void) {
-	glob_t pglob;
-
-	int r = glob("../resources/music/*.mp3", 0, 0, &pglob);
-	if(r != 0) {
-		perror("glob error on looking for music tracks.");
-	}
-
-	unsigned i;
-	for(i = 0; i < pglob.gl_pathc; i++) {
-		Audio::instance().playlist_append(pglob.gl_pathv[i]);
-	}
-
-	globfree(&pglob);
-}
-
-} // ns pinball
-
 #if MOCK_SPI
 	namespace pinball {
 		SpiInterface_t spi_interface;
@@ -67,6 +47,24 @@ namespace pinball {
 
 	Interface& interface() {
 		return interface_;
+	}
+
+	void fill_playlist(void) {
+		glob_t pglob;
+
+		int r = glob("../resources/music/original/*.mp3", 0, 0, &pglob);
+		if(r != 0) {
+			perror("glob error on looking for music tracks.");
+		}
+
+		unsigned i;
+		for(i = 0; i < pglob.gl_pathc; i++) {
+			const char *path = pglob.gl_pathv[i];
+			interface().logger() << "[" << i << "] " << path << "\n";
+			Audio::instance().playlist_append(path);
+		}
+
+		globfree(&pglob);
 	}
 
 } // ns pinball
