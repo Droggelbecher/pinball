@@ -9,9 +9,6 @@
 namespace pinball {
 
 GAME_LOGIC_TEMPL()::GameLogic(Interface& interface) : interface(interface) {
-	//marquee.resize({ 16, 100 });
-	// TODO
-
 	sound_r2d2_again = audio.sound_load("resources/sounds/r2d2_again.mp3");
 	sound_death_star_explode = audio.sound_load("resources/sounds/death_star_explode.mp3");
 }
@@ -106,15 +103,16 @@ GAME_LOGIC_TEMPL(void)::next_frame(double dt) {
 
 
 	// TODO
-	clear(marquee);
+	//clear(marquee);
 	clear(interface.canvas());
 
 	//pattern(marquee);
 
 	std::ostringstream ss;
-	ss << "FPS: " << std::setprecision(3) << (1.0 / dt); //Hallo, Welt!";
+	//ss << "FPS: " << std::setprecision(3) << (1.0 / dt); //Hallo, Welt!";
 	//ss << "A";
-	font_normal.paint_string(marquee, ss.str().c_str(), Coordinate<>(0, 0), 1);
+	font_small.paint_string(marquee, "STAR", Coordinate<>(0, 0), 1, ALIGN_CENTER);
+	font_small.paint_string(marquee, "WARS", Coordinate<>(8, 0), 2, ALIGN_CENTER);
 	//font_normal.paint_string(interface.canvas(), ss.str().c_str(), Coordinate<>(0, 0), 1);
 	//pattern(interface.canvas());
 	

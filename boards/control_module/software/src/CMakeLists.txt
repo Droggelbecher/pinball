@@ -6,15 +6,23 @@ set(CMAKE_BUILD_TYPE Debug CACHE STRING "CMake Build Type (Debug/Release)")
 project(Pinball)
 
 add_custom_command(
-	OUTPUT ../src/gohufont.cc
-	COMMAND ../tools/font_reader ../resources/gohufont-11.pcf ../src/gohufont.cc ../src/gohufont.h
+	OUTPUT ../src/gohu.cc
+	COMMAND ../tools/font_reader ../resources/gohufont-11.pcf ../src/ gohu
 	DEPENDS ../tools/font_reader
 )
+
+add_custom_command(
+	OUTPUT ../src/5x8.cc
+	COMMAND ../tools/font_reader ../resources/5x8.pcf ../src/ 5x8
+	DEPENDS ../tools/font_reader
+)
+
 
 set(pinball_sources
 	main.cc
 	framer.cc
-	gohufont.cc
+	gohu.cc
+	5x8.cc
 	canvas/buffer.cc
 	../../../../common_software/src/checksum.c
 	../../../../common_software/src/utils.c

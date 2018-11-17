@@ -12,6 +12,8 @@
 
 namespace pinball {
 
+enum Alignment { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT };
+
 template<const Coordinate<>& SIZE>
 class Font {
 
@@ -38,23 +40,12 @@ class Font {
 		}; // class CharacterCanvas
 
 		Font(const FontData& font_data) : font_data(font_data) {}
-		Coordinate<> size(const std::string& text);
+		Coordinate<> size(const std::string& text) {
+			return { SIZE.row(), static_cast<int>((SIZE.column() + 1) * text.size()) };
+		}
 
 		template<typename Canvas>
 		void paint_char(Canvas& canvas, char ch, Coordinate<> c, uint8_t color) {
-
-			/*
-			CharacterCanvas cc(font_data.at(ch));
-			for(int j=0; j<11; j++) {
-				for(int i=0; i <5; i++) {
-					std::cout << (int)cc.buffer()[i + j * 5];
-				}
-				std::cout << std::endl;
-			}
-			std::cout << std::endl;
-			*/
-			//assert(false);
-			
 			blit(
 					CharacterCanvas(font_data.at(ch)),
 					canvas,
@@ -65,8 +56,17 @@ class Font {
 		}
 
 		template<typename Canvas>
-		void paint_string(Canvas& canvas, const char *s,  Coordinate<> start, uint8_t color) {
-			//paint_char(canvas, 'a', start, 1);
+		void paint_string(Canvas& canvas, const char *s,  Coordinate<> start, uint8_t color, Alignment align = ALIGN_LEFT) {
+			if(align == ALIGN_RIGHT) {
+				start = { start.row(), canvas.size().column() - this->size(s).column() };
+			}
+			else if(align == ALIGN_CENTER) {
+				start = {
+					start.row(),
+					static_cast<int>((start.column() + canvas.size().column() - this->size(s).column()) / 2)
+				};
+			}
+
 			for( ; *s; ++s) {
 				paint_char(canvas, *s, start, 1);
 				start.column() += SIZE.column() + 1;

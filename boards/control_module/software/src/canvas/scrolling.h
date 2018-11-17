@@ -28,8 +28,8 @@ namespace canvas {
 
 			static const DataOrder data_order = DataOrder::COLUMN_FIRST;
 
-			Scrolling(TDecorated& decorated, Coordinate<double> speed)
-				: decorated_(decorated), speed_(speed) {
+			Scrolling(TDecorated& decorated, Coordinate<> virtual_size, Coordinate<double> speed)
+				: decorated_(decorated), virtual_size_(virtual_size), speed_(speed) {
 			}
 
 			void next_frame(double dt) {
@@ -38,8 +38,16 @@ namespace canvas {
 				offset_ %= virtual_size();
 			}
 
+			void set_offset(Coordinate<> o) {
+				offset_ = o;
+			}
+
 			Coordinate<> offset() const {
 				return offset_;
+			}
+
+			void set_speed(Coordinate<> s) {
+				speed_ = s;
 			}
 
 			Coordinate<> size() const {
@@ -47,7 +55,7 @@ namespace canvas {
 			}
 
 			Coordinate<> virtual_size() const {
-				return { 11, 80 };
+				return virtual_size_;
 			}
 
 			void set_pixel(Coordinate<> c, uint8_t color) {
@@ -79,6 +87,7 @@ namespace canvas {
 
 		private:
 			TDecorated& decorated_;
+			Coordinate<> virtual_size_;
 			Coordinate<double> speed_;
 			Coordinate<double> offset_;
 	};
@@ -96,16 +105,8 @@ namespace canvas {
 				Coordinate<> size_b,
 				T f
 		) {
-			//std::cout << begin_a << begin_b << "{" << std::endl;
-			//begin_a = Coordinate<> { max(0, begin_a.row()), max(0, begin_a.column()) };
-			//end_a = Coordinate<>   { max(0, end_a.row()),   max(0, end_a.column()) };
-			//begin_b = Coordinate<> { max(0, begin_b.row()), max(0, begin_b.column()) };
-
 			begin_a = end_a.crop(begin_a);
-			//begin_b = size_b.crop(begin_b);
-
 			Coordinate<> sz_a = end_a - begin_a;
-
 			if(!sz_a.area()) {
 				return;
 			}
@@ -131,7 +132,6 @@ namespace canvas {
 						);
 			}
 			if(begin_b.column() < 0) {
-				//std::cout << begin_a.column() << " - " << begin_b.column() << std::endl;
 				return blit_crop(
 						{ begin_a.row(), begin_a.column() - begin_b.column() },
 						end_a,
@@ -147,9 +147,7 @@ namespace canvas {
 						);
 			}
 
-			//std::cout << begin_a << end_a << begin_b << std::endl;
 			f(begin_a, end_a, begin_b);
-			//std::cout << "}" << std::endl;
 		}
 
 		template<typename T>
@@ -162,8 +160,8 @@ namespace canvas {
 				T f
 		) {
 			blit_crop(begin_b, end_b, begin_c + begin_b, size_c, f);
-			//blit_crop(begin_b, end_b, begin_c + begin_b - size_b, size_c, f);
 			blit_crop(begin_b, end_b, begin_c + begin_b - Coordinate<>(0, size_b.column()), size_c, f);
+			blit_crop(begin_b, end_b, begin_c + begin_b - Coordinate<>(size_b.row(), 0), size_c, f);
 		}
 
 		template<typename C, typename T>
@@ -192,8 +190,6 @@ namespace canvas {
 									// This is the actual copying of pixels from A (source) to C (target)
 									blit(
 											ca, cb.decorated(),
-											//begin_a, begin_a + eb2 - bb2,
-											//bc2
 											bb2, eb2, bc2
 									);
 								}

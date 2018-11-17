@@ -8,7 +8,7 @@
 
 using namespace pinball;
 
-void write_header(PcfFont& font, std::ofstream& ofs) {
+void write_header(PcfFont& font, std::ofstream& ofs, std::string name) {
 	auto size = font.get_char('a').size();
 
 	ofs
@@ -17,15 +17,15 @@ void write_header(PcfFont& font, std::ofstream& ofs) {
 		<< "#include \"coordinate.h\"\n"
 		<< "\n"
 		<< "namespace pinball {\n"
-		<< "  constexpr Coordinate<> g_font_size { "
+		<< "  constexpr Coordinate<> font_" << name << "_size { "
 			<< size.row() << ", " << size.column() << " };\n"
-		<< "  extern const std::map<char, std::array<uint8_t, " << size.area() << ">> g_font_data;\n"
+		<< "  extern const std::map<char, std::array<uint8_t, " << size.area() << ">> font_" << name << "_data;\n"
 		<< "}\n"
 		<< "\n\n"
 		;
 }
 
-void write_source(PcfFont& font, std::string h_filename, std::ofstream& ofs) {
+void write_source(PcfFont& font, std::ofstream& ofs, std::string name, std::string h_filename) {
 	auto size = font.get_char('a').size();
 
 	const char *chars = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(){}[]/?=+-_\\|'\",<.>`~;:";
@@ -35,7 +35,7 @@ void write_source(PcfFont& font, std::string h_filename, std::ofstream& ofs) {
 		<< "namespace pinball {\n"
 		<< "\n";
 
-	ofs << "const std::map<char, std::array<uint8_t, " << size.area() << ">> g_font_data = { \n";
+	ofs << "const std::map<char, std::array<uint8_t, " << size.area() << ">> font_" << name << "_data = { \n";
 	for(const char *c = chars; *c != 0; ++c) {
 		ofs << "{ " << (int)*c << ", {  // [" << *c << "]\n  ";
 		const auto& canvas = font.get_char(*c);
@@ -55,18 +55,21 @@ void write_source(PcfFont& font, std::string h_filename, std::ofstream& ofs) {
 int main(int argc, char** argv) {
 
 	if(argc < 4) {
-		std::cerr << "syntax: " << argv[0] << " [pcf font path] [outfile.cc] [outfile.h]" << std::endl;
+		std::cerr << "syntax: " << argv[0] << " [pcf font path] [out path] [out name]" << std::endl;
 		return 1;
 	}
 
 	PcfFont font { argv[1] };
 
-	std::ofstream cc(argv[2]);
-	write_source(font, argv[3], cc);
+	std::string cc_path = std::string(argv[2]) + "/" + argv[3] + ".cc";
+	std::string h_path = std::string(argv[2]) + "/" + argv[3] + ".h";
+
+	std::ofstream cc(cc_path);
+	write_source(font, cc, argv[3], h_path);
 	cc.close();
 
-	std::ofstream h(argv[3]);
-	write_header(font, h);
+	std::ofstream h(h_path);
+	write_header(font, h, argv[3]);
 	h.close();
 }
 

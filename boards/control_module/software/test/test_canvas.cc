@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(test_scrolling) {
 	} };
 
 
-	Scrolling<MockCanvas> scrolling(mock_canvas, { 1.0, 0.0 });
+	Scrolling<MockCanvas> scrolling(mock_canvas, {10, 10}, { 1.0, 0.0 });
 
 	std::cout << "mock_canvas = " << mock_canvas;
 	std::cout << "scrolling = " << scrolling;
