@@ -1,0 +1,13 @@
+{
+	"name": "control_module",
+	"authors": [
+		"henning"
+	],
+	"description": "Pinball control module software",
+	"copyright": "Copyright © 2018, henning",
+	"license": "proprietary",
+	"dependencies": {
+		"derelict-alure": ">=1.0.2",
+		"nice-curses": ">=0.2.4"
+	}
+}
