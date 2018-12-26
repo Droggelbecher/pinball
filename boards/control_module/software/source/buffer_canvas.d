@@ -1,7 +1,10 @@
 
 import coordinate;
+import canvas;
 
 class BufferCanvas {
+
+	static immutable storage_type = StorageType.ColumnFirst;
 
 	this(CArgs...)(CArgs cargs) {
 		this(make_coordinate(cargs));
@@ -25,7 +28,7 @@ class BufferCanvas {
 
 	Coordinate!() size;
 
-	private:
-		ubyte[] buffer;
+	//private:
+	ubyte[] buffer;
 }
 

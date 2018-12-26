@@ -59,10 +59,11 @@ void write_d(PcfFont& font, std::ofstream& ofs, std::string name) {
 
 	ofs << "import coordinate;\n\n";
 
-	ofs << "auto font_" << name << "_size = Coordinate!()(" << size.row() << ", " << size.column() << ");\n\n";
+	ofs << "enum font_" << name << "_size = Coordinate!()(" << size.row() << ", " << size.column() << ");\n\n";
+	ofs << "ubyte[" << size.area() << "][char] font_" << name << "_data;\n";
 
-	ofs << "ubyte[" << size.area() << "][char] make_font_" << name << "_data() {\n";
-	ofs << "ubyte[" << size.area() << "][char] data = \n";
+	ofs << "static this() {\n";
+	ofs << "font_" << name << "_data = [\n";
 	for(const char *c = chars; *c != 0; ++c) {
 		ofs << (int)*c << ": [  // [" << *c << "]\n  ";
 		const auto& canvas = font.get_char(*c);
@@ -75,7 +76,7 @@ void write_d(PcfFont& font, std::ofstream& ofs, std::string name) {
 		ofs << "],\n";
 	}
 	ofs << "];\n";
-	ofs << "return data;\n";
+	//ofs << "return data;\n";
 	ofs << "}\n\n";
 
 }

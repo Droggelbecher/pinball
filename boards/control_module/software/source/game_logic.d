@@ -1,25 +1,32 @@
 
-//import std.datetime.systime : Clock;
-
 import task : Task;
-//import mock_spi;
 
 class GameLogic(Solenoids, Switches, Display) : Task {
 
 	import std.stdio : writeln;
 	import std.datetime : seconds, msecs;
+	import font;
+	import five_eight: font_5x8_size, font_5x8_data;
+	import coordinate;
+	import canvas: blit;
 
 	Solenoids solenoids;
 	Switches switches;
 	Display display;
 
+	Font!(font_5x8_size) font_normal;
+
 	alias Sol = Solenoids.Index;
 	alias Sw = Switches.Index;
+
+	alias C = Coordinate!();
 
 	this(Solenoids solenoids, Switches switches, Display display) {
 		this.solenoids = solenoids;
 		this.switches = switches;
 		this.display = display;
+
+		this.font_normal = new Font!(font_5x8_size)(font_5x8_data);
 	}
 
 	override void frame_start(double dt) {
@@ -65,6 +72,19 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 				display[row, column] = ((row + column) % 2) ? 0 : 5;
 			}
 		}
+
+		yield(1.seconds);
+
+		foreach(int row; 0 .. display.size.row) {
+			foreach(int column; 0 .. display.size.column) {
+				display[row, column] = 0;
+			}
+		}
+
+		yield(1.seconds);
+
+		blit(font_normal['b'], C(), font_normal.size, display, C());
+
 
 		/*
 		writeln("First line ", Clock.currTime());

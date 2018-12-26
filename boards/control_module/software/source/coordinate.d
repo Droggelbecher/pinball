@@ -5,7 +5,7 @@ struct Coordinate(T = int) {
 		this.column = column;
 	}
 
-	T area() {
+	T area() const {
 		return row * column;
 	}
 
