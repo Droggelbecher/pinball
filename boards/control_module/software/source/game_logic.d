@@ -8,7 +8,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	import font;
 	import five_eight: font_5x8_size, font_5x8_data;
 	import coordinate;
-	import canvas: blit;
+	import canvas: blit, clear;
 
 	Solenoids solenoids;
 	Switches switches;
@@ -75,11 +75,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 
 		yield(1.seconds);
 
-		foreach(int row; 0 .. display.size.row) {
-			foreach(int column; 0 .. display.size.column) {
-				display[row, column] = 0;
-			}
-		}
+		display.clear;
 
 		yield(1.seconds);
 

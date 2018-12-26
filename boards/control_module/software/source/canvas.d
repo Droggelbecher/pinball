@@ -32,4 +32,9 @@ if(FromCanvas.storage_type == StorageType.ColumnFirst
 	}
 }
 
+void clear(ToCanvas)(ToCanvas to_) if(__traits(hasMember, ToCanvas, "buffer")) {
+	import core.stdc.string: memset;
+	memset(to_.buffer.ptr, 0, to_.buffer.length);
+}
+
 
