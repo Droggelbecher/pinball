@@ -30,13 +30,13 @@ struct CharacterCanvas(Font_) {
 	alias Font_ Font;
 	static immutable storage_type = StorageType.ColumnFirst;
 
-	this(ubyte[] char_data) {
+	this(const ubyte[] char_data) {
 		this.buffer = char_data;
 	}
 
-	Coordinate!() size() { return Font.size; }
+	Coordinate!() size() const { return Font.size; }
 
-	ubyte[] buffer;
+	const ubyte[] buffer;
 }
 
 struct StringCanvas(Font_) {
@@ -48,8 +48,8 @@ struct StringCanvas(Font_) {
 		this.buffers = buffers;
 	}
 
-	Coordinate!() character_size() { return Font.size; }
-	Coordinate!() size() {
+	Coordinate!() character_size() const { return Font.size; }
+	Coordinate!() size() const {
 		Coordinate!() r = Coordinate!()(
 			Font.size.row,
 			cast(int)((Font.size.column + Font.padding) * buffers.length)
@@ -61,11 +61,10 @@ struct StringCanvas(Font_) {
 }
 
 
-void blit(FromCanvas, ToCanvas)(
+void blit(FromCanvas: StringCanvas!Font_, ToCanvas, Font_)(
 		FromCanvas from, Coordinate!() from_start, Coordinate!() size,
 		ToCanvas to_, Coordinate!() to_start
 )
-	if(isInstanceOf!(StringCanvas, FromCanvas))
 in {
 	assert(size.nonnegative);
 	assert(from_start in from.size);
@@ -82,18 +81,25 @@ body {
 	int delta = from_start.column % w;
 
 	auto sz = Coord(
-		min(size.row, from.character_size.row * w * from.buffers.length),
-		min(size.column, from.character_size.column)
+		min(size.row, from.character_size.row),
+		min(size.column, from.character_size.column * w * from.buffers.length)
 	);
 
+	int i_end = ((from_start + sz).column) / w;
+
 	auto p = to_start;
-	foreach(int i, ubyte[] buffer; from.buffers) {
-		if(i < i_start) { continue; }
-		blit(
-			CharacterCanvas!(Fnt)(buffer),
-			Coord(from_start.row, (i == i_start) ? delta : 0),
-			sz, to_, p
-		);
+	foreach(int i, const(ubyte[]) buffer; from.buffers) {
+		if(i >= i_start && i < i_end) {
+			blit(
+				CharacterCanvas!(Fnt)(buffer),
+				Coord(from_start.row, (i == i_start) ? delta : 0),
+				Coord(
+					min(from.character_size.row, size.row),
+					min(from.character_size.column, size.column, to_.size.column - p.column)
+				),
+				to_, p
+			);
+		}
 		p += Coord(0, w);
 	}
 }

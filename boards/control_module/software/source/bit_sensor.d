@@ -26,8 +26,9 @@ class BitSensor(Spi, Index_, int SlaveIdx) {
 		return state[idx] = v;
 	}
 
+	@nogc
 	void frame_start(double dt) {
-		size_t[] answer = spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, state_data[0 .. DATA_WORDS]);
+		const(size_t)[] answer = spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, state_data[0 .. DATA_WORDS]);
 		if(answer.length == DATA_WORDS) {
 			this.state_data = answer;
 		}

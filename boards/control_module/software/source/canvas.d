@@ -26,8 +26,8 @@ do {
 	int n_from = from.size.column;
 	int n_to = to_.size.column;
 
-	ubyte *buf_from = from.buffer.ptr + from_start.row * n_from + from_start.column;
-	ubyte *buf_to   = to_.buffer.ptr + to_start.row * n_to + to_start.column;
+	const ubyte *buf_from = from.buffer.ptr + from_start.row * n_from + from_start.column;
+	ubyte *buf_to         = to_.buffer.ptr + to_start.row * n_to + to_start.column;
 
 	for(int i = 0; i < size.row; i++) {
 		memcpy(

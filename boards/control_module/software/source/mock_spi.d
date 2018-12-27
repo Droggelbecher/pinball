@@ -8,8 +8,9 @@ class Spi {
 		Solenoids = 25
 	};
 
-	size_t[] transfer_and_check(SlaveIndex slave, size_t[] input) {
-		return input.dup();
+	@nogc
+	const(size_t)[] transfer_and_check(SlaveIndex slave, size_t[] input) {
+		return input;
 	}
 }
 

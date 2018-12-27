@@ -1,4 +1,4 @@
 
-set makeprg=(cd\ ..\ &&\ dub\ build)
+set makeprg=dub\ --root=..\ build
 
 

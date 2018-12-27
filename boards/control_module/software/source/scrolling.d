@@ -1,7 +1,7 @@
 
 import coordinate;
-import canvas: blit;
-import font: blit;
+//import canvas: blit;
+//import font: blit;
 
 class Scrolling(Decorated) {
 
@@ -34,8 +34,8 @@ class Scrolling(Decorated) {
 
 }
 
-void blit(SomeCanvas, Decorated)(
-		SomeCanvas from, Coord from_start, Coord size,
+void blit(FromCanvas, Decorated)(
+		FromCanvas from, Coord from_start, Coord size,
 		Scrolling!(Decorated) to_, Coord to_start
 ) {
 	scroll(from, from_start, size, to_, to_start);
@@ -59,6 +59,7 @@ private:
   Calls $f at most once.
 
   **/
+@nogc
 void crop(alias f)(Coord from_start, Coord from_size, Coord size, Coord to_start, Coord to_size)
 in {
 	assert(to_start.lower(100000));
@@ -114,6 +115,7 @@ do {
 
   By moving the virtual canvas the well-known "marquee" effect is achieved.
 **/
+@nogc
 void wrap(alias f)(
 		Coord virtual_start,
 		Coord size,
@@ -151,6 +153,7 @@ do {
 	// TODO: for backwards scrolling also add overlapping on the left & top
 }
 
+@nogc
 void scroll(SourceCanvas, ScrollingCanvas)(
 		SourceCanvas from,
 		Coord from_start,
@@ -159,6 +162,29 @@ void scroll(SourceCanvas, ScrollingCanvas)(
 		Coord scrolling_start
 ) {
 	import font: blit;
+	import std.stdio;
+
+	//const from_ = from;
+	//immutable from_start_ = from_start;
+	//const scrolling_ = scrolling;
+	//const size_ = size;
+
+	static struct ActualBlit {
+		/*
+		this(SourceCanvas from, Coord size, ScrollingCanvas scrolling) {
+			this.from = from;
+			this.size = size;
+			this.scrolling = scrolling;
+		}
+		*/
+		SourceCanvas from;
+		Coord size;
+		ScrollingCanvas scrolling;
+		void opCall(Coord from_start, Coord size, Coord to_start) {
+			blit(from, from_start, size, scrolling.decorated, to_start);
+		}
+	}
+	ActualBlit actual_blit = { from, size, scrolling };
 
 	// 1. Crop from source onto virtual canvas
 	crop!(
@@ -166,10 +192,11 @@ void scroll(SourceCanvas, ScrollingCanvas)(
 		// 2. Wrap virtual canvas onto target canvas
 		(Coord from_start, Coord size, Coord to_start) =>
 		wrap!(
+			actual_blit
 
 			// 3. Do the actual blitting
-			(Coord from_start, Coord size, Coord to_start) =>
-			blit(from, from_start, size, scrolling.decorated, to_start)
+			//(Coord from_start, Coord size, Coord to_start) =>
+			//blit(from_, from_start, size, scrolling.decorated, to_start)
 
 		)(
 			from_start, size, // start & size in virtual space

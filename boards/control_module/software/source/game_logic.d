@@ -9,7 +9,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	import five_eight: font_5x8_size, font_5x8_data;
 	import coordinate;
 	import canvas: blit, clear;
-	import scrolling: Scrolling, blit;
+	import scrolling;
 
 	Solenoids solenoids;
 	Switches switches;
@@ -18,6 +18,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	alias Font!(font_5x8_size) FontNormal;
 
 	FontNormal font_normal;
+	StringCanvas!FontNormal text;
 	Scrolling!Display marquee;
 
 	alias Sol = Solenoids.Index;
@@ -33,6 +34,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		this.marquee = new Scrolling!Display(display, display.size, Coordinate!double(5.0, 0.0));
 	}
 
+	@nogc
 	override void frame_start(double dt) {
 		solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
 		solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
@@ -52,42 +54,12 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		marquee.next_frame(dt);
 
 		display.clear;
-		auto text = font_normal("Hello");
-		//blit(text, C(), text.size, display, C());
-
-		blit!(StringCanvas!FontNormal, Display)(
-				text, Coord(), text.size,
-				marquee, Coord()
-		);
-
+		scrolling.blit(text, Coord(), text.size, marquee, Coord());
 	}
 
 	override void run() {
-		foreach(int row; 0 .. display.size.row) {
-			foreach(int column; 0 .. display.size.column) {
-				display[row, column] = ((row + column) % 2) ? 5 : 0;
-			}
-		}
-		yield(100.msecs);
-
-		foreach(int row; 0 .. display.size.row) {
-			foreach(int column; 0 .. display.size.column) {
-				display[row, column] = ((row + column) % 2) ? 0 : 5;
-			}
-		}
-		yield(100.msecs);
-
-		display.clear;
-		yield(100.msecs);
-
-		//blit(font_normal['b'], C(), font_normal.size, display, C());
-		/*
-		writeln("First line ", Clock.currTime());
-		yield(2.seconds);
-		writeln("Initializing state ", Clock.currTime());
-		yield(3.seconds);
-		writeln("3s later ", Clock.currTime());
-		*/
+		yield(1000.msecs);
+		text = font_normal("STAR");
 	}
 }
 
