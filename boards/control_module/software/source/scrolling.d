@@ -1,22 +1,26 @@
 
 import coordinate;
-//import canvas: blit;
-//import font: blit;
+import canvas;
 
 class Scrolling(Decorated) {
 
 	import canvas: StorageType;
 	enum storage_type = StorageType.Other;
 
-	this(Decorated decorated, Coord virtual_size, Coordinate!double speed) {
+	this(
+			Decorated decorated,
+			Coord virtual_size,
+			Coordinate!double speed = Coordinate!double(0, 0)
+	) {
 		this.decorated = decorated;
 		this.virtual_size = virtual_size;
 		this.speed = speed;
 		this.offset = Coordinate!double(0, 0);
 	}
 
-	@nogc
-	Coord size() const { return decorated.size; }
+	@nogc void reset() { offset = Coordinate!double(0, 0); }
+	@nogc void stop() { speed = Coordinate!double(0, 0); }
+	@nogc Coord size() const { return decorated.size; }
 
 	@nogc
 	void next_frame(double dt) {
@@ -43,70 +47,6 @@ void blit(FromCanvas, Decorated)(
 
 
 private:
-
-/**
-  Blit from source to target canvas cropping at canvas ends.
-
-  @param f: Function (from, size, to) for blitting a rect of size $size at $from in source
-			to a target coordniate $to. f is assumed to be able to handle only blits that are
-			completely inside target canvases respectively.
-
-  @param from_start: start position in source to blit from
-  @param size: size of the rect to blit
-  @param to_start: start position in target canvas
-  @param to_size: size of target canvas
-
-  Calls $f at most once.
-
-  **/
-@nogc
-void crop(alias f)(Coord from_start, Coord from_size, Coord size, Coord to_start, Coord to_size)
-in {
-	assert(to_start.lower(100000));
-}
-do {
-	if(!size.nonnegative) { return; }
-	if(!from_size.nonnegative) { return; }
-	if(!to_size.nonnegative) { return; }
-	if(!size.area || !(size - Coord(1, 1)).area) { return; }
-	if(!from_size.area || !(from_size - Coord(1, 1)).area) { return; }
-	if(!to_size.area || !(to_size - Coord(1, 1)).area) { return; }
-
-	Coord to_end = to_start + size - Coord(1, 1);
-	Coord from_end = from_start + size - Coord(1, 1);
-
-	if(to_start.row < 0 || from_start.row < 0) {
-		Coord cut = Coord(-min(from_start.row, to_start.row), 0);
-		crop!f(from_start + cut, from_size, size - cut, to_start + cut, to_size);
-		return;
-	}
-	if(to_end.row >= to_size.row || from_end.row >= from_size.row) {
-		Coord cut = Coord(
-				max(to_end.row - to_size.row + 1, from_end.row - from_size.row + 1),
-				0
-		);
-		crop!f(from_start, from_size, size - cut, to_start, to_size);
-		return;
-	}
-	if(to_start.column < 0 || from_start.column < 0) {
-		Coord cut = Coord(0, -min(from_start.column, to_start.column));
-		crop!f(from_start + cut, from_size, size - cut, to_start + cut, to_size);
-		return;
-	}
-	if(to_end.column >= to_size.column || from_end.column >= from_size.column) {
-		Coord cut = Coord(
-				0,
-				max(to_end.column - to_size.column + 1, from_end.column - from_size.column + 1),
-		);
-		crop!f(from_start, from_size, size - cut, to_start, to_size);
-		return;
-	}
-
-	assert(from_start.nonnegative);
-	assert(size.nonnegative);
-	assert((to_start + size - Coord(1, 1)) in to_size);
-	f(from_start, size, to_start);
-}
 
 /**
   Blit a source canvas (here called "virtual canvas") to a target canvas
@@ -143,6 +83,13 @@ do {
 		target_start + virtual_start - Coord(0, virtual_size.column), target_size
 	);
 
+	// The part overlapping the virtual canvas to the left
+	crop!f(
+		virtual_start, virtual_size,
+		size,
+		target_start + virtual_start + Coord(0, virtual_size.column), target_size
+	);
+
 	// The part overlapping the virtual canvas on the bottom
 	crop!f(
 		virtual_start, virtual_size,
@@ -150,7 +97,12 @@ do {
 		target_start + virtual_start - Coord(virtual_size.row, 0), target_size
 	);
 
-	// TODO: for backwards scrolling also add overlapping on the left & top
+	// The part overlapping the virtual canvas on the top
+	crop!f(
+		virtual_start, virtual_size,
+		size,
+		target_start + virtual_start + Coord(virtual_size.row, 0), target_size
+	);
 }
 
 @nogc
@@ -164,22 +116,12 @@ void scroll(SourceCanvas, ScrollingCanvas)(
 	import font: blit;
 	import std.stdio;
 
-	//const from_ = from;
-	//immutable from_start_ = from_start;
-	//const scrolling_ = scrolling;
-	//const size_ = size;
-
 	static struct ActualBlit {
-		/*
-		this(SourceCanvas from, Coord size, ScrollingCanvas scrolling) {
-			this.from = from;
-			this.size = size;
-			this.scrolling = scrolling;
-		}
-		*/
 		SourceCanvas from;
 		Coord size;
 		ScrollingCanvas scrolling;
+
+		@nogc
 		void opCall(Coord from_start, Coord size, Coord to_start) {
 			blit(from, from_start, size, scrolling.decorated, to_start);
 		}
@@ -191,14 +133,7 @@ void scroll(SourceCanvas, ScrollingCanvas)(
 
 		// 2. Wrap virtual canvas onto target canvas
 		(Coord from_start, Coord size, Coord to_start) =>
-		wrap!(
-			actual_blit
-
-			// 3. Do the actual blitting
-			//(Coord from_start, Coord size, Coord to_start) =>
-			//blit(from_, from_start, size, scrolling.decorated, to_start)
-
-		)(
+		wrap!(actual_blit)(
 			from_start, size, // start & size in virtual space
 			// move target position by current scrolling offset
 			cast(Coord)(to_start + scrolling.offset),

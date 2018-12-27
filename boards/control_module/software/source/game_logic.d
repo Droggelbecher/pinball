@@ -3,27 +3,27 @@ import task : Task;
 
 class GameLogic(Solenoids, Switches, Display) : Task {
 
-	import std.stdio : writeln;
-	import std.datetime : seconds, msecs;
-	import font: Font, StringCanvas;
-	import five_eight: font_5x8_size, font_5x8_data;
+	import std.stdio:    writeln;
+	import std.datetime: Duration, seconds, msecs;
+	import font:         Font, StringCanvas;
+	import five_eight:   font_5x8_size, font_5x8_data;
 	import coordinate;
-	import canvas: blit, clear;
+	import canvas:       blit, clear, set_color;
 	import scrolling;
+
+	alias Font!(font_5x8_size) FontNormal;
+	alias Sol = Solenoids.Index;
+	alias Sw = Switches.Index;
+	alias C = Coordinate!();
 
 	Solenoids solenoids;
 	Switches switches;
 	Display display;
 
-	alias Font!(font_5x8_size) FontNormal;
-
 	FontNormal font_normal;
 	StringCanvas!FontNormal text;
 	Scrolling!Display marquee;
-
-	alias Sol = Solenoids.Index;
-	alias Sw = Switches.Index;
-	alias C = Coordinate!();
+	bool show_text;
 
 	this(Solenoids solenoids, Switches switches, Display display) {
 		this.solenoids = solenoids;
@@ -31,7 +31,13 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		this.display = display;
 
 		this.font_normal = new FontNormal(font_5x8_data);
-		this.marquee = new Scrolling!Display(display, display.size, Coordinate!double(5.0, 0.0));
+		this.marquee = new Scrolling!Display(
+				display,
+				Coord(80, display.size.column),
+		);
+		this.show_text = false;
+		//this.marquee = new Scrolling!Display(display, display.size, Coordinate!double(0.0, 0.0));
+		//marquee.offset = Coordinate!double(2.0, 0.0);
 	}
 
 	@nogc
@@ -54,12 +60,47 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		marquee.next_frame(dt);
 
 		display.clear;
-		scrolling.blit(text, Coord(), text.size, marquee, Coord());
+		if(show_text) {
+			scrolling.blit(text, Coord(), text.size, marquee, Coord());
+		}
+	}
+
+	void blank(Duration t) {
+		show_text = false;
+		yield(t);
+	}
+
+	void blink(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
+		auto t = 0.msecs;
+		while(t < duration) {
+			show_text = !show_text;
+			yield(interval);
+			t += interval;
+		}
+	}
+
+	void intro() {
+		yield(1000.msecs);
+		text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV ");
+		show_text = true;
+
+		yield(2000.msecs);
+		marquee.speed = Coordinate!double(-5, 0);
+
+		yield(5500.msecs);
+		marquee.stop;
+		yield(2000.msecs);
+		blank(2000.msecs);
+
+		marquee.reset;
+		text = font_normal(" READY  \nPLAYER 1");
+		blink();
+		show_text = true;
 	}
 
 	override void run() {
-		yield(1000.msecs);
-		text = font_normal("STAR");
+		intro();
+
 	}
 }
 
