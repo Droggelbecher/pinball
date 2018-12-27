@@ -7,6 +7,7 @@ enum StorageType {
 	Other
 }
 
+@nogc
 void blit(FromCanvas, ToCanvas)(
 		FromCanvas from, Coordinate!() from_start, Coordinate!() size,
 		ToCanvas to_, Coordinate!() to_start
@@ -38,12 +39,14 @@ do {
 	}
 }
 
+@nogc
 void clear(ToCanvas)(ToCanvas to_) if(__traits(hasMember, ToCanvas, "buffer")) {
 	//import core.stdc.string: memset;
 	//memset(to_.buffer.ptr, 0, to_.buffer.length);
 	to_.buffer[] = 0;
 }
 
+@nogc
 void set_color(ToCanvas)(ToCanvas to_, ubyte c) if(__traits(hasMember, ToCanvas, "buffer")) {
 	to_.buffer[] = c;
 }

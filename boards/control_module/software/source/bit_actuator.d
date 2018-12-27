@@ -1,5 +1,6 @@
 
 import std.bitmanip;
+import std.datetime;
 
 class BitActuator(Spi, Index_, int SlaveIdx) {
 
@@ -23,7 +24,8 @@ class BitActuator(Spi, Index_, int SlaveIdx) {
 		return state[idx] = v;
 	}
 
-	void frame_start(double dt) {
+	@nogc
+	void frame_start(Duration dt) {
 		spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, state_data[0 .. DATA_WORDS]);
 	}
 

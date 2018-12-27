@@ -36,12 +36,12 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 				Coord(80, display.size.column),
 		);
 		this.show_text = false;
-		//this.marquee = new Scrolling!Display(display, display.size, Coordinate!double(0.0, 0.0));
-		//marquee.offset = Coordinate!double(2.0, 0.0);
 	}
 
 	@nogc
 	override void frame_start(Duration dt) {
+		switches.frame_start(dt);
+
 		solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
 		solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
 		solenoids[Sol.SLINGSHOT0]    = switches[Sw.SLINGSHOT0];
@@ -56,6 +56,8 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 			&& switches[Sw.DTB0_2]
 			&& switches[Sw.DTB0_3]
 			&& switches[Sw.DTB0_4];
+
+		solenoids.frame_start(dt);
 
 		marquee.next_frame(dt);
 
