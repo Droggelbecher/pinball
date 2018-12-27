@@ -7,6 +7,7 @@ class CursesInterface : Task {
 	import buffer_canvas;
 	import coordinate;
 	import std.stdio;
+	import std.datetime;
 
 	this() {
 		canvas = new BufferCanvas(16, 40);
@@ -31,7 +32,7 @@ class CursesInterface : Task {
 		curses.update;
 	}
 
-	override void frame_start(double dt) {
+	override void frame_start(Duration dt) {
 		paint_canvas();
 	}
 

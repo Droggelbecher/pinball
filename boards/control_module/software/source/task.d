@@ -1,9 +1,7 @@
 
-import std.datetime.systime : SysTime, Clock;
-import std.concurrency : Generator, yield;
 import std.datetime;
 import std.stdio;
-import core.thread : Fiber;
+import core.thread: Fiber;
 
 import condition;
 
@@ -18,7 +16,7 @@ class Task {
 		condition = make_condition(args);
 	}
 
-	void frame_start(double dt) { }
+	void frame_start(Duration dt) { }
 	void run() { }
 
 	void check_run() {

@@ -4,6 +4,7 @@ import canvas;
 
 class Scrolling(Decorated) {
 
+	import std.datetime;
 	import canvas: StorageType;
 	enum storage_type = StorageType.Other;
 
@@ -23,11 +24,11 @@ class Scrolling(Decorated) {
 	@nogc Coord size() const { return decorated.size; }
 
 	@nogc
-	void next_frame(double dt) {
+	void next_frame(Duration dt) {
 		static if(__traits(hasMember, Decorated, "next_frame")) {
 			decorated.next_frame(dt);
 		}
-		offset += speed * dt;
+		offset += speed * dt.total!"usecs" / 1_000_000.0;
 		offset %= virtual_size;
 	}
 

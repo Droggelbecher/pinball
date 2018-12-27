@@ -41,7 +41,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	}
 
 	@nogc
-	override void frame_start(double dt) {
+	override void frame_start(Duration dt) {
 		solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
 		solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
 		solenoids[Sol.SLINGSHOT0]    = switches[Sw.SLINGSHOT0];
@@ -87,15 +87,14 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		yield(2000.msecs);
 		marquee.speed = Coordinate!double(-5, 0);
 
-		yield(5500.msecs);
+		yield(5800.msecs);
 		marquee.stop;
 		yield(2000.msecs);
 		blank(2000.msecs);
 
 		marquee.reset;
 		text = font_normal(" READY  \nPLAYER 1");
-		blink();
-		show_text = true;
+		blink(); show_text = true;
 	}
 
 	override void run() {
