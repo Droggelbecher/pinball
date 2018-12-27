@@ -5,20 +5,23 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 
 	import std.stdio : writeln;
 	import std.datetime : seconds, msecs;
-	import font;
+	import font: Font, StringCanvas;
 	import five_eight: font_5x8_size, font_5x8_data;
 	import coordinate;
 	import canvas: blit, clear;
+	import scrolling: Scrolling, blit;
 
 	Solenoids solenoids;
 	Switches switches;
 	Display display;
 
-	Font!(font_5x8_size) font_normal;
+	alias Font!(font_5x8_size) FontNormal;
+
+	FontNormal font_normal;
+	Scrolling!Display marquee;
 
 	alias Sol = Solenoids.Index;
 	alias Sw = Switches.Index;
-
 	alias C = Coordinate!();
 
 	this(Solenoids solenoids, Switches switches, Display display) {
@@ -26,7 +29,8 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		this.switches = switches;
 		this.display = display;
 
-		this.font_normal = new Font!(font_5x8_size)(font_5x8_data);
+		this.font_normal = new FontNormal(font_5x8_data);
+		this.marquee = new Scrolling!Display(display, display.size, Coordinate!double(5.0, 0.0));
 	}
 
 	override void frame_start(double dt) {
@@ -45,43 +49,38 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 			&& switches[Sw.DTB0_3]
 			&& switches[Sw.DTB0_4];
 
-		/+
-		solenoids[Sol.BALL_RETURN] 
+		marquee.next_frame(dt);
 
-		if(switches_delta.rising(Sw.HOLE0)) {
-			//iface.play_sound(sound_death_star_explode);
-		}
+		display.clear;
+		auto text = font_normal("Hello");
+		//blit(text, C(), text.size, display, C());
 
-		solenoids[Sol.BALL_RETURN] = ball_return();
-		+/
+		blit!(StringCanvas!FontNormal, Display)(
+				text, Coord(), text.size,
+				marquee, Coord()
+		);
 
 	}
 
 	override void run() {
-
 		foreach(int row; 0 .. display.size.row) {
 			foreach(int column; 0 .. display.size.column) {
 				display[row, column] = ((row + column) % 2) ? 5 : 0;
 			}
 		}
-
-		yield(1.seconds);
+		yield(100.msecs);
 
 		foreach(int row; 0 .. display.size.row) {
 			foreach(int column; 0 .. display.size.column) {
 				display[row, column] = ((row + column) % 2) ? 0 : 5;
 			}
 		}
-
-		yield(1.seconds);
+		yield(100.msecs);
 
 		display.clear;
+		yield(100.msecs);
 
-		yield(1.seconds);
-
-		blit(font_normal['b'], C(), font_normal.size, display, C());
-
-
+		//blit(font_normal['b'], C(), font_normal.size, display, C());
 		/*
 		writeln("First line ", Clock.currTime());
 		yield(2.seconds);

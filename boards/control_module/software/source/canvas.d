@@ -13,7 +13,14 @@ void blit(FromCanvas, ToCanvas)(
 )
 if(FromCanvas.storage_type == StorageType.ColumnFirst
 		&& ToCanvas.storage_type == StorageType.ColumnFirst)
-{
+in {
+	assert(size.nonnegative);
+	assert(from_start in from.size);
+	assert((from_start + size - Coord(1, 1)) in from.size);
+	assert(to_start in to_.size);
+	assert((to_start + size - Coord(1, 1)) in to_.size);
+}
+do {
 	import core.stdc.string: memcpy;
 
 	int n_from = from.size.column;
@@ -22,7 +29,6 @@ if(FromCanvas.storage_type == StorageType.ColumnFirst
 	ubyte *buf_from = from.buffer.ptr + from_start.row * n_from + from_start.column;
 	ubyte *buf_to   = to_.buffer.ptr + to_start.row * n_to + to_start.column;
 
-	//for(int row = from.row(); row < (from + size).row(); ++row) {
 	for(int i = 0; i < size.row; i++) {
 		memcpy(
 				buf_to + i * n_to,

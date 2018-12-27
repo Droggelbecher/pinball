@@ -16,10 +16,12 @@ class BitSensor(Spi, Index_, int SlaveIdx) {
 
 	alias state this;
 
+	@nogc
 	bool opIndex(Index idx) {
 		return state[idx];
 	}
 
+	@nogc
 	bool opIndexAssign(bool v, Index idx) {
 		return state[idx] = v;
 	}

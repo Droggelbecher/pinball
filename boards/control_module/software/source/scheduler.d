@@ -9,9 +9,16 @@ class Scheduler {
 
 	Task[] tasks; // = new Task[];
 
+	this() {
+		stopping = false;
+	}
+
+	void stop() {
+		stopping = true;
+	}
+
 	void run() {
-		foreach(i; 0 .. 100) {
-			//writeln("frame ", i);
+		while(!stopping) {
 			frame_start(0.1);
 			Thread.sleep(100.msecs);
 		}
@@ -26,6 +33,8 @@ class Scheduler {
 			task.check_run();
 		}
 	}
+
+	bool stopping;
 
 }
 

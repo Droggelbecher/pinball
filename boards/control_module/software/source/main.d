@@ -10,6 +10,7 @@ import mock_spi;
 import switches;
 import solenoids;
 import task;
+import core.thread;
 
 void main() {
 	auto iface = new CursesInterface();

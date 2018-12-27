@@ -18,6 +18,7 @@ class BitActuator(Spi, Index_, int SlaveIdx) {
 
 	alias state this;
 
+	@nogc
 	bool opIndexAssign(bool v, Index idx) {
 		return state[idx] = v;
 	}
