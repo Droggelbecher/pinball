@@ -52,7 +52,8 @@ struct CharacterCanvas(Font_) {
 		this.buffer = char_data;
 	}
 
-	Coordinate!() size() const { return Font.size; }
+	@nogc
+	Coord size() const { return Font.size; }
 
 	const ubyte[] buffer;
 }
@@ -67,7 +68,10 @@ struct StringCanvas(Font_) {
 		this.buffers = buffers;
 	}
 
+	@nogc
 	Coord character_size() const { return Font.size; }
+
+	@nogc
 	Coord size() const {
 		Coord r = Coord(
 			cast(int)((Font.size.row + Font.padding) * buffers.length),
@@ -92,7 +96,7 @@ in {
 	assert(to_start in to_.size);
 	assert((to_start + size - Coord(1, 1)) in to_.size);
 }
-body {
+do {
 	import canvas: blit;
 	import core.stdc.stdio;
 	alias FromCanvas.Font Fnt;
@@ -100,39 +104,12 @@ body {
 	const int w = from.character_size.column + from.padding;
 	const int h = from.character_size.row + from.padding;
 
-	static struct ActualBlit {
-		ubyte[Fnt.size.area()] buffer;
-		ToCanvas to_;
-		Coord size_;
-
-		@nogc
-		void opCall(Coord from_start_, Coord size_, Coord to_start_) {
-			debug(font_blitting_position) {
-				fprintf(stderr, "  -> from: %d/%d sz: %d/%d to: %d/%d\n",
-						from_start_.row, from_start_.column,
-						size_.row, size_.column,
-						to_start_.row, to_start_.column);
-				fflush(stderr);
-			}
-
-			this.size_ = size_;
-
-			blit(
-				CharacterCanvas!Fnt(buffer),
-				from_start_, size_,
-				to_, to_start_
-			);
-		}
-	}
-
 	Coord offs;
-	ActualBlit actual_blit;
-	actual_blit.to_ = to_;
 
 	foreach(int n_row, ubyte[Fnt.size.area()][] row; from.buffers) {
-		foreach(int i, ubyte[Fnt.size.area()] buffer; row) {
-			actual_blit.buffer = buffer;
+		Coord blit_size;
 
+		foreach(int i, ubyte[Fnt.size.area()] buffer; row) {
 			auto start = from_start + offs - Coord(n_row * h, i * w);
 
 			debug(font_blitting_position) {
@@ -147,17 +124,23 @@ body {
 				fflush(stderr);
 			}
 
-			crop!actual_blit(
+			crop!(
+				(from_start_, size_, to_start_) {
+					blit_size = size_;
+					blit(CharacterCanvas!Fnt(buffer), from_start_, size_, to_, to_start_);
+				}
+			)(
 				start, from.character_size,
 				size - offs,
 				to_start + offs, to_.size
 			);
 
 			offs += Coord(0, w);
-		}
-		offs.row += actual_blit.size_.row + from.padding;
+
+		} // foreach i (column)
+		offs.row += blit_size.row + from.padding;
 		offs.column = 0;
 
-	}
-}
+	} // foreach row
+} // blit()
 
