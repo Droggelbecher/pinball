@@ -83,7 +83,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 
 	void intro() {
 		yield(1000.msecs);
-		text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV ");
+		text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV ", 3);
 		show_text = true;
 
 		yield(2000.msecs);
@@ -95,7 +95,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		blank(2000.msecs);
 
 		marquee.reset;
-		text = font_normal(" READY  \nPLAYER 1");
+		text = font_normal(" READY  \nPLAYER 1", 2);
 		blink(); show_text = true;
 	}
 
