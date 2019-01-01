@@ -10,6 +10,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	import coordinate;
 	import canvas:       blit, clear, set_color;
 	import scrolling;
+	import keep_value_delay;
 
 	alias Font!(font_5x8_size) FontNormal;
 	alias Sol = Solenoids.Index;
@@ -23,7 +24,11 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	FontNormal font_normal;
 	StringCanvas!FontNormal text;
 	Scrolling!Display marquee;
+
+	KeepValueDelay ball_return;
+
 	bool show_text;
+	bool enable_ball_return;
 
 	this(Solenoids solenoids, Switches switches, Display display) {
 		this.solenoids = solenoids;
@@ -36,28 +41,45 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 				Coord(80, display.size.column),
 		);
 		this.show_text = false;
+		this.enable_ball_return = false;
+
+		// Debounce ball out switch in the sense
+		// that we want it to be "true" for at least 1000 msecs
+		// before reacting so ball has really come to halt
+		this.ball_return = KeepValueDelay(
+			() => switches[Sw.BALL_OUT], true, 1000.msecs
+		);
 	}
 
 	@nogc
 	override void frame_start(Duration dt) {
 		switches.frame_start(dt);
+		ball_return.frame_start(dt);
 
-		solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
-		solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
-		solenoids[Sol.SLINGSHOT0]    = switches[Sw.SLINGSHOT0];
-		solenoids[Sol.SLINGSHOT1]    = switches[Sw.SLINGSHOT1];
-		solenoids[Sol.BUMPER0]       = switches[Sw.BUMPER0];
-		solenoids[Sol.BUMPER1]       = switches[Sw.BUMPER1];
-		solenoids[Sol.BUMPER2]       = switches[Sw.BUMPER2];
+		// Some more or less direct switch -> solenoid mappings
+		{
+			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
+			solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
+			solenoids[Sol.SLINGSHOT0]    = switches[Sw.SLINGSHOT0];
+			solenoids[Sol.SLINGSHOT1]    = switches[Sw.SLINGSHOT1];
+			solenoids[Sol.BUMPER0]       = switches[Sw.BUMPER0];
+			solenoids[Sol.BUMPER1]       = switches[Sw.BUMPER1];
+			solenoids[Sol.BUMPER2]       = switches[Sw.BUMPER2];
 
-		solenoids[Sol.DTB0] = 
-			   switches[Sw.DTB0_0]
-			&& switches[Sw.DTB0_1]
-			&& switches[Sw.DTB0_2]
-			&& switches[Sw.DTB0_3]
-			&& switches[Sw.DTB0_4];
+			solenoids[Sol.DTB0] = 
+				   switches[Sw.DTB0_0]
+				&& switches[Sw.DTB0_1]
+				&& switches[Sw.DTB0_2]
+				&& switches[Sw.DTB0_3]
+				&& switches[Sw.DTB0_4];
 
+			if(enable_ball_return && ball_return) {
+				solenoids[Sol.BALL_RETURN] = true;
+			}
+		}
 		solenoids.frame_start(dt);
+
+		// Now care for display-related updates
 
 		marquee.next_frame(dt);
 
@@ -67,7 +89,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		}
 	}
 
-	void blank(Duration t) {
+	void blank(Duration t = 100.msecs) {
 		show_text = false;
 		yield(t);
 	}
@@ -82,26 +104,30 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	}
 
 	void intro() {
-		yield(1000.msecs);
-		text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV ", 3);
+		blank(5000.msecs);
+		text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
 		show_text = true;
 
 		yield(2000.msecs);
 		marquee.speed = Coordinate!double(-5, 0);
 
-		yield(5800.msecs);
+		yield(9700.msecs);
 		marquee.stop;
-		yield(2000.msecs);
-		blank(2000.msecs);
+		yield(4000.msecs);
+		blank(4000.msecs);
 
 		marquee.reset;
 		text = font_normal(" READY  \nPLAYER 1", 2);
-		blink(); show_text = true;
+		yield(1000.msecs);
+		blink(500.msecs);
+		show_text = true;
+		yield(1000.msecs);
+		blank();
 	}
 
 	override void run() {
 		intro();
-
+		enable_ball_return = true;
 	}
 }
 
