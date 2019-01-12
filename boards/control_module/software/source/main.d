@@ -1,6 +1,7 @@
 
 import std.stdio: writeln;
 import std.datetime;
+import core.thread;
 
 import game_logic : GameLogic;
 import scheduler : Scheduler;
@@ -10,9 +11,17 @@ import mock_spi;
 import switches;
 import solenoids;
 import task;
-import core.thread;
+import audio;
 
-void main() {
+void test_audio() {
+	audio.init();
+	AudioSource main_theme = load_sound("./resources/music/original/01_IV_main_theme.mp3");
+	main_theme.play();
+}
+
+void run_game() {
+	audio.init();
+
 	auto iface = new CursesInterface();
 	auto scheduler = new Scheduler();
 
@@ -34,5 +43,10 @@ void main() {
 	scheduler.tasks ~= iface;
 	//scheduler.tasks ~= new Task(10.seconds);
 	scheduler.run();
+}
+
+void main() {
+	//test_audio();
+	run_game();
 }
 

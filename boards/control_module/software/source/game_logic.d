@@ -1,5 +1,6 @@
 
-import task : Task;
+import task: Task;
+import utils: assumeNoGC;
 
 class GameLogic(Solenoids, Switches, Display) : Task {
 
@@ -11,6 +12,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	import canvas:       blit, clear, set_color;
 	import scrolling;
 	import keep_value_delay;
+	import audio;
 
 	alias Font!(font_5x8_size) FontNormal;
 	alias Sol = Solenoids.Index;
@@ -30,6 +32,9 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	bool show_text;
 	bool enable_ball_return;
 
+	AudioSource main_theme;
+	Playlist playlist;
+
 	this(Solenoids solenoids, Switches switches, Display display) {
 		this.solenoids = solenoids;
 		this.switches = switches;
@@ -48,6 +53,11 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		// before reacting so ball has really come to halt
 		this.ball_return = KeepValueDelay(
 			() => switches[Sw.BALL_OUT], true, 1000.msecs
+		);
+
+		//this.main_theme = load_sound("./resources/music/original/01_IV_main_theme.mp3");
+		this.playlist = new Playlist(
+			"./resources/music/original/01_IV_main_theme.mp3"
 		);
 	}
 
@@ -87,6 +97,8 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		if(show_text) {
 			scrolling.blit(text, Coord(), text.size, marquee, Coord());
 		}
+
+		assumeNoGC(&playlist.frame_start)(dt);
 	}
 
 	void blank(Duration t = 100.msecs) {
@@ -104,7 +116,13 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	}
 
 	void intro() {
-		blank(5000.msecs);
+		//blank(4200.msecs); main_theme.play(); blank(800.msecs);
+		blank(4200.msecs);
+		//playlist.frame_start(0.msecs);
+		playlist.play();
+		//playlist.frame_start(0.msecs);
+		blank(800.msecs);
+
 		text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
 		show_text = true;
 
