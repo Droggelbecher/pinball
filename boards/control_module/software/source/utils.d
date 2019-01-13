@@ -1,4 +1,5 @@
 import std.traits;
+import std.stdio;
 
 auto assumeNoGC(T)(T t)
 	if (isFunctionPointer!T || isDelegate!T)
@@ -6,4 +7,5 @@ auto assumeNoGC(T)(T t)
 	enum attrs = functionAttributes!T | FunctionAttribute.nogc;
 	return cast(SetFunctionAttributes!(T, functionLinkage!T, attrs)) t;
 }
+
 

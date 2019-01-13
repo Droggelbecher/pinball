@@ -1,8 +1,9 @@
 
 import task: Task;
 import utils: assumeNoGC;
+import core.stdc.stdio;
 
-class GameLogic(Solenoids, Switches, Display) : Task {
+class GameLogic(Interface) : Task {
 
 	import std.stdio:    writeln;
 	import std.datetime: Duration, seconds, msecs;
@@ -15,17 +16,15 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	import audio;
 
 	alias Font!(font_5x8_size) FontNormal;
-	alias Sol = Solenoids.Index;
-	alias Sw = Switches.Index;
+	alias Sol = Interface.Solenoids.Index;
+	alias Sw = Interface.Switches.Index;
 	alias C = Coordinate!();
 
-	Solenoids solenoids;
-	Switches switches;
-	Display display;
+	Interface iface;
 
 	FontNormal font_normal;
 	StringCanvas!FontNormal text;
-	Scrolling!Display marquee;
+	Scrolling!(Interface.Canvas) marquee;
 
 	KeepValueDelay ball_return;
 
@@ -35,15 +34,13 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 	AudioSource main_theme;
 	Playlist playlist;
 
-	this(Solenoids solenoids, Switches switches, Display display) {
-		this.solenoids = solenoids;
-		this.switches = switches;
-		this.display = display;
+	this(Interface iface) {
+		this.iface = iface;
 
 		this.font_normal = new FontNormal(font_5x8_data);
-		this.marquee = new Scrolling!Display(
-				display,
-				Coord(80, display.size.column),
+		this.marquee = new Scrolling!(Interface.Canvas)(
+				iface.canvas,
+				Coord(80, iface.canvas.size.column),
 		);
 		this.show_text = false;
 		this.enable_ball_return = false;
@@ -52,7 +49,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 		// that we want it to be "true" for at least 1000 msecs
 		// before reacting so ball has really come to halt
 		this.ball_return = KeepValueDelay(
-			() => switches[Sw.BALL_OUT], true, 1000.msecs
+			() => iface.switches[Sw.BALL_OUT], true, 1000.msecs
 		);
 
 		//this.main_theme = load_sound("./resources/music/original/01_IV_main_theme.mp3");
@@ -63,11 +60,11 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 
 	@nogc
 	override void frame_start(Duration dt) {
-		switches.frame_start(dt);
+		iface.switches.frame_start(dt);
 		ball_return.frame_start(dt);
 
 		// Some more or less direct switch -> solenoid mappings
-		{
+		with(iface) {
 			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
 			solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
 			solenoids[Sol.SLINGSHOT0]    = switches[Sw.SLINGSHOT0];
@@ -83,17 +80,15 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 				&& switches[Sw.DTB0_3]
 				&& switches[Sw.DTB0_4];
 
-			if(enable_ball_return && ball_return) {
-				solenoids[Sol.BALL_RETURN] = true;
-			}
+			solenoids[Sol.BALL_RETURN] = enable_ball_return && ball_return;
+			solenoids.frame_start(dt);
 		}
-		solenoids.frame_start(dt);
 
 		// Now care for display-related updates
 
 		marquee.next_frame(dt);
 
-		display.clear;
+		iface.canvas.clear;
 		if(show_text) {
 			scrolling.blit(text, Coord(), text.size, marquee, Coord());
 		}
@@ -145,6 +140,7 @@ class GameLogic(Solenoids, Switches, Display) : Task {
 
 	override void run() {
 		intro();
+		iface.logger.log("Game started.");
 		enable_ball_return = true;
 	}
 }

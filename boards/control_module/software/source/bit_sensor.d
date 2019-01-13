@@ -14,7 +14,7 @@ class BitSensor(Spi, Index_, int SlaveIdx) {
 	this(Spi spi) {
 		this.spi = spi;
 		this.state = BitArray(state_data, Index.MAX);
-		this.state_data[] = cast(size_t)-1;
+		this.state_data[] = cast(size_t)0;
 	}
 
 	alias state this;

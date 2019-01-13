@@ -22,22 +22,18 @@ void test_audio() {
 void run_game() {
 	audio.init();
 
-	auto iface = new CursesInterface();
+	alias Sol = Solenoids!Spi;
+	alias Sw = Switches!Spi;
+	alias Iface = CursesInterface!(Sol, Sw);
+
 	auto scheduler = new Scheduler();
 
 	auto spi = new Spi();
-	auto solenoids = new Solenoids!(Spi)(spi);
-	auto switches = new Switches!(Spi)(spi);
+	//auto solenoids = new Sol(spi);
+	//auto switches = new Sw(spi);
+	auto iface = new Iface(new Sol(spi), new Sw(spi));
 
-	auto logic = new GameLogic!(
-			Solenoids!(Spi),
-			Switches!(Spi),
-			CursesInterface,
-	)(
-		solenoids,
-		switches,
-		iface
-	);
+	auto logic = new GameLogic!Iface(iface);
 
 	scheduler.tasks ~= logic;
 	scheduler.tasks ~= iface;
