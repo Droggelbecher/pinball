@@ -6,7 +6,7 @@ class BufferLogger(int N) {
 	void log(string line) {
 		auto time = Clock.currTime;
 		append(
-			format!"%2d:%2d:%2d  %s"(time.hour, time.minute, time.second, line)
+			format!"%02d:%20d:%02d  %s"(time.hour, time.minute, time.second, line)
 		);
 	}
 

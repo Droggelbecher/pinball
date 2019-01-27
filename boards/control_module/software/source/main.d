@@ -19,6 +19,11 @@ void test_audio() {
 	main_theme.play();
 }
 
+void test_spi() {
+	import bcm2708_spi: Spi;
+	auto s = new Spi();
+}
+
 void run_game() {
 	audio.init();
 
@@ -43,6 +48,7 @@ void run_game() {
 
 void main() {
 	//test_audio();
+	//test_spi();
 	run_game();
 }
 

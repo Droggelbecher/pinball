@@ -9,5 +9,15 @@
 	"dependencies": {
 		"derelict-alure": ">=1.0.2",
 		"nice-curses": ">=0.2.4"
-	}
+	},
+	"preBuildCommands": [
+		"gcc -c -o bcm2708.o source/bcm2708.c",
+		"gcc -c -o checksum.o ../../../common_software/src/checksum.c -I../../../common_software/include",
+		"gcc -c -o utils.o ../../../common_software/src/utils.c -I../../../common_software/include",
+	],
+	"sourceFiles": [
+		"bcm2708.o",
+		"checksum.o",
+		"utils.o"
+	]
 }
