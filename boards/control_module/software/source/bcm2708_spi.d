@@ -41,7 +41,7 @@ class Spi {
 	}
 
 	@nogc
-	ubyte[] transfer_and_check(SlaveIndex slave, ubyte[] input)
+	const(void[]) transfer_and_check(SlaveIndex slave, void[] input)
 	in {
 		assert(input.length < BUFFER_SIZE - 1);
 	}
@@ -52,7 +52,7 @@ class Spi {
 		ubyte[] output = buffer[0 .. input.length];
 		output[] = 0xAA;
 
-		spi_transfer(spi_fd, cast(int)input.length, input.ptr, output.ptr);
+		spi_transfer(spi_fd, cast(int)input.length, cast(ubyte*)input.ptr, output.ptr);
 		gpio_disable_all(SlaveIndex.AllMask);
 		ubyte s = checksum(output.ptr, cast(ubyte)(output.length - 1));
 		if(s == output[$ - 1]) {

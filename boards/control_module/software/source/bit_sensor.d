@@ -31,9 +31,9 @@ class BitSensor(Spi, Index_, int SlaveIdx) {
 
 	@nogc
 	void frame_start(Duration dt) {
-		const(size_t)[] answer = spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, state_data[0 .. DATA_WORDS]);
+		const(void[]) answer = spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, state_data[0 .. DATA_WORDS]);
 		if(answer.length == DATA_WORDS) {
-			this.state_data[0 .. DATA_WORDS] = answer;
+			this.state_data[0 .. DATA_WORDS] = cast(const size_t[])answer;
 		}
 	}
 

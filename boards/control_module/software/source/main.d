@@ -7,7 +7,8 @@ import game_logic : GameLogic;
 import scheduler : Scheduler;
 
 import curses_interface;
-import mock_spi;
+import mock_spi: Spi;
+//import bcm2708_spi: Spi;
 import switches;
 import solenoids;
 import task;

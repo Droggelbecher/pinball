@@ -9,8 +9,8 @@ class Spi {
 	};
 
 	@nogc
-	const(size_t)[] transfer_and_check(SlaveIndex slave, size_t[] input) {
-		buffer[0 .. input.length] = input;
+	const(void[]) transfer_and_check(SlaveIndex slave, void[] input) {
+		buffer[0 .. input.length] = cast(size_t[])input;
 		return buffer[0 .. input.length];
 	}
 
