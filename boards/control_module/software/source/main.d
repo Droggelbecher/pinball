@@ -13,6 +13,7 @@ import switches;
 import solenoids;
 import task;
 import audio;
+//import audio = mock_audio;
 
 void test_audio() {
 	audio.init();
@@ -26,18 +27,16 @@ void test_spi() {
 }
 
 void run_game() {
-	audio.init();
-
 	alias Sol = Solenoids!Spi;
 	alias Sw = Switches!Spi;
 	alias Iface = CursesInterface!(Sol, Sw);
 
-	auto scheduler = new Scheduler();
-
-	auto spi = new Spi();
-	//auto solenoids = new Sol(spi);
-	//auto switches = new Sw(spi);
 	auto iface = new Iface(new Sol(spi), new Sw(spi));
+
+	audio.init();
+
+	auto scheduler = new Scheduler(iface.logger);
+	auto spi = new Spi();
 
 	auto logic = new GameLogic!Iface(iface);
 

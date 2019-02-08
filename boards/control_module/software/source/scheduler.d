@@ -1,6 +1,6 @@
 
 import std.stdio: writeln;
-
+import logger: Logger;
 
 class Scheduler {
 	import task : Task;
@@ -14,9 +14,11 @@ class Scheduler {
 	enum target_duration = usecs(cast(long)(1_000_000 / target_fps));
 
 	Task[] tasks;
+	Logger logger;
 
-	this() {
-		stopping = false;
+	this(Logger logger = null) {
+		this.stopping = false;
+		this.logger = logger;
 	}
 
 	void stop() {
@@ -30,8 +32,9 @@ class Scheduler {
 		sw.start();
 		while(!stopping) {
 			frame_start(frame_duration);
-			debug(print_scheduler_fps) {
-				fprintf(stderr, "fps: %lf dur=%s tgt=%s\n",
+			//debug(print_scheduler_fps) {
+			if(logger) {
+				logger.log("fps: %lf dur=%s tgt=%s\n",
 						1_000_000.0 / frame_duration.total!"usecs",
 						frame_duration.toString.toStringz,
 						target_duration.toString.toStringz

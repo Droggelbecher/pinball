@@ -1,8 +1,14 @@
 
 import std.datetime.systime;
 import std.datetime;
+import std.format;
 
 class BufferLogger(int N) {
+
+	void log(string fmt, Args args...) {
+		log(format(fmt, args));
+	}
+
 	void log(string line) {
 		auto time = Clock.currTime;
 		append(
