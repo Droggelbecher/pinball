@@ -11,8 +11,13 @@ class Spi;
 class Switches {
 	public:
 		enum class Index {
+			// Bank 0: 0..7
 			FLIPPER_LEFT = 2,
 			FLIPPER_RIGHT = 5,
+			SLINGSHOT0 = 3,
+			SLINGSHOT1 = 4,
+
+			// Bank 1: 8..15
 			DTB0_0 = 8,
 			DTB0_1 = 9,
 			DTB0_2 = 10,
@@ -21,15 +26,13 @@ class Switches {
 			DTB0_4 = 11,
 			DTB0_3 = 12,
 
-			SLINGSHOT0 = 3,
-			SLINGSHOT1 = 4,
-
+			// Bank 2: 16..23
 			BUMPER0 = 13,
 			BUMPER1 = 14,
 			BUMPER2 = 15,
-
 			BALL_OUT = 22,
 			HOLE0 = 23,
+
 			MAX = 64
 		};
 
