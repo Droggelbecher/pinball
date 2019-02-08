@@ -14,6 +14,10 @@ class GameLogic(Interface) : Task {
 	import scrolling;
 	import keep_value_delay;
 	import audio;
+	//import audio = mock_audio;
+
+	alias blit = canvas.blit;
+	alias blit = scrolling.blit;
 
 	alias Font!(font_5x8_size) FontNormal;
 	alias Sol = Interface.Solenoids.Index;
@@ -29,6 +33,7 @@ class GameLogic(Interface) : Task {
 	KeepValueDelay ball_return;
 
 	bool show_text;
+	bool show_score;
 	bool enable_ball_return;
 
 	AudioSource main_theme;
@@ -43,6 +48,7 @@ class GameLogic(Interface) : Task {
 				Coord(80, iface.canvas.size.column),
 		);
 		this.show_text = false;
+		this.show_score = false;
 		this.enable_ball_return = false;
 
 		// Debounce ball out switch in the sense
@@ -89,8 +95,12 @@ class GameLogic(Interface) : Task {
 		marquee.next_frame(dt);
 
 		iface.canvas.clear;
-		if(show_text) {
-			scrolling.blit(text, Coord(), text.size, marquee, Coord());
+		if(show_score > 0.msecs) {
+			score_text = font_normal(format!"%d"(score));
+			blit_center!blit(score_text, iface.canvas);
+		}
+		else if(show_text) {
+			blit(text, Coord(), text.size, marquee, Coord());
 		}
 
 		assumeNoGC(&playlist.frame_start)(dt);
@@ -108,6 +118,11 @@ class GameLogic(Interface) : Task {
 			yield(interval);
 			t += interval;
 		}
+	}
+
+	void add_score(int score) {
+		this.score += score;
+		this.show_score = 2000.msecs;
 	}
 
 	void intro() {

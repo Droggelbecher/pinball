@@ -152,4 +152,12 @@ do {
 	f(from_start, size, to_start);
 }
 
+@nogc
+void blit_center(alias blit, FromCanvas, ToCanvas)(FromCanvas from, ToCanvas to_) {
+	blit(
+		from, Coord(), from.size, to_,
+		(to_.size - from.size) / 2
+	);
+}
+
 
