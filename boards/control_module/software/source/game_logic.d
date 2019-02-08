@@ -1,10 +1,10 @@
 
 import task: Task;
+import std.datetime: Duration, seconds, msecs;
 
-class GameLogic(Interface) : Task {
+class GameLogic(Interface_) : Task {
 
 	import std.stdio:    writeln;
-	import std.datetime: Duration, seconds, msecs;
 	//import std.format;
 	import std.conv;
 	import core.stdc.stdio;
@@ -23,32 +23,25 @@ class GameLogic(Interface) : Task {
 	alias blit = canvas.blit;
 	alias blit = scrolling.blit;
 
+	alias Interface = Interface_;
+
 	alias Font!(font_5x8_size) FontNormal;
 	alias Sol = Interface.Solenoids.Index;
 	alias Sw = Interface.Switches.Index;
 	alias C = Coordinate!();
 
-	private {
+	mixin Reflexes!() reflexes;
+	mixin TextDisplay!() text_display;
+	mixin ScoreDisplay!() score_display;
+
+	protected {
 		Interface iface;
-
 		FontNormal font_normal;
-		Scrolling!(Interface.Canvas) marquee;
-
-		// Text
-		bool show_text;
-		StringCanvas!FontNormal text;
 
 		// Ball return
 		bool enable_ball_return;
 		KeepValueDelay ball_return;
-
 		Rising dtb_scored;
-
-		// Score
-		size_t score;
-		size_t score_display;
-		Duration show_score;
-		StringCanvas!FontNormal score_text;
 
 		// Audio
 		AudioSource main_theme;
@@ -57,17 +50,13 @@ class GameLogic(Interface) : Task {
 
 	this(Interface iface) {
 		this.iface = iface;
-
 		this.font_normal = new FontNormal(font_5x8_data);
-		this.marquee = new Scrolling!(Interface.Canvas)(
-				iface.canvas,
-				Coord(80, iface.canvas.size.column),
-		);
-		this.show_text = false;
-		this.enable_ball_return = false;
 
-		this.show_score = 0.msecs;
-		this.score = 0;
+		reflexes.this_();
+		text_display.this_();
+		score_display.this_();
+
+		this.enable_ball_return = false;
 
 		// Debounce ball out switch in the sense
 		// that we want it to be "true" for at least 1000 msecs
@@ -87,11 +76,62 @@ class GameLogic(Interface) : Task {
 	@nogc
 	override void frame_start(Duration dt) {
 		iface.switches.frame_start(dt);
+		reflexes.frame_start_(dt);
+		iface.solenoids.frame_start(dt);
 
 		ball_return.frame_start(dt);
 		dtb_scored.frame_start(dt);
 
-		// Some more or less direct switch -> solenoid mappings
+		assumeNoGC(&check_scoring)(dt);
+
+		iface.canvas.clear;
+		text_display.frame_start_(dt);
+		score_display.frame_start_(dt);
+
+		assumeNoGC(&playlist.frame_start)(dt);
+	}
+
+	void intro() {
+		blank(4200.msecs);
+		playlist.play();
+		blank(800.msecs);
+
+		text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
+		text_display.show = true;
+
+		yield(2000.msecs);
+		marquee.speed = Coordinate!double(-5, 0);
+
+		yield(9700.msecs);
+		marquee.stop;
+		yield(4000.msecs);
+		blank(4000.msecs);
+
+		marquee.reset;
+		text = font_normal(" READY  \nPLAYER 1", 2);
+		yield(1000.msecs);
+		blink(500.msecs);
+		text_display.show = true;
+		yield(1000.msecs);
+		blank();
+	}
+
+	override void run() {
+		intro();
+		iface.logger.log("Game started.");
+		enable_ball_return = true;
+	}
+}
+
+
+// Some more or less direct switch -> solenoid mappings
+mixin template Reflexes() {
+
+	void this_() {
+	}
+
+	@nogc
+	void frame_start_(Duration dt) {
 		with(iface) {
 			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
 			solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
@@ -109,24 +149,65 @@ class GameLogic(Interface) : Task {
 				&& switches[Sw.DTB0_4];
 
 			solenoids[Sol.BALL_RETURN] = enable_ball_return && ball_return;
-			solenoids.frame_start(dt);
 		}
+	}
+}
 
-		assumeNoGC(&check_scoring)(dt);
 
-		// Now care for display-related updates
+// Show a piece of potentially scrolling text on the display
+mixin template TextDisplay() {
+	StringCanvas!FontNormal text;
+	bool show;
 
+	Scrolling!(Interface.Canvas) marquee;
+	
+	void this_() {
+		marquee = new Scrolling!(Interface.Canvas)(
+			iface.canvas,
+			Coord(80, iface.canvas.size.column),
+		);
+	}
+
+	@nogc
+	void frame_start_(Duration dt) {
 		marquee.next_frame(dt);
-
-		iface.canvas.clear;
-		if(show_score > 0.msecs) {
-			blit_center!(canvas.blit)(score_text, iface.canvas);
-		}
-		else if(show_text) {
+		if(show) {
 			blit(text, Coord(), text.size, marquee, Coord());
 		}
+	}
 
-		assumeNoGC(&playlist.frame_start)(dt);
+	void blank(Duration t = 100.msecs) {
+		show = false;
+		yield(t);
+	}
+
+	void blink(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
+		auto t = 0.msecs;
+		while(t < duration) {
+			show = !show;
+			yield(interval);
+			t += interval;
+		}
+	}
+}
+
+mixin template ScoreDisplay() {
+	size_t score;
+	size_t display_score;
+	Duration show_score;
+	StringCanvas!FontNormal score_text;
+
+	void this_() {
+		this.show_score = 0.msecs;
+		this.score = 0;
+	}
+
+	@nogc
+	void frame_start_(Duration dt) {
+		if(show_score > 0.msecs) {
+			iface.canvas.clear;
+			blit_center!(canvas.blit)(score_text, iface.canvas);
+		}
 	}
 
 	void check_scoring(Duration dt) {
@@ -135,8 +216,8 @@ class GameLogic(Interface) : Task {
 			add_score(100);
 		}
 
-		if(score_display < score) {
-			score_display += 10;
+		if(display_score < score) {
+			display_score += 10;
 			render_score();
 		}
 	}
@@ -150,57 +231,13 @@ class GameLogic(Interface) : Task {
 
 	void render_score() {
 		char[10] score_string;
-		snprintf(score_string.ptr, score_string.length, "%d", this.score_display);
+		snprintf(score_string.ptr, score_string.length, "%d", this.display_score);
 		this.score_text = font_normal(to!string(score_string.ptr));
 	}
-
-
-	void blank(Duration t = 100.msecs) {
-		show_text = false;
-		yield(t);
-	}
-
-	void blink(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
-		auto t = 0.msecs;
-		while(t < duration) {
-			show_text = !show_text;
-			yield(interval);
-			t += interval;
-		}
-	}
-
-	void intro() {
-		//blank(4200.msecs); main_theme.play(); blank(800.msecs);
-		blank(4200.msecs);
-		//playlist.frame_start(0.msecs);
-		playlist.play();
-		//playlist.frame_start(0.msecs);
-		blank(800.msecs);
-
-		text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
-		show_text = true;
-
-		yield(2000.msecs);
-		marquee.speed = Coordinate!double(-5, 0);
-
-		yield(9700.msecs);
-		marquee.stop;
-		yield(4000.msecs);
-		blank(4000.msecs);
-
-		marquee.reset;
-		text = font_normal(" READY  \nPLAYER 1", 2);
-		yield(1000.msecs);
-		blink(500.msecs);
-		show_text = true;
-		yield(1000.msecs);
-		blank();
-	}
-
-	override void run() {
-		intro();
-		iface.logger.log("Game started.");
-		enable_ball_return = true;
-	}
 }
+
+
+
+
+
 
