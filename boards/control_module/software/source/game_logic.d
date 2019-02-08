@@ -46,6 +46,7 @@ class GameLogic(Interface) : Task {
 
 		// Score
 		size_t score;
+		size_t score_display;
 		Duration show_score;
 		StringCanvas!FontNormal score_text;
 
@@ -133,7 +134,26 @@ class GameLogic(Interface) : Task {
 		if(dtb_scored) {
 			add_score(100);
 		}
+
+		if(score_display < score) {
+			score_display += 10;
+			render_score();
+		}
 	}
+
+	void add_score(int score) {
+		this.score += score;
+		iface.logger.logf("Score: %d", this.score);
+		this.show_score = 2000.msecs;
+		//render_score();
+	}
+
+	void render_score() {
+		char[10] score_string;
+		snprintf(score_string.ptr, score_string.length, "%d", this.score_display);
+		this.score_text = font_normal(to!string(score_string.ptr));
+	}
+
 
 	void blank(Duration t = 100.msecs) {
 		show_text = false;
@@ -147,16 +167,6 @@ class GameLogic(Interface) : Task {
 			yield(interval);
 			t += interval;
 		}
-	}
-
-	void add_score(int score) {
-		this.score += score;
-		iface.logger.logf("Score: %d", this.score);
-		this.show_score = 2000.msecs;
-
-		char[10] score_string;
-		snprintf(score_string.ptr, score_string.length, "%d", this.score);
-		this.score_text = font_normal(to!string(score_string.ptr));
 	}
 
 	void intro() {
