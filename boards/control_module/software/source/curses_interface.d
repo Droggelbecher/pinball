@@ -3,7 +3,6 @@ import std.stdio;
 import std.datetime;
 import std.string;
 
-//import nice.curses;
 import deimos.ncurses;
 package alias deimos.ncurses nc;
 
@@ -40,9 +39,6 @@ class CursesInterface(Solenoids_, Switches_) : Task {
 	alias SensorActuatorOverride!Switches_ Switches;
 	alias BufferCanvas Canvas;
 	alias BufferLogger!(10) Logger;
-
-private:
-	//nc.WINDOW scr;
 
 public:
 	// Solenoids
@@ -232,7 +228,6 @@ public:
 			} // if enable solenoid contral
 		}
 
-		//Curses curses;
 		alias canvas this;
 }
 

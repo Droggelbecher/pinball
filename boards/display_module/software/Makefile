@@ -281,7 +281,7 @@ AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b $(AVRDU
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
-
+AVRDUDE_FLAGS += -U lfuse:w:0xff:m -U hfuse:w:0xde:m -U efuse:w:0xfd:m
 
 
 #---------------- Debugging Options ----------------
@@ -430,6 +430,7 @@ gccversion :
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 	$(AVRDUDE_WRITE_EEPROM)
+
 
 
 # Generate avr-gdb config/init file which does the following:
