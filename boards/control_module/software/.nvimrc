@@ -1,0 +1,4 @@
+
+set makeprg=dub\ build
+
+

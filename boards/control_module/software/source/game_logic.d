@@ -14,10 +14,11 @@ class GameLogic(Interface) : Task {
 	import coordinate;
 	import canvas:       blit, blit_center, clear, set_color;
 	import scrolling;
-	import keep_value_delay;
+	import signal;
 	import audio;
 	//import audio = mock_audio;
 	import utils: assumeNoGC;
+	import logger: logf;
 
 	alias blit = canvas.blit;
 	alias blit = scrolling.blit;
@@ -40,6 +41,8 @@ class GameLogic(Interface) : Task {
 		// Ball return
 		bool enable_ball_return;
 		KeepValueDelay ball_return;
+
+		Rising dtb_scored;
 
 		// Score
 		size_t score;
@@ -72,6 +75,8 @@ class GameLogic(Interface) : Task {
 			() => iface.switches[Sw.BALL_OUT], true, 1000.msecs
 		);
 
+		this.dtb_scored = Rising(() => iface.switches[Sw.DTB0_0]);
+
 		//this.main_theme = load_sound("./resources/music/original/01_IV_main_theme.mp3");
 		this.playlist = new Playlist(
 			"./resources/music/original/01_IV_main_theme.mp3"
@@ -81,7 +86,9 @@ class GameLogic(Interface) : Task {
 	@nogc
 	override void frame_start(Duration dt) {
 		iface.switches.frame_start(dt);
+
 		ball_return.frame_start(dt);
+		dtb_scored.frame_start(dt);
 
 		// Some more or less direct switch -> solenoid mappings
 		with(iface) {
@@ -104,6 +111,8 @@ class GameLogic(Interface) : Task {
 			solenoids.frame_start(dt);
 		}
 
+		assumeNoGC(&check_scoring)(dt);
+
 		// Now care for display-related updates
 
 		marquee.next_frame(dt);
@@ -117,6 +126,13 @@ class GameLogic(Interface) : Task {
 		}
 
 		assumeNoGC(&playlist.frame_start)(dt);
+	}
+
+	void check_scoring(Duration dt) {
+		this.show_score -= dt;
+		if(dtb_scored) {
+			add_score(100);
+		}
 	}
 
 	void blank(Duration t = 100.msecs) {
@@ -135,11 +151,12 @@ class GameLogic(Interface) : Task {
 
 	void add_score(int score) {
 		this.score += score;
+		iface.logger.logf("Score: %d", this.score);
 		this.show_score = 2000.msecs;
 
 		char[10] score_string;
-		snprintf(score_string.ptr, score_string.length, "%d", score);
-		this.score_text = font_normal(cast(string)score_string);
+		snprintf(score_string.ptr, score_string.length, "%d", this.score);
+		this.score_text = font_normal(to!string(score_string.ptr));
 	}
 
 	void intro() {
