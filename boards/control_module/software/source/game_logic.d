@@ -34,7 +34,7 @@ class GameLogic(Interface_) : Task {
 	mixin TextDisplay!() text_display;
 	mixin ScoreDisplay!() score_display;
 
-	protected {
+	private {
 		Interface iface;
 		FontNormal font_normal;
 
@@ -44,7 +44,7 @@ class GameLogic(Interface_) : Task {
 		Rising dtb_scored;
 
 		// Audio
-		AudioSource main_theme;
+		AudioSource score_sound;
 		Playlist playlist;
 	}
 
@@ -67,10 +67,11 @@ class GameLogic(Interface_) : Task {
 
 		this.dtb_scored = Rising(() => iface.switches[Sw.DTB0_0]);
 
-		//this.main_theme = load_sound("./resources/music/original/01_IV_main_theme.mp3");
 		this.playlist = new Playlist(
 			"./resources/music/original/01_IV_main_theme.mp3"
 		);
+
+		this.score_sound = load_sound("./resources/sounds/blip1.mp3");
 	}
 
 	@nogc
@@ -214,6 +215,7 @@ mixin template ScoreDisplay() {
 		this.show_score -= dt;
 		if(dtb_scored) {
 			add_score(100);
+			score_sound.play;
 		}
 
 		if(display_score < score) {
