@@ -31,18 +31,16 @@ void run_game() {
 	alias Sw = Switches!Spi;
 	alias Iface = CursesInterface!(Sol, Sw);
 
+	auto spi = new Spi();
 	auto iface = new Iface(new Sol(spi), new Sw(spi));
 
 	audio.init();
 
 	auto scheduler = new Scheduler(iface.logger);
-	auto spi = new Spi();
-
 	auto logic = new GameLogic!Iface(iface);
 
 	scheduler.tasks ~= logic;
 	scheduler.tasks ~= iface;
-	//scheduler.tasks ~= new Task(10.seconds);
 	scheduler.run();
 }
 

@@ -2,6 +2,7 @@
 import core.stdc.string;
 import core.stdc.errno;
 import std.conv;
+
 extern(C) {
 	@nogc int open_gpio();
 	@nogc int open_spi();

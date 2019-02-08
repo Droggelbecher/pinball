@@ -1,20 +1,23 @@
 
 import task: Task;
-import utils: assumeNoGC;
-import core.stdc.stdio;
 
 class GameLogic(Interface) : Task {
 
 	import std.stdio:    writeln;
 	import std.datetime: Duration, seconds, msecs;
+	//import std.format;
+	import std.conv;
+	import core.stdc.stdio;
+
 	import font:         Font, StringCanvas;
 	import five_eight:   font_5x8_size, font_5x8_data;
 	import coordinate;
-	import canvas:       blit, clear, set_color;
+	import canvas:       blit, blit_center, clear, set_color;
 	import scrolling;
 	import keep_value_delay;
 	import audio;
 	//import audio = mock_audio;
+	import utils: assumeNoGC;
 
 	alias blit = canvas.blit;
 	alias blit = scrolling.blit;
@@ -24,20 +27,29 @@ class GameLogic(Interface) : Task {
 	alias Sw = Interface.Switches.Index;
 	alias C = Coordinate!();
 
-	Interface iface;
+	private {
+		Interface iface;
 
-	FontNormal font_normal;
-	StringCanvas!FontNormal text;
-	Scrolling!(Interface.Canvas) marquee;
+		FontNormal font_normal;
+		Scrolling!(Interface.Canvas) marquee;
 
-	KeepValueDelay ball_return;
+		// Text
+		bool show_text;
+		StringCanvas!FontNormal text;
 
-	bool show_text;
-	bool show_score;
-	bool enable_ball_return;
+		// Ball return
+		bool enable_ball_return;
+		KeepValueDelay ball_return;
 
-	AudioSource main_theme;
-	Playlist playlist;
+		// Score
+		size_t score;
+		Duration show_score;
+		StringCanvas!FontNormal score_text;
+
+		// Audio
+		AudioSource main_theme;
+		Playlist playlist;
+	}
 
 	this(Interface iface) {
 		this.iface = iface;
@@ -48,8 +60,10 @@ class GameLogic(Interface) : Task {
 				Coord(80, iface.canvas.size.column),
 		);
 		this.show_text = false;
-		this.show_score = false;
 		this.enable_ball_return = false;
+
+		this.show_score = 0.msecs;
+		this.score = 0;
 
 		// Debounce ball out switch in the sense
 		// that we want it to be "true" for at least 1000 msecs
@@ -96,8 +110,7 @@ class GameLogic(Interface) : Task {
 
 		iface.canvas.clear;
 		if(show_score > 0.msecs) {
-			score_text = font_normal(format!"%d"(score));
-			blit_center!blit(score_text, iface.canvas);
+			blit_center!(canvas.blit)(score_text, iface.canvas);
 		}
 		else if(show_text) {
 			blit(text, Coord(), text.size, marquee, Coord());
@@ -123,6 +136,10 @@ class GameLogic(Interface) : Task {
 	void add_score(int score) {
 		this.score += score;
 		this.show_score = 2000.msecs;
+
+		char[10] score_string;
+		snprintf(score_string.ptr, score_string.length, "%d", score);
+		this.score_text = font_normal(cast(string)score_string);
 	}
 
 	void intro() {

@@ -3,6 +3,11 @@ import std.datetime: Duration, msecs;
 
 struct KeepValueDelay {
 
+	/**
+		fx: Delegate that yields the value to debounce
+		active_side: Value that is considered "active"
+		delay: time that fx() must yield the "active" value for the output (opCast) to yield active
+	*/
 	this(bool delegate() @nogc fx, bool active_side, Duration delay) {
 		this.f = fx;
 		this.active_side = active_side;

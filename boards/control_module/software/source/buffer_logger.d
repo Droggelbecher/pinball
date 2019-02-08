@@ -3,17 +3,24 @@ import std.datetime.systime;
 import std.datetime;
 import std.format;
 
-class BufferLogger(int N) {
+import logger;
 
-	void log(string fmt, Args args...) {
-		log(format(fmt, args));
-	}
+class BufferLogger(int N) : Logger {
 
 	void log(string line) {
 		auto time = Clock.currTime;
 		append(
 			format!"%02d:%02d:%02d  %s"(time.hour, time.minute, time.second, line)
 		);
+	}
+
+	int opApply(int delegate(string) dg) {
+		int r = 0;
+		for(int i = begin; i != end; i = (i + 1) % N) {
+			r = dg(lines[i]);
+			if(r) { break; }
+		}
+		return r;
 	}
 
 	bool empty() {

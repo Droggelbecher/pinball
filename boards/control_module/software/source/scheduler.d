@@ -1,6 +1,5 @@
 
 import std.stdio: writeln;
-import logger: Logger;
 
 class Scheduler {
 	import task : Task;
@@ -9,6 +8,8 @@ class Scheduler {
 	import std.conv;
 	import core.stdc.stdio;
 	import std.string;
+	import logger: Logger, logf;
+	import interval: Interval;
 
 	enum target_fps = 30.0;
 	enum target_duration = usecs(cast(long)(1_000_000 / target_fps));
@@ -26,19 +27,17 @@ class Scheduler {
 	}
 
 	void run() {
+		static log_interval = Interval!Duration(5000.msecs);
+
 		StopWatch sw;
 		Duration frame_duration = target_duration;
 
 		sw.start();
 		while(!stopping) {
 			frame_start(frame_duration);
-			//debug(print_scheduler_fps) {
-			if(logger) {
-				logger.log("fps: %lf dur=%s tgt=%s\n",
-						1_000_000.0 / frame_duration.total!"usecs",
-						frame_duration.toString.toStringz,
-						target_duration.toString.toStringz
-				);
+
+			if(logger && log_interval(frame_duration)) {
+				logger.logf("fps: %f\n", 1_000_000.0 / frame_duration.total!"usecs");
 			}
 
 			Duration computation_time = sw.peek().to!Duration;
@@ -66,7 +65,8 @@ class Scheduler {
 		}
 	}
 
-	bool stopping;
+	private:
+		bool stopping;
 
 }
 
