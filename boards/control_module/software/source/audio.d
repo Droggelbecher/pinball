@@ -18,7 +18,7 @@ void init() {
 
 class Playlist {
 	public:
-		enum MUSIC_BUFFERS = 3;
+		enum MUSIC_BUFFERS = 10;
 
 		this(string[] filenames...) {
 			alGenSources(1, &source);
@@ -39,7 +39,7 @@ class Playlist {
 		void play() {
 			stream = alureCreateStreamFromFile(
 					cast(char*)filenames[index].toStringz,
-					1000000, // microseconds
+					5000000, // microseconds
 					0, null
 			);
 			alurePlaySourceStream(source, stream, MUSIC_BUFFERS, 0, &eos_callback, cast(void*)this);
@@ -81,6 +81,50 @@ class Playlist {
 		string[] filenames;
 		alureStream *stream = null;
 };
+
+/+
+class SoundEffect {
+	this(string filename) {
+		buffer_id = source = 0;
+	}
+
+	void play() {
+		if(state == AL_PLAYING) {
+			return;
+		}
+
+		alGenSources(1, &this.source);
+		if(alGetError() != AL_NO_ERROR) {
+			perror("Failed to create OpenAL source.");
+		}
+		this.buffer_id = alureCreateBufferFromFile(cast(char*)filename.toStringz);
+		// Set source parameters
+		alSourcei(source, AL_BUFFER, buffer_id);
+		// Set sound volume to 100%
+		alSourcef(source, AL_GAIN, 1.0);
+
+		alSourcePlay(source);
+	}
+
+	void frame_start(Duration dt) {
+		alGetSourcei(source, AL_SOURCE_STATE, &state);
+		if(state != AL_PLAYING) {
+			alDeleteSources(1, &source);
+			alDeleteBuffers(1, &buffer_id);
+			source = buffer_id = 0;
+		}
+	}
+
+	bool is_playing() {
+		return state == AL_PLAYING;
+	}
+
+	private:
+		ALuint buffer_id;
+		ALuint source;
+		ALint state = AL_INITIAL;
+}
++/
 
 AudioSource load_sound(string filename) {
 	AudioSource src;
