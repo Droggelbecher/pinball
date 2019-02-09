@@ -43,6 +43,7 @@ class CursesInterface(Solenoids_, Switches_) : Task {
 public:
 	// Solenoids
 	enum enable_solenoid_control_key = KEY_F(1);
+	enum quit_key = KEY_F(12);
 	bool enable_solenoid_control = false;
 
 	SolenoidState[] solenoid_states = [
@@ -187,6 +188,11 @@ public:
 			foreach(string line; logger) {
 				nc.wmove(nc.stdscr, pos.row + i, pos.column);
 				printw("%s", line.toStringz);
+
+				// Print some spaces to erase whatever was before in this line
+				for(int j=0; j<80 - line.length; j++) {
+					printw(" ");
+				}
 				i++;
 			}
 		}
@@ -205,6 +211,9 @@ public:
 
 				// If user controls solenoids, cut off game logic
 				solenoids.mute_set = enable_solenoid_control;
+			}
+			else if(ch == quit_key) {
+				this.quit();
 			}
 
 			// Is this a switch-emulating key?

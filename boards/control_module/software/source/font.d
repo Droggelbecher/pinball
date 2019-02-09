@@ -59,7 +59,7 @@ struct StringCanvas(Font_) {
 
 				// Row inside the Character buffer (# pixels)
 				for(int c_row = 0; c_row < Font.size.row; c_row++) {
-					ulong pos = (
+					size_t pos = (
 						  n_col * per_char.column
 						+ n_row * max_row_len * per_char.area
 						+ c_row * max_row_len * per_char.column

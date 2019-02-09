@@ -30,9 +30,18 @@ class Task {
 		fiber.yield();
 	}
 
+	void quit() {
+		want_quit = true;
+	}
+
+	bool quitting() {
+		return want_quit;
+	}
+
 	private {
 		Condition condition = new TrueCondition;
 		Fiber fiber;
+		bool want_quit = false;
 	}
 }
 

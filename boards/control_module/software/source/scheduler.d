@@ -35,6 +35,7 @@ class Scheduler {
 		sw.start();
 		while(!stopping) {
 			frame_start(frame_duration);
+			if(stopping) { break; }
 
 			if(logger && log_interval(frame_duration)) {
 				logger.logf("fps: %f\n", 1_000_000.0 / frame_duration.total!"usecs");
@@ -58,6 +59,10 @@ class Scheduler {
 	void frame_start(Duration dt) {
 		foreach(task; tasks) {
 			task.frame_start(dt);
+			if(task.quitting()) {
+				stop();
+				return;
+			}
 		}
 
 		foreach(task; tasks) {

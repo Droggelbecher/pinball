@@ -8,7 +8,7 @@
 	"license": "proprietary",
 	"dependencies": {
 		"derelict-alure": ">=1.0.2",
-		"nice-curses": ">=0.2.4"
+		"ncurses": "~master"
 	},
 	"preBuildCommands": [
 		"gcc -c -o bcm2708.o source/bcm2708.c",
