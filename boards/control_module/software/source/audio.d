@@ -5,6 +5,9 @@ import std.datetime;
 
 import derelict.alure.alure;
 
+import utils: assumeNoGC;
+import logger: Logger, logf;
+
 alias ALuint AudioSource;
 
 void init() {
@@ -18,13 +21,16 @@ void init() {
 
 class Playlist {
 	public:
-		enum MUSIC_BUFFERS = 10;
+		enum MUSIC_BUFFERS = 3;
+		enum MUSIC_CHUNK_SIZE = (512 * 1024);
 
-		this(string[] filenames...) {
+		this(Logger logger, string[] filenames...) {
 			alGenSources(1, &source);
-			alureStreamSizeIsMicroSec(AL_TRUE);
 			alSourcef(source, AL_GAIN, 0.7);
+
+			this.logger = logger;
 			this.filenames = filenames.dup;
+
 		}
 
 		void clear() {
@@ -37,12 +43,14 @@ class Playlist {
 		}
 
 		void play() {
+			logger.logf("Playing: %s", filenames[index]);
 			stream = alureCreateStreamFromFile(
 					cast(char*)filenames[index].toStringz,
-					5000000, // microseconds
-					0, null
+					MUSIC_CHUNK_SIZE, MUSIC_BUFFERS,
+					buffers.ptr
 			);
 			alurePlaySourceStream(source, stream, MUSIC_BUFFERS, 0, &eos_callback, cast(void*)this);
+			alure_update();
 		}
 
 		void next() {
@@ -61,11 +69,14 @@ class Playlist {
 			}
 		}
 
+		@nogc
 		void frame_start(Duration _) {
-			alureUpdate();
+			assumeNoGC(&alure_update)();
 		}
 
 	private:
+		void alure_update() { alureUpdate(); }
+
 		extern(C) static void eos_callback(void *userdata, ALuint source) {
 			Playlist instance = cast(Playlist)userdata;
 
@@ -80,51 +91,9 @@ class Playlist {
 		AudioSource source = 0;
 		string[] filenames;
 		alureStream *stream = null;
+		ALuint[MUSIC_BUFFERS] buffers;
+		Logger logger;
 };
-
-/+
-class SoundEffect {
-	this(string filename) {
-		buffer_id = source = 0;
-	}
-
-	void play() {
-		if(state == AL_PLAYING) {
-			return;
-		}
-
-		alGenSources(1, &this.source);
-		if(alGetError() != AL_NO_ERROR) {
-			perror("Failed to create OpenAL source.");
-		}
-		this.buffer_id = alureCreateBufferFromFile(cast(char*)filename.toStringz);
-		// Set source parameters
-		alSourcei(source, AL_BUFFER, buffer_id);
-		// Set sound volume to 100%
-		alSourcef(source, AL_GAIN, 1.0);
-
-		alSourcePlay(source);
-	}
-
-	void frame_start(Duration dt) {
-		alGetSourcei(source, AL_SOURCE_STATE, &state);
-		if(state != AL_PLAYING) {
-			alDeleteSources(1, &source);
-			alDeleteBuffers(1, &buffer_id);
-			source = buffer_id = 0;
-		}
-	}
-
-	bool is_playing() {
-		return state == AL_PLAYING;
-	}
-
-	private:
-		ALuint buffer_id;
-		ALuint source;
-		ALint state = AL_INITIAL;
-}
-+/
 
 AudioSource load_sound(string filename) {
 	AudioSource src;

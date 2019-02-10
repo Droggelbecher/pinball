@@ -16,13 +16,17 @@ if(FromCanvas.storage_type == StorageType.ColumnFirst
 		&& ToCanvas.storage_type == StorageType.ColumnFirst)
 in {
 	assert(size.nonnegative);
-	assert(from_start in from.size);
-	assert((from_start + size - Coord(1, 1)) in from.size);
+	assert((from_start in from.size) || (from.size.area == 0));
+	assert(((from_start + size - Coord(1, 1)) in from.size) || (from.size.area == 0));
 	assert(to_start in to_.size);
 	assert((to_start + size - Coord(1, 1)) in to_.size);
 }
 do {
 	import core.stdc.string: memcpy;
+
+	if(from.size.area == 0) {
+		return;
+	}
 
 	int n_from = from.size.column;
 	int n_to = to_.size.column;

@@ -68,7 +68,9 @@ class GameLogic(Interface_) : Task {
 		this.dtb_scored = Rising(() => iface.switches[Sw.DTB0_0]);
 
 		this.playlist = new Playlist(
-			"./resources/music/original/01_IV_main_theme.mp3"
+			this.iface.logger,
+			"./resources/music/original/01_IV_main_theme.mp3",
+			"./resources/music/original/02_IV_leias_theme.mp3"
 		);
 
 		this.score_sound = load_sound("./resources/sounds/blip1.mp3");
@@ -89,7 +91,7 @@ class GameLogic(Interface_) : Task {
 		text_display.frame_start_(dt);
 		score_display.frame_start_(dt);
 
-		assumeNoGC(&playlist.frame_start)(dt);
+		playlist.frame_start(dt);
 	}
 
 	void intro() {
@@ -215,7 +217,7 @@ mixin template ScoreDisplay() {
 		this.show_score -= dt;
 		if(dtb_scored) {
 			add_score(100);
-			score_sound.play;
+			//score_sound.play;
 		}
 
 		if(display_score < score) {
