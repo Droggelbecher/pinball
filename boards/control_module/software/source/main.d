@@ -16,14 +16,22 @@ import audio;
 //import audio = mock_audio;
 
 void test_audio() {
-	audio.init();
-	AudioSource main_theme = load_sound("./resources/music/original/01_IV_main_theme.mp3");
-	main_theme.play();
+	//audio.init();
+	//auto main_theme = new SoundEffect("./resources/music/original/01_IV_main_theme.mp3");
+	//main_theme.play();
 }
 
 void test_spi() {
 	import bcm2708_spi: Spi;
 	auto s = new Spi();
+}
+
+void test_mad() {
+	import audio_mad_al;
+	import logger: WritelnLogger;
+	Logger logger = new WritelnLogger;
+	auto audio_interface = AudioInterface(logger);
+	auto sound = Sound("./resources/sounds/blip1.mp3");
 }
 
 void run_game() {
@@ -34,7 +42,7 @@ void run_game() {
 	auto spi = new Spi();
 	auto iface = new Iface(new Sol(spi), new Sw(spi));
 
-	audio.init();
+	//audio.init();
 
 	auto scheduler = new Scheduler(iface.logger);
 	auto logic = new GameLogic!Iface(iface);
@@ -48,5 +56,6 @@ void main() {
 	//test_audio();
 	//test_spi();
 	run_game();
+	//test_mad();
 }
 

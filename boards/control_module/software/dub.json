@@ -14,10 +14,17 @@
 		"gcc -c -o bcm2708.o source/bcm2708.c",
 		"gcc -c -o checksum.o ../../../common_software/src/checksum.c -I../../../common_software/include",
 		"gcc -c -o utils.o ../../../common_software/src/utils.c -I../../../common_software/include",
+		
+		"#swig -d -d2 -module mad -outdir source/ -o source/mad_wrap.c source/mad.i",
+		"gcc -fPIC -c -o mad_wrap.o source/mad_wrap.c",
+		"ld -shared -lmad mad_wrap.o -o libmad_wrap.so"
 	],
 	"sourceFiles": [
 		"bcm2708.o",
 		"checksum.o",
 		"utils.o"
+	],
+	"libs": [
+		"mad"
 	]
 }

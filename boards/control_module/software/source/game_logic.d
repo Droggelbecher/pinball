@@ -44,8 +44,11 @@ class GameLogic(Interface_) : Task {
 		Rising dtb_scored;
 
 		// Audio
-		AudioSource score_sound;
+		//AudioSource score_sound;
+
+		AudioInterface audio_interface;
 		Playlist playlist;
+		SoundEffect score_sound;
 	}
 
 	this(Interface iface) {
@@ -67,13 +70,15 @@ class GameLogic(Interface_) : Task {
 
 		this.dtb_scored = Rising(() => iface.switches[Sw.DTB0_0]);
 
+		this.audio_interface = AudioInterface(this.iface.logger);
+
 		this.playlist = new Playlist(
-			this.iface.logger,
+			this.iface.logger, //"./resources/sounds/utini.mp3",
 			"./resources/music/original/01_IV_main_theme.mp3",
 			"./resources/music/original/02_IV_leias_theme.mp3"
 		);
 
-		this.score_sound = load_sound("./resources/sounds/blip1.mp3");
+		this.score_sound = new SoundEffect(this.iface.logger, "./resources/sounds/blip1_s.mp3");
 	}
 
 	@nogc
@@ -91,7 +96,7 @@ class GameLogic(Interface_) : Task {
 		text_display.frame_start_(dt);
 		score_display.frame_start_(dt);
 
-		playlist.frame_start(dt);
+		audio_interface.frame_start(dt);
 	}
 
 	void intro() {
@@ -217,7 +222,7 @@ mixin template ScoreDisplay() {
 		this.show_score -= dt;
 		if(dtb_scored) {
 			add_score(100);
-			//score_sound.play;
+			score_sound.play;
 		}
 
 		if(display_score < score) {
@@ -230,7 +235,7 @@ mixin template ScoreDisplay() {
 		this.score += score;
 		iface.logger.logf("Score: %d", this.score);
 		this.show_score = 2000.msecs;
-		//render_score();
+		render_score();
 	}
 
 	void render_score() {
