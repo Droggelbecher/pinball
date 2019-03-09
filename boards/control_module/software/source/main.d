@@ -29,9 +29,18 @@ void test_spi() {
 void test_mad() {
 	import audio_mad_al;
 	import logger: WritelnLogger;
-	Logger logger = new WritelnLogger;
+
+	auto logger = new WritelnLogger;
 	auto audio_interface = AudioInterface(logger);
-	auto sound = Sound("./resources/sounds/blip1.mp3");
+	auto scheduler = new Scheduler(logger);
+
+	//auto sound = new Sound("./resources/sounds/utini.mp3");
+	auto sound = new Sound("./resources/sounds/missile_alert.mp3"); // mono
+	//auto sound = new Sound("./resources/sounds/alert.mp3"); // joint stereo
+	//auto sound = new Sound("./resources/music/original/01_IV_main_theme.mp3"); // joint stereo
+	scheduler.add(sound);
+	sound.play();
+	scheduler.run();
 }
 
 void run_game() {
@@ -47,15 +56,15 @@ void run_game() {
 	auto scheduler = new Scheduler(iface.logger);
 	auto logic = new GameLogic!Iface(iface);
 
-	scheduler.tasks ~= logic;
-	scheduler.tasks ~= iface;
+	scheduler.add(logic);
+	scheduler.add(iface);
 	scheduler.run();
 }
 
 void main() {
 	//test_audio();
 	//test_spi();
-	run_game();
-	//test_mad();
+	//run_game();
+	test_mad();
 }
 

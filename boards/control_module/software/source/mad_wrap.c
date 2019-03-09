@@ -1767,6 +1767,7 @@ SWIGEXPORT void * D_mad_pcm_samples_get(void * jarg1) {
   mad_fixed_t (*result)[1152] = 0 ;
   
   arg1 = (struct mad_pcm *)jarg1;
+  /*printf("samples=%p\n", (arg1)->samples);*/
   result = (mad_fixed_t (*)[1152])(mad_fixed_t (*)[1152]) ((arg1)->samples);
   jresult = result; 
   return jresult;

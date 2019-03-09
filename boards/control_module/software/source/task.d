@@ -11,19 +11,24 @@ class Task {
 		fiber = new Fiber(&run);
 	}
 
+	/*
 	this(Args...)(Args args) {
 		fiber = new Fiber(&run);
 		condition = make_condition(args);
 	}
+	*/
+
+	//
+	// For override within task
+	//
 
 	void frame_start(Duration dt) { }
-	void run() { }
-
-	void check_run() {
-		if(fiber.state != Fiber.State.TERM && condition()) {
-			fiber.call();
-		}
+	void run() {
 	}
+
+	//
+	// For use from within task
+	//
 
 	void yield(Args...)(Args args) {
 		condition = make_condition(args);
@@ -34,8 +39,18 @@ class Task {
 		want_quit = true;
 	}
 
+	//
+	// For use from scheduler side...
+	//
+
 	bool quitting() {
 		return want_quit;
+	}
+
+	void check_run() {
+		if(fiber.state != Fiber.State.TERM && condition()) {
+			fiber.call();
+		}
 	}
 
 	private {
@@ -44,4 +59,5 @@ class Task {
 		bool want_quit = false;
 	}
 }
+
 

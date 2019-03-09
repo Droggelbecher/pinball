@@ -14,12 +14,13 @@ class Scheduler {
 	enum target_fps = 30.0;
 	enum target_duration = usecs(cast(long)(1_000_000 / target_fps));
 
-	Task[] tasks;
-	Logger logger;
-
 	this(Logger logger = null) {
 		this.stopping = false;
 		this.logger = logger;
+	}
+
+	void add(Task task) {
+		tasks ~= task;
 	}
 
 	void stop() {
@@ -71,6 +72,9 @@ class Scheduler {
 	}
 
 	private:
+		Task[] tasks;
+		Logger logger;
+
 		bool stopping;
 
 }
