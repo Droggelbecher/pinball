@@ -15,8 +15,9 @@ class GameLogic(Interface_) : Task {
 	import canvas:       blit, blit_center, clear, set_color;
 	import scrolling;
 	import signal;
-	import audio;
+	//import audio;
 	//import audio = mock_audio;
+	import audio_mad_al;
 	import utils: assumeNoGC;
 	import logger: logf;
 
@@ -48,7 +49,7 @@ class GameLogic(Interface_) : Task {
 
 		AudioInterface audio_interface;
 		Playlist playlist;
-		SoundEffect score_sound;
+		Sound score_sound;
 	}
 
 	this(Interface iface) {
@@ -77,8 +78,11 @@ class GameLogic(Interface_) : Task {
 			"./resources/music/original/01_IV_main_theme.mp3",
 			"./resources/music/original/02_IV_leias_theme.mp3"
 		);
+		this.playlist.set_volume(0.7);
+		schedule(this.playlist);
 
-		this.score_sound = new SoundEffect(this.iface.logger, "./resources/sounds/blip1_s.mp3");
+		this.score_sound = new Sound(this.iface.logger, "./resources/sounds/blip1_s.mp3");
+		schedule(this.score_sound);
 	}
 
 	@nogc
@@ -221,8 +225,8 @@ mixin template ScoreDisplay() {
 	void check_scoring(Duration dt) {
 		this.show_score -= dt;
 		if(dtb_scored) {
-			add_score(100);
 			score_sound.play;
+			add_score(100);
 		}
 
 		if(display_score < score) {

@@ -34,24 +34,33 @@ void test_mad() {
 	auto audio_interface = AudioInterface(logger);
 	auto scheduler = new Scheduler(logger);
 
-	auto music = new Sound("./resources/music/original/01_IV_main_theme.mp3"); // joint stereo
-	auto sound = new Sound("./resources/sounds/utini.mp3");
-	//auto sound = new Sound("./resources/sounds/missile_alert.mp3"); // mono
-	//auto sound = new Sound("./resources/sounds/alert.mp3"); // joint stereo
+	auto sound = new Sound(logger, "./resources/music/original/01_IV_main_theme.mp3"); // joint stereo
+	//auto sound = new Sound(logger, "./resources/sounds/utini.mp3");
+	//auto sound = new Sound(logger, "./resources/sounds/missile_alert.mp3"); // mono
+	//auto sound = new Sound(logger, "./resources/sounds/alert.mp3"); // joint stereo
+
+	auto playlist = new Playlist(
+		logger,
+		"./resources/sounds/blip1.mp3",
+		"./resources/sounds/alert.mp3",
+		"./resources/sounds/chime.mp3",
+		"./resources/sounds/utini.mp3",
+	);
 
 
 	class MyTask: Task {
 		override void run() {
-			writeln("Uitini!");
-			music.play();
-			yield(10000.msecs);
+			writeln("Playlist!");
+			playlist.play();
+			yield(1000.msecs);
 			writeln("Uitini!");
 			sound.play();
 		}
 	}
 
 
-	scheduler.add(music);
+	scheduler.add(playlist);
+	//scheduler.add(music);
 	scheduler.add(sound);
 	scheduler.add(new MyTask);
 	scheduler.run();
@@ -78,7 +87,7 @@ void run_game() {
 void main() {
 	//test_audio();
 	//test_spi();
-	//run_game();
-	test_mad();
+	run_game();
+	//test_mad();
 }
 

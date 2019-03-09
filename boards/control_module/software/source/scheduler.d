@@ -58,6 +58,9 @@ class Scheduler {
 	}
 
 	void frame_start(Duration dt) {
+		// I. Run all frame_start() methods.
+		//    Those are run unconditionally, before any run() methods
+		//    and are expected to execute swiftly and can not yield.
 		foreach(task; tasks) {
 			task.frame_start(dt);
 			if(task.quitting()) {
@@ -66,9 +69,17 @@ class Scheduler {
 			}
 		}
 
+		// II. Run run() for those tasks that have their run conditions met
 		foreach(task; tasks) {
 			task.check_run();
 		}
+		
+		// III. Check any other requests from tasks, eg. scheduling of new tasks
+		Task[] to_schedule;
+		foreach(task; tasks) {
+			to_schedule ~= task.pop_schedule_requests();
+		}
+		tasks ~= to_schedule;
 	}
 
 	private:

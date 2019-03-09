@@ -11,20 +11,13 @@ class Task {
 		fiber = new Fiber(&run);
 	}
 
-	/*
-	this(Args...)(Args args) {
-		fiber = new Fiber(&run);
-		condition = make_condition(args);
-	}
-	*/
-
 	//
 	// For override within task
 	//
 
 	void frame_start(Duration dt) { }
-	void run() {
-	}
+
+	void run() { }
 
 	//
 	// For use from within task
@@ -37,6 +30,10 @@ class Task {
 
 	void quit() {
 		want_quit = true;
+	}
+
+	void schedule(Task t) {
+		to_schedule ~= t;
 	}
 
 	//
@@ -53,10 +50,17 @@ class Task {
 		}
 	}
 
+	Task[] pop_schedule_requests() {
+		Task[] r = this.to_schedule;
+		this.to_schedule = [];
+		return r;
+	}
+
 	private {
 		Condition condition = new TrueCondition;
 		Fiber fiber;
 		bool want_quit = false;
+		Task[] to_schedule;
 	}
 }
 

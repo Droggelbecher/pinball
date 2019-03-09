@@ -47,12 +47,9 @@ struct AudioInterface {
 			}
 		}
 
-		/+
 		@nogc
 		void frame_start(Duration _) {
-			assumeNoGC(&al_update)();
 		}
-		+/
 
 	private:
 		ALCcontext* context = null;
@@ -60,27 +57,77 @@ struct AudioInterface {
 
 }
 
-// TODO: Implement Playlist in terms of Sound
+class Playlist : Sound {
+	public:
+		this(Logger logger, string[] filenames...) {
+			this.filenames = filenames.dup;
+			super(logger, this.filenames[0]);
+		}
+
+		void clear() {
+			filenames.length = 0;
+		}
+
+		Playlist opOpAssign(string op)(string filename) if(op == "~") {
+			filenames ~= filename;
+			return this;
+		}
+
+		override void play() {
+			logger.logf("Playlist playing: %s", filenames[index]);
+			super.play();
+		}
+
+		void next() {
+			index++;
+			if(index >= filenames.length) {
+				index = 0;
+			}
+			//this.filename = filenames[index];
+		}
+
+		override void rewind() {
+			//alSourceStop(source);
+			next();
+			load_file(filenames[index]);
+			play();
+		}
+
+	private:
+		Sound sound = null;
+		uint index = 0;
+		string[] filenames;
+}
+
 
 class Sound : Task {
 
 	enum BUFFERS = 4;
 	enum BUFFER_SIZE = 16 * 1024;
 
-	this(string filename) {
+	this(Logger logger, string filename) {
+		this.logger = logger;
 		this.filename = filename;
 
 		stream = new mad_stream; mad_stream_init(stream);
 		synth = new mad_synth;   mad_synth_init(synth);
 		frame = new mad_frame;   mad_frame_init(frame);
-		load_file(filename);
 
 		alGenSources(1, &source);
 		check_al("gen_sources");
-
 		alSourcef(source, AL_GAIN, 1.0);
 
-		prefill_buffers();
+		load_file(filename);
+	}
+
+	~this() {
+		mad_frame_finish(frame);
+		//mad_synth_finish(synth);
+		mad_stream_finish(stream);
+	}
+
+	void set_volume(double v) {
+		alSourcef(source, AL_GAIN, v);
 	}
 
 	void play() {
@@ -88,26 +135,59 @@ class Sound : Task {
 		check_al("source_play");
 	}
 
+	void stop() {
+		alSourceStop(source);
+		rewind();
+	}
+
 	@nogc
 	override void frame_start(Duration dt) {
+		int state;
+		alGetSourcei(source, AL_SOURCE_STATE, &state);
+		if(state == AL_STOPPED) {
+			printf("---- STATE STOPPED ---- \n");
+			assumeNoGC(&rewind)();
+		}
+
 		update_buffers();
 	}
 
 	void rewind() {
-		alSourceStop(source);
+		logger.logf("stopped! rewinging");
+		alSourceRewind(source);
+		//alSourceStop(source);
 		mad_stream_buffer(stream, map, size);
 		prefill_buffers();
 	}
 
-	private:
-		// in D, int is guaranteed to be 4 bytes, no need for ifdef trickery
+	protected:
 		void load_file(string filename) {
+			logger.logf("Loading %s", filename);
+
+			// Stop sound, unqueue all queued buffers
+			alSourceStop(source);
+			int processed;
+			alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+			for( ; processed; processed--) {
+				ALuint buffer;
+				alSourceUnqueueBuffers(source, 1, &buffer);
+			}
+
+			// unmap audio file
+			if(map) {
+				munmap(map, size);
+				map = null;
+			}
+
+			// Now load new one
 			this.size = getSize(filename);
 			auto file = File(filename, "r");
 			this.map = cast(ubyte*)mmap(null, size, PROT_READ, MAP_SHARED, file.fileno, 0);
 			mad_stream_buffer(stream, map, size);
+			prefill_buffers();
 		}
 
+	private:
 		/*
 		Resources:
 		http://m.baert.free.fr/contrib/docs/libmad/doxy/html/low-level.html
@@ -116,6 +196,7 @@ class Sound : Task {
 		*/
 
 		void prefill_buffers() {
+			// TODO: We should not regenerate those on eg. rewind
 			alGenBuffers(buffers.length, buffers.ptr);
 			foreach(buffer; buffers) {
 				if(!assumeNoGC(&fill_buffer)(buffer)) {
@@ -131,8 +212,8 @@ class Sound : Task {
 			int state, processed;
 			alGetSourcei(source, AL_SOURCE_STATE, &state);
 			if(state != AL_PLAYING) {
-				// IF were not playing we will not consume buffers,
-				// thus repeadetely call rewind().
+				// If we're not playing we will not consume buffers,
+				// thusno paint in queueing them.
 				// That doesn't harm (in terms of functionality) but is not nice either,
 				// lets rather not.
 				return;
@@ -144,7 +225,7 @@ class Sound : Task {
 				alSourceUnqueueBuffers(source, 1, &buffer);
 				assumeNoGC(&check_al)("unqueue");
 				if(!assumeNoGC(&fill_buffer)(buffer)) {
-					assumeNoGC(&rewind)();
+					//assumeNoGC(&rewind)();
 					break;
 				}
 				alSourceQueueBuffers(source, 1, &buffer);
@@ -158,7 +239,6 @@ class Sound : Task {
 			int channels;
 
 			do {
-
 				int r = mad_frame_decode(frame, stream);
 				if(r != 0) {
 					if(stream.error == mad_error.MAD_ERROR_BUFLEN) {
@@ -184,7 +264,6 @@ class Sound : Task {
 							dither_left(synth.pcm.samples[0][i])
 							.clip .mad_decode!short;
 					}
-					to_fill = to_fill[n..$];
 				}
 				
 				else { // Stereo / Dual-channel
@@ -202,17 +281,6 @@ class Sound : Task {
 				to_fill = to_fill[n * channels..$];
 				
 			} while(to_fill.length >= synth.pcm.length * channels);
-
-			debug {
-				/+
-				writefln("Mode: %d Channels: %d Samplerate: %d sz: %d",
-					frame.header.mode,
-					synth.pcm.channels,
-					frame.header.samplerate,
-					cast(int)(buffer.length - to_fill.length) * 2,
-				);
-				+/
-			}
 
 			/*
 			   Notes on buffer format expected by openAL:
@@ -234,6 +302,8 @@ class Sound : Task {
 
 			return sz != 0;
 		} // fill_buffer
+
+		Logger logger;
 
 		mad_stream stream;
 		mad_synth synth;
