@@ -162,11 +162,10 @@ class Sound : Task {
 			short[] to_fill = buffer;
 
 			while(to_fill.length) {
-				writefln("to_fill: %d", to_fill.length);
 				if(mad_frame_decode(frame, stream) && (stream.error != mad_error.MAD_ERROR_BUFLEN)) {
 					check_mad(stream.error, "frame_decode");
 					if(stream.error != 0) {
-						writeln("ERROR: ", mad_errorstring[stream.error]);
+						writeln("MAD: ", mad_errorstring[stream.error]);
 					}
 				}
 				
@@ -176,10 +175,24 @@ class Sound : Task {
 
 				mad_synth_frame(synth, frame);
 				
+				// Mono
+				// 1 sample = 1 short value
 				size_t n = min(synth.pcm.length, to_fill.length);
+					
+				const int scalebits = MAD_F_FRACBITS + 1 - 16;
+				const int mask = (1 << scalebits) - 1;
+
+				for(int i=0; i<n; i++) {
+					to_fill[i] = cast(short)(
+							synth.pcm.samples[i] >> scalebits
+					);
+				}
+				//to_fill[0 .. n] = (synth.pcm.samples)[0 .. n];
+
 				
-				writeln(frame.header.samplerate);
-				sine.fill(to_fill[0 .. n], frame.header.samplerate);
+				//sine.fill(to_fill[0 .. n], frame.header.samplerate);
+				
+
 				to_fill = to_fill[n..$];
 			} // while
 
@@ -393,4 +406,81 @@ private:
 			throw new Exception(format!"%s: MAD Error: %s"(msg, mad_errorstring[err]));
 		}
 	}
+
+
+/+
+short audio_linear_dither(int bits, mad_fixed_t sample, struct audio_dither *dither, struct audio_stats *stats) {
+    unsigned int scalebits;
+    mad_fixed_t output, mask, random;
+
+    enum {
+        MIN = -MAD_F_ONE,
+        MAX =  MAD_F_ONE - 1
+    };
+
+    /* noise shape */
+    sample += dither->error[0] - dither->error[1] + dither->error[2];
+
+    dither->error[2] = dither->error[1];
+    dither->error[1] = dither->error[0] / 2;
+
+    /* bias */
+    output = sample + (1L << (MAD_F_FRACBITS + 1 - bits - 1));
+
+    scalebits = MAD_F_FRACBITS + 1 - bits;
+    mask = (1L << scalebits) - 1;
+
+    /* dither */
+    random  = prng(dither->random);
+    output += (random & mask) - (dither->random & mask);
+
+    dither->random = random;
+
+    /* clip */
+    if (output >= stats->peak_sample) 
+    {
+        if (output > MAX) 
+        {
+            ++stats->clipped_samples;
+
+            if (output - MAX > stats->peak_clipping)
+                stats->peak_clipping = output - MAX;
+
+            output = MAX;
+
+            if (sample > MAX)
+                sample = MAX;
+        }
+
+        stats->peak_sample = output;
+    }
+    else if (output < -stats->peak_sample) 
+    {
+        if (output < MIN) 
+        {
+            ++stats->clipped_samples;
+
+            if (MIN - output > stats->peak_clipping)
+                stats->peak_clipping = MIN - output;
+
+            output = MIN;
+
+            if (sample < MIN)
+                sample = MIN;
+        }
+
+        stats->peak_sample = -output;
+    }
+
+    /* quantize */
+    output &= ~mask;
+
+    /* error feedback */
+    dither->error[0] = sample - output;
+
+    /* scale */
+    return output >> scalebits;
+}
++/
+
 
