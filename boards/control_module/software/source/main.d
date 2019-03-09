@@ -34,12 +34,26 @@ void test_mad() {
 	auto audio_interface = AudioInterface(logger);
 	auto scheduler = new Scheduler(logger);
 
-	//auto sound = new Sound("./resources/sounds/utini.mp3");
-	auto sound = new Sound("./resources/sounds/missile_alert.mp3"); // mono
+	auto music = new Sound("./resources/music/original/01_IV_main_theme.mp3"); // joint stereo
+	auto sound = new Sound("./resources/sounds/utini.mp3");
+	//auto sound = new Sound("./resources/sounds/missile_alert.mp3"); // mono
 	//auto sound = new Sound("./resources/sounds/alert.mp3"); // joint stereo
-	//auto sound = new Sound("./resources/music/original/01_IV_main_theme.mp3"); // joint stereo
+
+
+	class MyTask: Task {
+		override void run() {
+			writeln("Uitini!");
+			music.play();
+			yield(10000.msecs);
+			writeln("Uitini!");
+			sound.play();
+		}
+	}
+
+
+	scheduler.add(music);
 	scheduler.add(sound);
-	sound.play();
+	scheduler.add(new MyTask);
 	scheduler.run();
 }
 

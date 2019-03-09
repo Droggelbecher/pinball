@@ -6,6 +6,7 @@ import std.datetime;
 import std.file;
 import std.format;
 import std.stdio;
+import std.random;
 
 import mad;
 import derelict.alure.alure;
@@ -14,6 +15,11 @@ import audio_synth: Sine;
 import utils: assumeNoGC;
 import logger: Logger, logf;
 import task: Task;
+
+private {
+	alias mad_fixed_t = int;
+}
+
 
 struct AudioInterface {
 	public:
@@ -54,20 +60,15 @@ struct AudioInterface {
 
 }
 
-//package:
-
+// TODO: Implement Playlist in terms of Sound
 
 class Sound : Task {
 
 	enum BUFFERS = 4;
 	enum BUFFER_SIZE = 16 * 1024;
 
-	Sine sine;
-
 	this(string filename) {
 		this.filename = filename;
-
-		this.sine = new Sine(440.0);
 
 		stream = new mad_stream; mad_stream_init(stream);
 		synth = new mad_synth;   mad_synth_init(synth);
@@ -78,24 +79,13 @@ class Sound : Task {
 		check_al("gen_sources");
 
 		alSourcef(source, AL_GAIN, 1.0);
-		//check_al("gen_buffers");
 
-		//update_buffer(0.msecs);
-		//alSourceQueueBuffers(source, buffers.length, buffers.ptr);
-		//check_al("queue_buffers");
 		prefill_buffers();
 	}
 
 	void play() {
-		//logger.logf("SoundEffect playing: %s", filename);
-		//update_buffer(0.msecs);
-		//alSourceQueueBuffers(source, buffers.length, buffers.ptr);
-		//check_al("queue_buffers");
-		//update_buffer(
-
 		alSourcePlay(source);
 		check_al("source_play");
-		// TODO: Implement
 	}
 
 	@nogc
@@ -103,16 +93,19 @@ class Sound : Task {
 		update_buffers();
 	}
 
+	void rewind() {
+		alSourceStop(source);
+		mad_stream_buffer(stream, map, size);
+		prefill_buffers();
+	}
+
 	private:
 		// in D, int is guaranteed to be 4 bytes, no need for ifdef trickery
-		alias mad_fixed_t = int;
-
 		void load_file(string filename) {
-			auto size = getSize(filename);
+			this.size = getSize(filename);
 			auto file = File(filename, "r");
-			ubyte* map = cast(ubyte*)mmap(null, size, PROT_READ, MAP_SHARED, file.fileno, 0);
+			this.map = cast(ubyte*)mmap(null, size, PROT_READ, MAP_SHARED, file.fileno, 0);
 			mad_stream_buffer(stream, map, size);
-			//check_mad(stream.error, "stream_buffer");
 		}
 
 		/*
@@ -124,9 +117,10 @@ class Sound : Task {
 
 		void prefill_buffers() {
 			alGenBuffers(buffers.length, buffers.ptr);
-			//for(int i = 0; i < BUFFERS; i++) {
 			foreach(buffer; buffers) {
-				assumeNoGC(&fill_buffer)(buffer);
+				if(!assumeNoGC(&fill_buffer)(buffer)) {
+					break;
+				}
 				alSourceQueueBuffers(source, 1, &buffer);
 				assumeNoGC(&check_al)("queue");
 			}
@@ -136,93 +130,90 @@ class Sound : Task {
 		void update_buffers() {
 			int state, processed;
 			alGetSourcei(source, AL_SOURCE_STATE, &state);
-			alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-			//printf("state: %x processed: %d\n", state, processed);
-
-			/*
-			if(state == AL_STOPPED) {
+			if(state != AL_PLAYING) {
+				// IF were not playing we will not consume buffers,
+				// thus repeadetely call rewind().
+				// That doesn't harm (in terms of functionality) but is not nice either,
+				// lets rather not.
 				return;
 			}
-			*/
 
-				// TODO: add alGetError checks everywhere
+			alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
 			for( ; processed; processed--) {
-				//printf("-\n");
 				ALuint buffer;
 				alSourceUnqueueBuffers(source, 1, &buffer);
 				assumeNoGC(&check_al)("unqueue");
-				assumeNoGC(&fill_buffer)(buffer);
+				if(!assumeNoGC(&fill_buffer)(buffer)) {
+					assumeNoGC(&rewind)();
+					break;
+				}
 				alSourceQueueBuffers(source, 1, &buffer);
 				assumeNoGC(&check_al)("queue");
 			}
 		}
 
-		void fill_buffer(ALuint buffer_id) {
+		bool fill_buffer(ALuint buffer_id) {
 			short[BUFFER_SIZE / 2] buffer;
 			short[] to_fill = buffer;
+			int channels;
 
-			while(to_fill.length) {
-				if(mad_frame_decode(frame, stream) && (stream.error != mad_error.MAD_ERROR_BUFLEN)) {
-					check_mad(stream.error, "frame_decode");
-					if(stream.error != 0) {
-						writeln("MAD: ", mad_errorstring[stream.error]);
+			do {
+
+				int r = mad_frame_decode(frame, stream);
+				if(r != 0) {
+					if(stream.error == mad_error.MAD_ERROR_BUFLEN) {
+						// libmad neeeds more input (input buffer too small)
+						break;
+					}
+					else {
+						check_mad(stream.error, "frame_decode");
+						if(stream.error != 0) {
+							writeln("MAD: ", mad_errorstring[stream.error]);
+						}
 					}
 				}
 				
-				if(stream.error == mad_error.MAD_ERROR_BUFLEN) {
-					break;
-				}
-
 				mad_synth_frame(synth, frame);
-				
-				// Mono
-				// 1 sample = 1 short value
-				size_t n = min(synth.pcm.length, to_fill.length);
-					
-				const int scalebits = MAD_F_FRACBITS + 1 - 16;
-				const int mask = (1 << scalebits) - 1;
 
-				for(int i=0; i<n; i++) {
-					to_fill[i] = cast(short)(
-							synth.pcm.samples[i] >> scalebits
-					);
+				channels = (frame.header.mode == mad_mode.MAD_MODE_SINGLE_CHANNEL) ? 1 : 2;
+				size_t n = min(synth.pcm.length, to_fill.length / channels);
+
+				if(channels == 1) {
+					for(int i=0; i<n; i++) {
+						to_fill[i] = 
+							dither_left(synth.pcm.samples[0][i])
+							.clip .mad_decode!short;
+					}
+					to_fill = to_fill[n..$];
 				}
-				//to_fill[0 .. n] = (synth.pcm.samples)[0 .. n];
-
 				
-				//sine.fill(to_fill[0 .. n], frame.header.samplerate);
+				else { // Stereo / Dual-channel
+					for(int i=0; i<n; i++) {
+						to_fill[i * 2] =
+							dither_left(synth.pcm.samples[0][i])
+							.clip .mad_decode!short;
+							
+						to_fill[i * 2 + 1] =
+							dither_right(synth.pcm.samples[1][i])
+							.clip .mad_decode!short;
+					}
+				}
 				
+				to_fill = to_fill[n * channels..$];
+				
+			} while(to_fill.length >= synth.pcm.length * channels);
 
-				to_fill = to_fill[n..$];
-			} // while
-
-			writefln("Mode: %d Channels: %d Samplerate: %d sz: %d",
-				frame.header.mode,
-				synth.pcm.channels,
-				frame.header.samplerate,
-				cast(int)(buffer.length - to_fill.length) * 2,
-			);
-
-			alBufferData(
-					buffer_id,
-					AL_FORMAT_MONO16,
-					buffer.ptr,
+			debug {
+				/+
+				writefln("Mode: %d Channels: %d Samplerate: %d sz: %d",
+					frame.header.mode,
+					synth.pcm.channels,
+					frame.header.samplerate,
 					cast(int)(buffer.length - to_fill.length) * 2,
-					frame.header.samplerate
-			);
-			check_al("alBufferData");
-			
+				);
+				+/
+			}
 
-		} // fill_buffer
-
-
-
-		// TODO:
-		// mad error checking:
-		// err = mad_frame_decode(frame, stream)
-		// if err && !MAD_RECOVERABLE(stream.error) { throw }
-
-		void fill_buffer__(ALuint buffer_id) {
 			/*
 			   Notes on buffer format expected by openAL:
 			
@@ -231,110 +222,30 @@ class Sound : Task {
 			   PCM 16 buffer format:
 			   signed 16 bit int, stereo: 16bit left, 16bit right, ...
 			*/
-
-			ubyte[BUFFER_SIZE] buffer;
-			ubyte[] to_fill = buffer;
-			//writefln("buf: %d %d %d %d", buffer[0], buffer[1], buffer[2], buffer[3]);
-			static int xxx = 0;
-
-			while(to_fill.length >= 4) {
-				if(mad_frame_decode(frame, stream) && (stream.error != mad_error.MAD_ERROR_BUFLEN)) {
-					check_mad(stream.error, "frame_decode");
-					if(stream.error != 0) {
-						writeln(mad_errorstring[stream.error]);
-					}
-				}
-				
-				if(stream.error == mad_error.MAD_ERROR_BUFLEN) {
-					break;
-					//continue;
-				}
-				//*/
-
-				  //mad_fixed_t samples[2][1152];		[> PCM output samples [ch][sample] <]
-				mad_synth_frame(synth, frame);
-				//check_mad(stream.error, "synth_frame");
-
-				// nsampls = synth.pcm.length
-				//printf("nsamples=%d addr=%p\n", synth.pcm.length, synth.pcm.samples);
-				if(frame.header.mode != mad_mode.MAD_MODE_SINGLE_CHANNEL) { // Stereo
-					/+
-					mad_fixed_t* left = (*synth.pcm.samples)[0].ptr;
-					mad_fixed_t* right = (*synth.pcm.samples)[1].ptr;
-					for(
-							int i = 0;
-							i < synth.pcm.length && to_fill.length >= 4;
-							i++, left++, right++, to_fill = to_fill[4..$]
-					) {
-						to_fill[0] = (*left) & 0xff;
-						to_fill[1] = (*left >> 8) & 0xff;
-						to_fill[2] = (*right) & 0xff;
-						to_fill[3] = (*right >> 8) & 0xff;
-					}
-					+/
-
-				}
-				else if(true) { // Mono
-					mad_fixed_t* samples = synth.pcm.samples; //)[0].ptr;
-					for(
-							int i = 0;
-							i < synth.pcm.length && to_fill.length >= 2;
-							i++, samples++, to_fill = to_fill[2..$]
-					) {
-						for(int j = 0; j < (*samples) / 10000000; j++) {
-							writef("*");
-						}
-						writeln();
-						//writefln("%d %d %d %d", 
-								//(*samples >>  0) & 0xff,
-								//(*samples >>  8) & 0xff,
-								//(*samples >> 16) & 0xff,
-								//(*samples >> 24) & 0xff,
-						//);
-						to_fill[0] = (*samples) & 0xff;
-						to_fill[1] = (*samples >> 8) & 0xff;
-						//to_fill[1] = (*samples >> 16) & 0xff;
-						//to_fill[0] = (*samples >> 24) & 0xff;
-					}
-				}
-				else {
-					for(
-							int i = 0;
-							i < synth.pcm.length && to_fill.length >= 2;
-							i++, xxx += 100000000, to_fill = to_fill[2..$]
-					) {
-						for(int j = 0; j < (xxx) / 10000000; j++) {
-							writef("*");
-						}
-						writeln();
-						to_fill[0] = xxx & 0xff;
-						to_fill[1] = (xxx >> 8) & 0xff;
-						//to_fill[2] = (xxx >> 16) & 0xff;
-						//to_fill[3] = (xxx >> 24) & 0xff;
-					}
-				}
-			}
-
-			writefln("Mode: %d Channels: %d Samplerate: %d", frame.header.mode, synth.pcm.channels, frame.header.samplerate);
-			writefln("buffering %d bytes into %d", buffer.length - to_fill.length, buffer_id);
-			//writefln("buf: %d %d %d %d", buffer[0], buffer[1], buffer[2], buffer[3]);
-
+			int sz  = cast(int)(buffer.length - to_fill.length) * 2;
 			alBufferData(
 				buffer_id,
-				(frame.header.mode == mad_mode.MAD_MODE_STEREO) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16,
-				buffer.ptr, cast(int)(buffer.length - to_fill.length),
+				(frame.header.mode == mad_mode.MAD_MODE_SINGLE_CHANNEL)
+					? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
+				cast(void*)buffer.ptr, sz,
 				frame.header.samplerate
 			);
 			check_al("alBufferData");
 
-		} // fill_buffer()
+			return sz != 0;
+		} // fill_buffer
 
 		mad_stream stream;
 		mad_synth synth;
 		mad_frame frame;
 		ALuint source;
 		ALuint[BUFFERS] buffers;
+
 		string filename;
+		ubyte* map;
+		ulong size;
+
+		LinearDither dither_left, dither_right;
 }
 
 
@@ -405,6 +316,64 @@ private:
 		if(!(err & 0xff00)) {
 			throw new Exception(format!"%s: MAD Error: %s"(msg, mad_errorstring[err]));
 		}
+	}
+
+	T mad_decode(T)(mad_fixed_t sample) {
+		ulong scalebits = MAD_F_FRACBITS + 1 - T.sizeof * 8;
+		return cast(T)(sample >> scalebits);
+	}
+
+	mad_fixed_t clip(mad_fixed_t sample) {
+		enum {
+			MIN = -0x10000000L,
+			MAX =  0x10000000L - 1
+		};
+		if(sample > MAX) {
+			sample = MAX;
+		}
+		else if(sample < MIN) {
+			sample = MIN;
+		}
+		return sample;
+	}
+
+
+	struct LinearDither {
+		enum bits = 16;
+
+		mad_fixed_t opCall(mad_fixed_t sample) {
+			/*
+			 * Fixed-point format: 0xACCCCBBB
+			 * A == whole part      (sign + 3 bits)
+			 * B == fractional part (28 bits)
+			 * C == PCM part        (1 whole + 15 fractional bits)
+			 */
+
+			// mask = Part B
+			mad_fixed_t scalebits = MAD_F_FRACBITS + 1 - bits;
+			mad_fixed_t mask = cast(mad_fixed_t)((1 << scalebits) - 1);
+
+			sample += error[0] - error[1] + error[2];
+			error[2] = error[1];
+			error[1] = error[0] / 2;
+
+			// round
+			mad_fixed_t output = sample + (1 << (MAD_F_FRACBITS - bits));
+			
+			// add noise
+			mad_fixed_t r = uniform(mad_fixed_t.min, mad_fixed_t.max);
+			output += (r & mask) - (prev_random & mask);
+			prev_random = r;
+
+			output = clip(output);
+
+			// Difference between 0xACCCC after modification and (complete) original
+			error[0] = sample - (output & ~mask);
+			return output;
+		}
+
+		mad_fixed_t[3] error;
+		mad_fixed_t prev_random;
 	}
 
 

@@ -920,12 +920,12 @@ class mad_pcm {
     return ret;
   }
 
-  public int* samples() @property const {
+  public int[1152]* samples() @property const {
 	  import std.stdio;
     void* cPtr = mad_im.mad_pcm_samples_get(cast(void*)swigCPtr);
 	//ubyte*ptr=cast(ubyte*)cPtr;
 	//writeln("cPtr=%d%d%d%d", cPtr[0], cPtr[1], cPtr[2]j);
-	return cast(int *)cPtr;
+	return cast(int[1152] *)cPtr;
     //SWIGTYPE_p_a_1152__int ret = (cPtr is null) ? null : new SWIGTYPE_p_a_1152__int(cPtr, false);
     //return ret;
   }
