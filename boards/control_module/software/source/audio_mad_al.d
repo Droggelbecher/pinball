@@ -83,11 +83,9 @@ class Playlist : Sound {
 			if(index >= filenames.length) {
 				index = 0;
 			}
-			//this.filename = filenames[index];
 		}
 
 		override void rewind() {
-			//alSourceStop(source);
 			next();
 			load_file(filenames[index]);
 			play();
@@ -100,7 +98,57 @@ class Playlist : Sound {
 }
 
 
-class Sound : Task {
+class MultiSound: Task {
+	this(Logger logger, string filename, int n = 4) {
+		sounds ~= new Sound(logger, filename);
+		for(int i = 1; i < n; i++) {
+			sounds ~= new Sound(logger, sounds[0].map, sounds[0].size);
+		}
+	}
+
+	void set_volume(double v) {
+		foreach(sound; sounds) {
+			sound.set_volume(v);
+		}
+	}
+
+	int state() {
+		foreach(sound; sounds) {
+			if(sound.state() == AL_PLAYING) {
+				return AL_PLAYING;
+			}
+		}
+		return sounds[0].state();
+	}
+
+	void play() {
+		foreach(sound; sounds) {
+			if(sound.state() != AL_PLAYING) {
+				sound.play();
+				break;
+			}
+		}
+	}
+
+	void stop() {
+		foreach(sound; sounds) {
+			sound.stop();
+		}
+	}
+
+	@nogc
+	override void frame_start(Duration dt) {
+		foreach(sound; sounds) {
+			sound.frame_start(dt);
+		}
+	}
+	
+	private:
+		Sound[] sounds;
+}
+
+
+class Sound: Task {
 
 	enum BUFFERS = 4;
 	enum BUFFER_SIZE = 16 * 1024;
@@ -117,13 +165,42 @@ class Sound : Task {
 		check_al("gen_sources");
 		alSourcef(source, AL_GAIN, 1.0);
 
+		alGenBuffers(buffers.length, buffers.ptr);
+
 		load_file(filename);
 	}
+
+	this(Logger logger, ubyte* map, ulong size) {
+		this.logger = logger;
+		this.map = map;
+		this.size = size;
+
+		stream = new mad_stream; mad_stream_init(stream);
+		synth = new mad_synth;   mad_synth_init(synth);
+		frame = new mad_frame;   mad_frame_init(frame);
+
+		alGenSources(1, &source);
+		check_al("gen_sources");
+		alSourcef(source, AL_GAIN, 1.0);
+
+		mad_stream_buffer(stream, map, size);
+
+		// TODO: We should not regenerate those on eg. rewind
+		alGenBuffers(buffers.length, buffers.ptr);
+		prefill_buffers();
+	}
+
 
 	~this() {
 		mad_frame_finish(frame);
 		//mad_synth_finish(synth);
 		mad_stream_finish(stream);
+	}
+
+	int state() {
+		int state;
+		alGetSourcei(source, AL_SOURCE_STATE, &state);
+		return state;
 	}
 
 	void set_volume(double v) {
@@ -145,7 +222,6 @@ class Sound : Task {
 		int state;
 		alGetSourcei(source, AL_SOURCE_STATE, &state);
 		if(state == AL_STOPPED) {
-			printf("---- STATE STOPPED ---- \n");
 			assumeNoGC(&rewind)();
 		}
 
@@ -153,25 +229,24 @@ class Sound : Task {
 	}
 
 	void rewind() {
-		logger.logf("stopped! rewinging");
 		alSourceRewind(source);
-		//alSourceStop(source);
 		mad_stream_buffer(stream, map, size);
 		prefill_buffers();
 	}
 
 	protected:
 		void load_file(string filename) {
-			logger.logf("Loading %s", filename);
-
 			// Stop sound, unqueue all queued buffers
-			alSourceStop(source);
+			alSourceRewind(source);
+			clear_all_buffers();
+			/+
 			int processed;
 			alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
 			for( ; processed; processed--) {
 				ALuint buffer;
 				alSourceUnqueueBuffers(source, 1, &buffer);
 			}
+			+/
 
 			// unmap audio file
 			if(map) {
@@ -182,7 +257,16 @@ class Sound : Task {
 			// Now load new one
 			this.size = getSize(filename);
 			auto file = File(filename, "r");
+			/*
+				Note on resource management:
+				- There will be a limited number of sound files being used throughout the whole game
+				- Thus no point in unmapping (unless for the playlist case)
+				- For MultiSound unmapping will be dangerous as pointer to mapped area is shared!
+			*/
 			this.map = cast(ubyte*)mmap(null, size, PROT_READ, MAP_SHARED, file.fileno, 0);
+			if(map == MAP_FAILED) {
+				throw new Exception("mmap failed");
+			}
 			mad_stream_buffer(stream, map, size);
 			prefill_buffers();
 		}
@@ -195,9 +279,34 @@ class Sound : Task {
 		LibMAD & OpenAL: https://github.com/monokrome/openal-source/blob/master/src/openal_mp3sample.cpp
 		*/
 
+		void clear_all_buffers() {
+			// Precondition: Source is in stopped or initial state
+			// prefill is only called when there iss completely new audio data to be played
+
+			ALint processed;
+			ALint queued;
+			alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+			alGetSourcei(source, AL_BUFFERS_QUEUED, &queued);
+
+			// Unqueue processed buffers
+			alSourceUnqueueBuffers(source, processed, null);
+			assumeNoGC(&check_al)("unqueue");
+
+			// Clear all pending buffers
+			alSourcei(source, AL_BUFFER, AL_NONE);
+			assumeNoGC(&check_al)("clear pending");
+
+			alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+			alGetSourcei(source, AL_BUFFERS_QUEUED, &queued);
+
+			// Source should now be completely buffer-less
+			assert(processed == 0);
+			assert(queued == 0);
+		}
+
 		void prefill_buffers() {
-			// TODO: We should not regenerate those on eg. rewind
-			alGenBuffers(buffers.length, buffers.ptr);
+			clear_all_buffers();
+
 			foreach(buffer; buffers) {
 				if(!assumeNoGC(&fill_buffer)(buffer)) {
 					break;
@@ -225,7 +334,6 @@ class Sound : Task {
 				alSourceUnqueueBuffers(source, 1, &buffer);
 				assumeNoGC(&check_al)("unqueue");
 				if(!assumeNoGC(&fill_buffer)(buffer)) {
-					//assumeNoGC(&rewind)();
 					break;
 				}
 				alSourceQueueBuffers(source, 1, &buffer);
@@ -242,38 +350,28 @@ class Sound : Task {
 				int r = mad_frame_decode(frame, stream);
 				if(r != 0) {
 					if(stream.error == mad_error.MAD_ERROR_BUFLEN) {
-						// libmad neeeds more input (input buffer too small)
 						break;
 					}
 					else {
 						check_mad(stream.error, "frame_decode");
-						if(stream.error != 0) {
-							writeln("MAD: ", mad_errorstring[stream.error]);
-						}
+						logger.logf("MAD: %s", mad_errorstring[stream.error]);
 					}
 				}
 				
 				mad_synth_frame(synth, frame);
-
 				channels = (frame.header.mode == mad_mode.MAD_MODE_SINGLE_CHANNEL) ? 1 : 2;
 				size_t n = min(synth.pcm.length, to_fill.length / channels);
-
 				if(channels == 1) {
 					for(int i=0; i<n; i++) {
-						to_fill[i] = 
-							dither_left(synth.pcm.samples[0][i])
+						to_fill[i] = dither_left(synth.pcm.samples[0][i])
 							.clip .mad_decode!short;
 					}
 				}
-				
 				else { // Stereo / Dual-channel
 					for(int i=0; i<n; i++) {
-						to_fill[i * 2] =
-							dither_left(synth.pcm.samples[0][i])
+						to_fill[i * 2] = dither_left(synth.pcm.samples[0][i])
 							.clip .mad_decode!short;
-							
-						to_fill[i * 2 + 1] =
-							dither_right(synth.pcm.samples[1][i])
+						to_fill[i * 2 + 1] = dither_right(synth.pcm.samples[1][i])
 							.clip .mad_decode!short;
 					}
 				}
@@ -282,21 +380,12 @@ class Sound : Task {
 				
 			} while(to_fill.length >= synth.pcm.length * channels);
 
-			/*
-			   Notes on buffer format expected by openAL:
-			
-			   https://wiki.delphigl.com/index.php/alBufferData
-			
-			   PCM 16 buffer format:
-			   signed 16 bit int, stereo: 16bit left, 16bit right, ...
-			*/
 			int sz  = cast(int)(buffer.length - to_fill.length) * 2;
-			alBufferData(
-				buffer_id,
+			auto samplerate = frame.header.samplerate;
+			alBufferData(buffer_id,
 				(frame.header.mode == mad_mode.MAD_MODE_SINGLE_CHANNEL)
 					? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
-				cast(void*)buffer.ptr, sz,
-				frame.header.samplerate
+				cast(void*)buffer.ptr, sz, samplerate
 			);
 			check_al("alBufferData");
 
@@ -427,7 +516,7 @@ private:
 			error[2] = error[1];
 			error[1] = error[0] / 2;
 
-			// round
+			// round (by adding 1 to highest bit of B)
 			mad_fixed_t output = sample + (1 << (MAD_F_FRACBITS - bits));
 			
 			// add noise
@@ -445,81 +534,5 @@ private:
 		mad_fixed_t[3] error;
 		mad_fixed_t prev_random;
 	}
-
-
-/+
-short audio_linear_dither(int bits, mad_fixed_t sample, struct audio_dither *dither, struct audio_stats *stats) {
-    unsigned int scalebits;
-    mad_fixed_t output, mask, random;
-
-    enum {
-        MIN = -MAD_F_ONE,
-        MAX =  MAD_F_ONE - 1
-    };
-
-    /* noise shape */
-    sample += dither->error[0] - dither->error[1] + dither->error[2];
-
-    dither->error[2] = dither->error[1];
-    dither->error[1] = dither->error[0] / 2;
-
-    /* bias */
-    output = sample + (1L << (MAD_F_FRACBITS + 1 - bits - 1));
-
-    scalebits = MAD_F_FRACBITS + 1 - bits;
-    mask = (1L << scalebits) - 1;
-
-    /* dither */
-    random  = prng(dither->random);
-    output += (random & mask) - (dither->random & mask);
-
-    dither->random = random;
-
-    /* clip */
-    if (output >= stats->peak_sample) 
-    {
-        if (output > MAX) 
-        {
-            ++stats->clipped_samples;
-
-            if (output - MAX > stats->peak_clipping)
-                stats->peak_clipping = output - MAX;
-
-            output = MAX;
-
-            if (sample > MAX)
-                sample = MAX;
-        }
-
-        stats->peak_sample = output;
-    }
-    else if (output < -stats->peak_sample) 
-    {
-        if (output < MIN) 
-        {
-            ++stats->clipped_samples;
-
-            if (MIN - output > stats->peak_clipping)
-                stats->peak_clipping = MIN - output;
-
-            output = MIN;
-
-            if (sample < MIN)
-                sample = MIN;
-        }
-
-        stats->peak_sample = -output;
-    }
-
-    /* quantize */
-    output &= ~mask;
-
-    /* error feedback */
-    dither->error[0] = sample - output;
-
-    /* scale */
-    return output >> scalebits;
-}
-+/
 
 

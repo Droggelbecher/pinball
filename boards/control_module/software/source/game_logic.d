@@ -44,12 +44,9 @@ class GameLogic(Interface_) : Task {
 		KeepValueDelay ball_return;
 		Rising dtb_scored;
 
-		// Audio
-		//AudioSource score_sound;
-
 		AudioInterface audio_interface;
 		Playlist playlist;
-		Sound score_sound;
+		MultiSound score_sound;
 	}
 
 	this(Interface iface) {
@@ -74,14 +71,14 @@ class GameLogic(Interface_) : Task {
 		this.audio_interface = AudioInterface(this.iface.logger);
 
 		this.playlist = new Playlist(
-			this.iface.logger, //"./resources/sounds/utini.mp3",
-			"./resources/music/original/01_IV_main_theme.mp3",
+			this.iface.logger, "./resources/sounds/utini.mp3",
+			"./resources/music/original/01_IV_main_theme.mp3"
 			"./resources/music/original/02_IV_leias_theme.mp3"
 		);
 		this.playlist.set_volume(0.7);
 		schedule(this.playlist);
 
-		this.score_sound = new Sound(this.iface.logger, "./resources/sounds/blip1_s.mp3");
+		this.score_sound = new MultiSound(this.iface.logger, "./resources/sounds/blip1_s.mp3", 10);
 		schedule(this.score_sound);
 	}
 
