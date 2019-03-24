@@ -10,21 +10,20 @@
 
 #include "led_stripe.h"
 
-#define LEDS 10
+#define LEDS 20
 struct cRGB led[LEDS];
+/*struct cRGB led_off[LEDS];*/
 
 volatile unsigned long milliseconds;
 
 // Command execution state
-int current_led = 0;
+int phase = 0;
 unsigned long next_action_ms = 0;
 
 int main(void) {
 	setup();
 
-	for(int i = 0; i < LEDS; i++) {
-		led[i].r = led[i].g = led[i].b = 0;
-	}
+	clear_leds();
 	ws2812_setleds(led, LEDS);
 
 	Command yellow = {
@@ -34,29 +33,61 @@ int main(void) {
 		.arg_B0 = 0x00
 	};
 
-	Command chaser = {
-		.mode = CHASER,
+	Command mod = {
+		.mode = MOD,
 		.arg_R0 = 0xff,
 		.arg_G0 = 0xa0,
 		.arg_B0 = 0x00,
-		.arg_DT = 60, // *10ms
-		.arg_MOD = 3 //LEDS / 2
+		.arg_MOD = 4 //LEDS / 2 // LEDS/2=one LED, every other value: every Xth LED
 	};
 
-	Command fade = {
-		.mode = FADE,
-		.arg_R0 = 0xf0,
+	Command gradient = {
+		.mode = GRADIENT,
+		.arg_R0 = 0x00,
 		.arg_G0 = 0xa0,
+		.arg_B0 = 0x30,
+
+		.arg_R1 = 0xf0,
+		.arg_G1 = 0x00,
+		.arg_B1 = 0x00
+	};
+
+	Command gradient2 = {
+		.mode = GRADIENT2,
+		.arg_R0 = 0x30,
+		.arg_G0 = 0x00,
 		.arg_B0 = 0x00,
 
-		.arg_R1 = 0x10,
+		.arg_R1 = 0x00,
 		.arg_G1 = 0x20,
-		.arg_B1 = 0xa0
+		.arg_B1 = 0x00
 	};
 
+	Command rotate = {
+		.mode = ROTATE,
+		.arg_DT = 10,
+		.arg_MOD = 1 // direction
+	};
 
+	Command fadeout = {
+		.mode = FADEOUT,
+		.arg_DT = 10
+	};
+
+	Command flash = {
+		.mode = FLASH,
+		.arg_R0 = 0x60,
+		.arg_G0 = 0x60,
+		.arg_B0 = 0xff,
+		.arg_DT = 40,
+		.arg_MOD = 3
+	};
+
+	/*execute(&gradient2);*/
+	phase = 0;
 	while(1) {
-		execute(&fade);
+		/*execute(&rotate);*/
+		execute(&flash);
 		_delay_ms(1);
 
 	}
@@ -65,10 +96,7 @@ int main(void) {
 }
 
 void clear_leds() {
-	/*memset(&led, 0, LEDS * sizeof(struct cRGB));*/
-	for(int i = 0; i < LEDS; i++) {
-		led[i].r = led[i].g = led[i].b = 0;
-	}
+	memset(&led, 0, LEDS * sizeof(struct cRGB));
 }
 
 void execute(Command* c) {
@@ -81,19 +109,10 @@ void execute(Command* c) {
 			}
 			break;
 
-		case CHASER:
-			if(milliseconds >= next_action_ms) {
-				next_action_ms = milliseconds + c->arg_DT * 10;
-				current_led++;
-				if(current_led >= LEDS / 2) {
-					current_led = 0;
-				}
-			}
-
+		case MOD:
 			clear_leds();
-
 			for(int i = 0; i < LEDS / 2; i++) {
-				if((i + current_led) % c->arg_MOD == 0) {
+				if(i % c->arg_MOD == 0) {
 				led[i].r = c->arg_R0;
 				led[i].g = c->arg_G0;
 				led[i].b = c->arg_B0;
@@ -103,10 +122,9 @@ void execute(Command* c) {
 				led[LEDS - i - 1].b = c->arg_B0;
 				}
 			}
-
 			break;
 
-		case FADE:
+		case GRADIENT:
 			for(int i = 0; i < LEDS/2; i++) {
 				led[i].r = c->arg_R0 + i * ((int)c->arg_R1 - (int)c->arg_R0) / (LEDS/2 - 1);
 				led[i].g = c->arg_G0 + i * ((int)c->arg_G1 - (int)c->arg_G0) / (LEDS/2 - 1);
@@ -115,8 +133,67 @@ void execute(Command* c) {
 			}
 			break;
 
+		case GRADIENT2:
+			for(int i = 0; i < LEDS/4; i++) {
+				led[i].r = c->arg_R0 + i * ((int)c->arg_R1 - (int)c->arg_R0) / (LEDS/4 - 1);
+				led[i].g = c->arg_G0 + i * ((int)c->arg_G1 - (int)c->arg_G0) / (LEDS/4 - 1);
+				led[i].b = c->arg_B0 + i * ((int)c->arg_B1 - (int)c->arg_B0) / (LEDS/4 - 1);
+				led[LEDS/2 - i - 1] = led[i];
+				led[LEDS/2 + i] = led[i];
+				led[LEDS - i - 1] = led[i];
+			}
+			break;
 
+		case ROTATE:
+			if(milliseconds >= next_action_ms) {
+				next_action_ms = milliseconds + c->arg_DT * 10;
+				
+				if(c->arg_MOD) {
+					struct cRGB first = led[0];
+					memmove(led,              led + 1,      (LEDS/2 - 1) * sizeof(struct cRGB));
+					memmove(led + LEDS/2 + 1, led + LEDS/2, (LEDS/2 - 1) * sizeof(struct cRGB));
+					led[LEDS/2 - 1] = first;
+					led[LEDS/2] = first;
+				}
+				else {
+					struct cRGB last = led[LEDS/2 - 1];
+					memmove(led + 1,          led,              (LEDS/2 - 1) * sizeof(struct cRGB));
+					memmove(led + LEDS/2,     led + LEDS/2 + 1, (LEDS/2 - 1) * sizeof(struct cRGB));
+					led[0] = last;
+					led[LEDS - 1] = last;
+				}
+			}
+			break;
+
+		case FADEOUT:
+			if(milliseconds >= next_action_ms) {
+				next_action_ms = milliseconds + c->arg_DT * 10;
+				for(int i = 0; i < LEDS; i++) {
+					if(led[i].r) { led[i].r = (led[i].r - 1) * 0.9; }
+					if(led[i].g) { led[i].g = (led[i].g - 1) * 0.9; }
+					if(led[i].b) { led[i].b = (led[i].b - 1) * 0.9; }
+				}
+			}
+			break;
+
+		case FLASH:
+			if(milliseconds >= next_action_ms && phase/2 <= c->arg_MOD) {
+				next_action_ms = milliseconds + c->arg_DT * 1;
+				if(phase % 2 == 0) {
+					for(int i = 0; i < LEDS; i++) {
+						led[i].r = c->arg_R0;
+						led[i].g = c->arg_G0;
+						led[i].b = c->arg_B0;
+					}
+				}
+				else {
+					clear_leds();
+				}
+				phase++;
+			}
+			break;
 	} // switch
+
 	ws2812_setleds(led, LEDS);
 } // execute()
 

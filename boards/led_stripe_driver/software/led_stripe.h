@@ -40,9 +40,16 @@
  */
 
 typedef enum {
-	FULL = 0,
-	CHASER,
-	FADE
+	// LED setting
+	FULL = 0, // all LEDs same color
+	MOD, // light up every k'th LED in this color
+	GRADIENT, // gradient (color0 -> color1)
+	GRADIENT2, // double gradient (color0 -> color1 -> color0)
+
+	// animation
+	ROTATE,
+	FADEOUT,
+	FLASH
 } Mode;
 
 typedef struct {
