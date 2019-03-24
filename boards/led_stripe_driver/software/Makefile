@@ -26,7 +26,8 @@
 
 
 # MCU name
-MCU = atmega328p
+#MCU = atmega328p
+MCU = atmega2560
 F_CPU = 16000000
 
 
@@ -56,7 +57,7 @@ FORMAT = ihex
 
 
 # Target file name (without extension).
-TARGET = target_light
+TARGET = led_stripe
 
 
 # Object files directory
@@ -64,15 +65,15 @@ OBJDIR = obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c
-EXTSRCDIR =
+SRC = $(TARGET).c light_ws2812.c 
+EXTSRCDIR = #FastLED
 #../../../common_software/src
-EXTSRC =
+EXTSRC = 
 #../../../common_software/src/checksum.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
-CPPSRC =
+CPPSRC = #$(TARGET).cpp FastLED/*.cpp
 
 
 # List Assembler source files here.
@@ -103,7 +104,7 @@ DEBUG = dwarf-2
 #     Each directory must be seperated by a space.
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
-EXTRAINCDIRS = ../../../common_software/include/
+EXTRAINCDIRS = ../../../common_software/include/ 
 
 
 # Compiler flag to set the C Standard level.
@@ -115,11 +116,11 @@ CSTANDARD = -std=gnu99
 
 
 # Place -D or -U options here for C sources
-CDEFS = -DF_CPU=$(F_CPU)UL
+CDEFS = -DF_CPU=$(F_CPU)UL -DNEED_CXX_BITS
 
 
 # Place -D or -U options here for C++ sources
-CPPDEFS = -DF_CPU=$(F_CPU)UL
+CPPDEFS = -DF_CPU=$(F_CPU)UL -DNEED_CXX_BITS
 #CPPDEFS += -D__STDC_LIMIT_MACROS
 #CPPDEFS += -D__STDC_CONSTANT_MACROS
 
@@ -255,13 +256,14 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # to get a full listing.
 #
 #AVRDUDE_PROGRAMMER = avrispv2
-AVRDUDE_PROGRAMMER = arduino
+#AVRDUDE_PROGRAMMER = stk500v1
+AVRDUDE_PROGRAMMER = wiring
 
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
 AVRDUDE_PORT = /dev/ttyACM3
 
-AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
+AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex:i
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
 
@@ -277,10 +279,11 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # Increase verbosity level.  Please use this when submitting bug
 # reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude>
 # to submit bug reports.
-AVRDUDE_VERBOSE = -v -v
+AVRDUDE_VERBOSE = -v
 
 #AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 57600
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 115200
+AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 115200 -D
+#AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 19200
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)

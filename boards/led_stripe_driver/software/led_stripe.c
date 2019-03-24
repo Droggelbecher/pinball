@@ -1,43 +1,44 @@
 
-#include <string.h> // memset & co
+/*#include <string.h> // memset & co*/
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include <checksum.h>
+/*#include <checksum.h>*/
 
-#include "target_light.h"
+#include "led_stripe.h"
 
-#define ACTIVE (PINB & (1 << PB0))
-#define DELAY 1000
+#define LEDS 6
+struct cRGB led[LEDS];
+
 
 int main(void) {
 	setup_pins();
 
+	for(int i = 0; i < LEDS; i++) {
+		led[i].r = led[i].g = led[i].b = 0;
+	}
+
 	while(1) {
-		if(ACTIVE) {
-			PORTC = (1 << PC1); _delay_ms(DELAY); PORTC = 0;
-		}
-		if(ACTIVE) {
-			PORTC = (1 << PC2); _delay_ms(DELAY); PORTC = 0;
-		}
-		if(ACTIVE) {
-			PORTC = (1 << PC3); _delay_ms(DELAY); PORTC = 0;
-		}
+		led[0].r++;
+		led[1].g++;
+		led[2].b++;
+
+		led[3].r++; led[3].g++;
+		led[4].g++; led[4].b++;
+		led[5].b++; led[5].r++;
+
+		ws2812_setleds(led, LEDS);
+		_delay_ms(100);
+
 	}
 
 	return 0;
 }
 
 void setup_pins(void) {
-	// outputs
-	DDRC |= (1 << PC1) | (1 << PC2) | (1 << PC3);
-	PORTC = 0;
-
-	// PB0 = input for enable/disable, deactivate internal pullup
-	PORTB &= ~(1 << PB0);
-	DDRB &= ~(1 << PB0);
-	PORTB &= ~(1 << PB0);
+	/*DDRF |= (1 << PF0);*/
+	DDRC |= (1 << PC0);
 }
 
