@@ -16,7 +16,7 @@
  
 // Calculate the value needed for 
 // the CTC match value in OCR1A.
-#define CTC_MATCH_OVERFLOW ((F_CPU / 1000) / 8) 
+#define CTC_MATCH_OVERFLOW ((F_CPU / 1000UL) / 8UL) 
 
 // PF0 = Analog 0
 // PC0 = Diginal 37
@@ -69,6 +69,7 @@ int main(void);
 void setup(void);
 void execute(Command*);
 void clear_leds(void);
+void xfer_spi(void);
 
 #endif
 

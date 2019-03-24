@@ -66,10 +66,8 @@ OBJDIR = obj
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = $(TARGET).c light_ws2812.c 
-EXTSRCDIR = #FastLED
-#../../../common_software/src
-EXTSRC = 
-#../../../common_software/src/checksum.c
+EXTSRCDIR = ../../../common_software/src
+EXTSRC = ../../../common_software/src/checksum.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)

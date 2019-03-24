@@ -5,6 +5,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <string.h>
+#include <checksum.h>
 
 /*#include <checksum.h>*/
 
@@ -16,6 +17,10 @@ struct cRGB led[LEDS];
 
 volatile unsigned long milliseconds;
 
+int spi_xfer = 0;
+int command_idx = 0;
+Command command_buffer[2];
+
 // Command execution state
 int phase = 0;
 unsigned long next_action_ms = 0;
@@ -26,6 +31,7 @@ int main(void) {
 	clear_leds();
 	ws2812_setleds(led, LEDS);
 
+	/*
 	Command yellow = {
 		.mode = FULL,
 		.arg_R0 = 0xff,
@@ -73,6 +79,7 @@ int main(void) {
 		.mode = FADEOUT,
 		.arg_DT = 10
 	};
+	*/
 
 	Command flash = {
 		.mode = FLASH,
@@ -88,7 +95,7 @@ int main(void) {
 	while(1) {
 		/*execute(&rotate);*/
 		execute(&flash);
-		_delay_ms(1);
+		xfer_spi();
 
 	}
 
@@ -98,6 +105,43 @@ int main(void) {
 void clear_leds() {
 	memset(&led, 0, LEDS * sizeof(struct cRGB));
 }
+
+
+/**
+ * SS interrupt.
+ * Activated when SS flanks (low<->high), i.e. at beginning and end of
+ * SPI transmission.
+ */
+ISR(PCINT0_vect) {
+	spi_xfer = !(PINB & (1 << PB2)); // SS pin high -> end of transmission
+	/*
+	if(!spi_xfer) {
+		disable_next();
+	}
+	*/
+}
+
+void xfer_spi(void) {
+	if(!spi_xfer) { return; }
+
+	uint8_t *cmd = (uint8_t*)&(command_buffer[!command_idx]);
+
+	while(!(SPSR & (1 << SPIF))) { }
+
+	for(int i = 0; i < 8; i++) {
+		cmd[i] = SPDR;
+	}
+	uint8_t chk = SPDR;
+	uint8_t mychecksum = checksum(cmd, 8);
+	if(chk == mychecksum) {
+		// New command received correctly, switch to it
+		command_idx = !command_idx;
+	}
+
+	spi_xfer = 0;
+}
+
+
 
 void execute(Command* c) {
 	switch(c->mode) {
@@ -214,7 +258,7 @@ void setup(void) {
 	// Load the high byte, then the low byte
 	// into the output compare
 	OCR1AH = (CTC_MATCH_OVERFLOW >> 8);
-	OCR1AL = CTC_MATCH_OVERFLOW;
+	OCR1AL = (CTC_MATCH_OVERFLOW & 0xff);
  
 	// Enable the compare match interrupt
 	TIMSK1 |= (1 << OCIE1A);
