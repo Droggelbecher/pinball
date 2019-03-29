@@ -22,15 +22,7 @@
 // PC0 = Diginal 37
 // src: https://www.arduino.cc/en/uploads/Hacking/PinMap2560big.png
 
-#define arg_R0 arg0
-#define arg_G0 arg1
-#define arg_B0 arg2
-#define arg_DT arg3
-#define arg_MOD arg4
-
-#define arg_R1 arg4
-#define arg_G1 arg5
-#define arg_B1 arg6
+typedef uint8_t Command[8];
 
 /**
  * MODE       ARG0  ARG1  ARG2  ARG3  ARG4  ARG5  ARG6
@@ -38,7 +30,6 @@
  * FULL       Color
  * CHASER
  */
-
 typedef enum {
 	// LED setting
 	FULL = 0, // all LEDs same color
@@ -49,27 +40,44 @@ typedef enum {
 	// animation
 	ROTATE,
 	FADEOUT,
-	FLASH
+	FLASH,
+
+	_MAX = 0x0f
 } Mode;
 
-typedef struct {
-	uint8_t mode;
+inline Mode mode(const Command c) { return c[0] & 0x0f; }
+inline int  id  (const Command c) { return c[0] & 0xf0; }
+inline int  r0  (const Command c) { return c[1]; }
+inline int  g0  (const Command c) { return c[2]; }
+inline int  b0  (const Command c) { return c[3]; }
+inline int  dt  (const Command c) { return c[4]; }
+inline int  mod (const Command c) { return c[5]; }
+inline int  r1  (const Command c) { return c[5]; }
+inline int  g1  (const Command c) { return c[6]; }
+inline int  b1  (const Command c) { return c[7]; }
 
-	// Note: turning these into an array might cause issues with alignment
-	uint8_t arg0;
-	uint8_t arg1;
-	uint8_t arg2;
-	uint8_t arg3;
-	uint8_t arg4;
-	uint8_t arg5;
-	uint8_t arg6;
-} Command;
+//typedef struct {
+	//uint8_t mode;
+
+	//// Note: turning these into an array might cause issues with alignment
+	//uint8_t arg0;
+	//uint8_t arg1;
+	//uint8_t arg2;
+	//uint8_t arg3;
+	//uint8_t arg4;
+	//uint8_t arg5;
+	//uint8_t arg6;
+//} Command;
 
 int main(void);
 void setup(void);
-void execute(Command*);
+void execute(void);
 void clear_leds(void);
 void xfer_spi(void);
+void swap_buffers(void);
+uint8_t* active_buffer(void);
+uint8_t* inactive_buffer(void);
+void load(Command);
 
 #endif
 
