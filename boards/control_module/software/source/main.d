@@ -7,10 +7,11 @@ import game_logic : GameLogic;
 import scheduler : Scheduler;
 
 import curses_interface;
-import mock_spi: Spi;
-//import bcm2708_spi: Spi;
+//import mock_spi: Spi;
+import bcm2708_spi: Spi;
 import switches;
 import solenoids;
+import led_actuator;
 import task;
 import audio;
 //import audio = mock_audio;
@@ -69,10 +70,11 @@ void test_mad() {
 void run_game() {
 	alias Sol = Solenoids!Spi;
 	alias Sw = Switches!Spi;
-	alias Iface = CursesInterface!(Sol, Sw);
+	alias LED = LEDStripe!Spi;
+	alias Iface = CursesInterface!(Sol, Sw, LED);
 
 	auto spi = new Spi();
-	auto iface = new Iface(new Sol(spi), new Sw(spi));
+	auto iface = new Iface(new Sol(spi), new Sw(spi), new LED(spi));
 
 	//audio.init();
 

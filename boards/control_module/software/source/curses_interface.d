@@ -11,6 +11,8 @@ import coordinate;
 import task;
 import solenoids;
 import switches;
+import led_actuator;
+
 import sensor_actuator_override;
 import buffer_logger;
 
@@ -33,10 +35,11 @@ struct Key {
 }
 
 
-class CursesInterface(Solenoids_, Switches_) : Task {
+class CursesInterface(Solenoids_, Switches_, LEDStripe_) : Task {
 
 	alias SensorActuatorOverride!Solenoids_ Solenoids;
 	alias SensorActuatorOverride!Switches_ Switches;
+	alias LEDStripe_ LEDStripe;
 	alias BufferCanvas Canvas;
 	alias BufferLogger!(10) Logger;
 
@@ -80,9 +83,10 @@ public:
 
 	// Switch states
 
-	this(Solenoids_ solenoids_, Switches_ switches_) {
+	this(Solenoids_ solenoids_, Switches_ switches_, LEDStripe_ led_stripe_) {
 		solenoids = new Solenoids(solenoids_, No.mask_get, No.mute_set);
 		switches = new Switches(switches_, Yes.mask_get, No.mute_set);
+		led_stripe = led_stripe_;
 		canvas = new Canvas(16, 40);
 		logger = new Logger();
 
@@ -130,6 +134,7 @@ public:
 
 	Solenoids solenoids;
 	Switches switches;
+	LEDStripe led_stripe;
 	Canvas canvas;
 	Logger logger;
 

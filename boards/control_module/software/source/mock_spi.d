@@ -2,6 +2,7 @@
 class Spi {
 
 	enum SlaveIndex {
+		LEDStripe = 18,
 		Lamps = 22,
 		Switches = 23,
 		Display = 24,

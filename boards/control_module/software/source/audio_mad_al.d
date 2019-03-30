@@ -183,7 +183,7 @@ class Sound: Task {
 		check_al("gen_sources");
 		alSourcef(source, AL_GAIN, 1.0);
 
-		mad_stream_buffer(stream, map, size);
+		mad_stream_buffer(stream, map, cast(uint)size);
 
 		// TODO: We should not regenerate those on eg. rewind
 		alGenBuffers(buffers.length, buffers.ptr);
@@ -230,7 +230,7 @@ class Sound: Task {
 
 	void rewind() {
 		alSourceRewind(source);
-		mad_stream_buffer(stream, map, size);
+		mad_stream_buffer(stream, map, cast(uint)size);
 		prefill_buffers();
 	}
 
@@ -239,18 +239,10 @@ class Sound: Task {
 			// Stop sound, unqueue all queued buffers
 			alSourceRewind(source);
 			clear_all_buffers();
-			/+
-			int processed;
-			alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-			for( ; processed; processed--) {
-				ALuint buffer;
-				alSourceUnqueueBuffers(source, 1, &buffer);
-			}
-			+/
 
 			// unmap audio file
 			if(map) {
-				munmap(map, size);
+				munmap(map, cast(uint)size);
 				map = null;
 			}
 
@@ -263,11 +255,11 @@ class Sound: Task {
 				- Thus no point in unmapping (unless for the playlist case)
 				- For MultiSound unmapping will be dangerous as pointer to mapped area is shared!
 			*/
-			this.map = cast(ubyte*)mmap(null, size, PROT_READ, MAP_SHARED, file.fileno, 0);
+			this.map = cast(ubyte*)mmap(null, cast(uint)size, PROT_READ, MAP_SHARED, file.fileno, 0);
 			if(map == MAP_FAILED) {
 				throw new Exception("mmap failed");
 			}
-			mad_stream_buffer(stream, map, size);
+			mad_stream_buffer(stream, map, cast(uint)size);
 			prefill_buffers();
 		}
 
