@@ -22,55 +22,62 @@
 // PC0 = Diginal 37
 // src: https://www.arduino.cc/en/uploads/Hacking/PinMap2560big.png
 
-typedef uint8_t Command[8];
+typedef uint8_t Command[11];
 
-/**
- * MODE       ARG0  ARG1  ARG2  ARG3  ARG4  ARG5  ARG6
- *
- * FULL       Color
- * CHASER
+/*
+ * IIIAAACC
+ *       11 0x03
+ *    11100 0x1c
+ * 11100000 0xe0
  */
+
 typedef enum {
-	// LED setting
-	FULL = 0, // all LEDs same color
-	MOD, // light up every k'th LED in this color
-	GRADIENT, // gradient (color0 -> color1)
-	GRADIENT2, // double gradient (color0 -> color1 -> color0)
+	COLOR_MOD = 0, // light up every k'th LED in this color
+	COLOR_GRADIENT = 1, // gradient (color0 -> color1)
+	COLOR_BITS = 2,
+	COLOR_MASK = 0x03 //(1 << (COLOR_BITS + 1)) - 1
 
-	// animation
-	ROTATE,
-	FADEOUT,
-	FLASH,
+} ColorMode;
 
-	_MAX = 0x0f
-} Mode;
+typedef enum {
+	ANIM_ROTATE = 0x00,
+	ANIM_FADEOUT = 0x04,
+	ANIM_FLASH = 0x08,
+	ANIM_BITS = 3,
+	ANIM_MASK = 0x1c //((1 << (ANIM_BITS + 1)) - 1) << COLOR_BITS
+} AnimationMode;
 
-inline Mode mode(const Command c) { return c[0] & 0x0f; }
-inline int  id  (const Command c) { return c[0] & 0xf0; }
-inline int  r0  (const Command c) { return c[1]; }
-inline int  g0  (const Command c) { return c[2]; }
-inline int  b0  (const Command c) { return c[3]; }
-inline int  dt  (const Command c) { return c[4]; }
-inline int  mod (const Command c) { return c[5]; }
-inline int  r1  (const Command c) { return c[5]; }
-inline int  g1  (const Command c) { return c[6]; }
-inline int  b1  (const Command c) { return c[7]; }
+enum {
+	ID_MASK = 0xe0
+	//ID_MASK = (0xff << (ANIM_BITS + COLOR_BITS)) & 0xff
+};
 
-//typedef struct {
-	//uint8_t mode;
+inline ColorMode     color_mode(const Command c) { return c[0] & COLOR_MASK; }
+inline AnimationMode anim_mode(const Command c)  { return c[0] & ANIM_MASK; }
+inline int           id(const Command c)         { return c[0] & ID_MASK; }
 
-	//// Note: turning these into an array might cause issues with alignment
-	//uint8_t arg0;
-	//uint8_t arg1;
-	//uint8_t arg2;
-	//uint8_t arg3;
-	//uint8_t arg4;
-	//uint8_t arg5;
-	//uint8_t arg6;
-//} Command;
+// Color
+
+inline int  mod  (const Command c) { return c[ 1]; }
+
+inline int  r0   (const Command c) { return c[ 2]; }
+inline int  g0   (const Command c) { return c[ 3]; }
+inline int  b0   (const Command c) { return c[ 4]; }
+
+inline int  r1   (const Command c) { return c[ 5]; }
+inline int  g1   (const Command c) { return c[ 6]; }
+inline int  b1   (const Command c) { return c[ 7]; }
+
+// Animation
+
+inline int  dir  (const Command c) { return c[ 8]; }
+inline int  dt   (const Command c) { return c[ 9]; }
+inline int  count(const Command c) { return c[10]; }
+
 
 int main(void);
 void setup(void);
+void start_execute(void);
 void execute(void);
 void clear_leds(void);
 void xfer_spi(void);
@@ -78,6 +85,7 @@ void swap_buffers(void);
 uint8_t* active_buffer(void);
 uint8_t* inactive_buffer(void);
 void load(Command);
+void mirror_leds(void);
 
 #endif
 

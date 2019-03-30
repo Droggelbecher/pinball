@@ -20,6 +20,7 @@ class Spi {
 	enum BUFFER_SIZE = 10 * 1024;
 
 	enum SlaveIndex {
+		LEDStripe = 18,
 		Lamps = 22,
 		Switches = 23,
 		Display = 24,
@@ -28,11 +29,13 @@ class Spi {
 			| (1 << Display)
 			| (1 << Switches)
 			| (1 << Solenoids)
+			| (1 << LEDStripe)
 	}
 
 	this() {
 		open_gpio();
 		with(SlaveIndex) {
+			gpio_set_output(LEDStripe);
 			gpio_set_output(Lamps);
 			gpio_set_output(Switches);
 			gpio_set_output(Display);

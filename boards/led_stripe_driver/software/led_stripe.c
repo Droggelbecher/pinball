@@ -13,7 +13,7 @@
 
 #define LEDS 20
 struct cRGB led[LEDS];
-/*struct cRGB led_off[LEDS];*/
+struct cRGB led_off[LEDS];
 
 volatile unsigned long milliseconds;
 
@@ -91,18 +91,13 @@ int main(void) {
 	*/
 
 	Command gradient = {
-		GRADIENT2,
-		0x00, 0xf0, 0x00, // color 0
-		0x00, // dt (unused)
-		0xf0, 0x00, 0x00  // color 1
-	};
-
-	Command rotate = {
-		ROTATE,
-		0x00, 0x00, 0x00, // color0 (unused)
-		10, // dt
-		1, // mod (=direction)
-		0x00, 0x00 // g1, b1 (unused)
+		COLOR_MOD | ANIM_ROTATE,
+		4, // modulus
+		0x00, 0x00, 0xf0, // color 0
+		0xf0, 0x10, 0x00, // color 1
+		0x01, // direction
+		30, // dt
+		3, // count (unused)
 	};
 
 	// Command flash = {
@@ -114,15 +109,15 @@ int main(void) {
 	// };
 
 	load(gradient);
-	execute();
+	start_execute();
 
-	load(rotate);
-	execute();
+	/*load(rotate);*/
+	/*execute();*/
 
-	phase = 0;
+	/*phase = 0;*/
 	while(1) {
 		execute();
-		xfer_spi();
+		/*xfer_spi();*/
 
 	}
 
@@ -161,62 +156,76 @@ void xfer_spi(void) {
 
 		if(id(cmd) != id(command_buffer[!command_idx])) {
 			// Did command ID change? If yes it means we started a new command (instance)
-			phase = 0;
+			/*phase = 0;*/
+			start_execute();
 		}
 	}
 
 	spi_xfer = 0;
 }
 
+void mirror_leds() {
+	for(int i = 0; i < LEDS / 2; i++) {
+		led[LEDS - i - 1].r = led[i].r;
+		led[LEDS - i - 1].g = led[i].g;
+		led[LEDS - i - 1].b = led[i].b;
+	}
+}
+
+void start_execute() {
+	uint8_t *c = active_buffer();
+
+	clear_leds();
+	phase = 0;
+
+	switch(color_mode(c)) {
+		case COLOR_MOD:
+			for(int i = 0; i < LEDS / 2; i++) {
+				if(i % mod(c) == 0) {
+					led[i].r = r0(c); led[i].g = g0(c); led[i].b = b0(c);
+				}
+				else {
+					led[i].r = r1(c); led[i].g = g1(c); led[i].b = b1(c);
+				}
+			}
+			mirror_leds();
+			break;
+
+		case COLOR_GRADIENT: {
+			int n = (LEDS/2) / (mod(c) + 1);
+			for(int i = 0; i < n; i++) {
+				for(int offs = 0; offs < LEDS/2; offs += 2 * n) {
+					led[i].r = r0(c) + i * (r1(c) - r0(c)) / (n - 1);
+					led[i].g = g0(c) + i * (g1(c) - g0(c)) / (n - 1);
+					led[i].b = b0(c) + i * (b1(c) - b0(c)) / (n - 1);
+
+					if(offs + 2*n <= LEDS/2) {
+						led[offs + 2*n - i - 1] = led[i];
+					}
+				}
+			}
+			mirror_leds();
+			break;
+		}
+
+		default:
+			break;
+	}
+	ws2812_setleds(led, LEDS);
+}
+
 void execute() {
 	uint8_t *c = active_buffer();
-	switch(mode(c)) {
-		case FULL:
-			for(int i = 0; i < LEDS; i++) {
-				led[i].r = r0(c);
-				led[i].g = g0(c);
-				led[i].b = b0(c);
-			}
-			break;
+	if(dt(c) == 0) {
+		return;
+	}
 
-		case MOD:
-			clear_leds();
-			for(int i = 0; i < LEDS / 2; i += mod(c)) {
-				led[i].r = r0(c);
-				led[i].g = g0(c);
-				led[i].b = b0(c);
-
-				led[LEDS - i - 1].r = r0(c);
-				led[LEDS - i - 1].g = g0(c);
-				led[LEDS - i - 1].b = b0(c);
-			}
-			break;
-
-		case GRADIENT:
-			for(int i = 0; i < LEDS/2; i++) {
-				led[i].r = r0(c) + i * (r1(c) - r0(c)) / (LEDS/2 - 1);
-				led[i].g = g0(c) + i * (g1(c) - g0(c)) / (LEDS/2 - 1);
-				led[i].b = b0(c) + i * (b1(c) - b0(c)) / (LEDS/2 - 1);
-				led[LEDS - i - 1] = led[i];
-			}
-			break;
-
-		case GRADIENT2:
-			for(int i = 0; i < LEDS/4; i++) {
-				led[i].r = r0(c) + i * (r1(c) - r0(c)) / (LEDS/4 - 1);
-				led[i].g = g0(c) + i * (g1(c) - g0(c)) / (LEDS/4 - 1);
-				led[i].b = b0(c) + i * (b1(c) - b0(c)) / (LEDS/4 - 1);
-				led[LEDS/2 - i - 1] = led[i];
-				led[LEDS/2 + i] = led[i];
-				led[LEDS - i - 1] = led[i];
-			}
-			break;
-
-		case ROTATE:
+	switch(anim_mode(c)) {
+		case ANIM_ROTATE:
 			if(milliseconds >= next_action_ms) {
 				next_action_ms = milliseconds + dt(c) * 10;
 				
-				if(mod(c)) {
+				if(dir(c)) {
 					struct cRGB first = led[0];
 					memmove(led,              led + 1,      (LEDS/2 - 1) * sizeof(struct cRGB));
 					memmove(led + LEDS/2 + 1, led + LEDS/2, (LEDS/2 - 1) * sizeof(struct cRGB));
@@ -231,9 +240,10 @@ void execute() {
 					led[LEDS - 1] = last;
 				}
 			}
+			ws2812_setleds(led, LEDS);
 			break;
 
-		case FADEOUT:
+		case ANIM_FADEOUT:
 			if(milliseconds >= next_action_ms) {
 				next_action_ms = milliseconds + dt(c) * 10;
 				for(int i = 0; i < LEDS; i++) {
@@ -242,20 +252,17 @@ void execute() {
 					if(led[i].b) { led[i].b = (led[i].b - 1) * 0.9; }
 				}
 			}
+			ws2812_setleds(led, LEDS);
 			break;
 
-		case FLASH:
-			if(milliseconds >= next_action_ms && phase/2 <= mod(c)) {
+		case ANIM_FLASH:
+			if(milliseconds >= next_action_ms && phase/2 <= count(c)) {
 				next_action_ms = milliseconds + dt(c) * 1;
 				if(phase % 2 == 0) {
-					for(int i = 0; i < LEDS; i++) {
-						led[i].r = r0(c);
-						led[i].g = g0(c);
-						led[i].b = b0(c);
-					}
+					ws2812_setleds(led, LEDS);
 				}
 				else {
-					clear_leds();
+					ws2812_setleds(led_off, LEDS);
 				}
 				phase++;
 			}
@@ -264,7 +271,6 @@ void execute() {
 			break;
 	} // switch
 
-	ws2812_setleds(led, LEDS);
 } // execute()
 
 ISR(TIMER1_COMPA_vect)

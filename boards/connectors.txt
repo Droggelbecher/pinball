@@ -6,16 +6,29 @@ On board connector (top down view)
   | ( 6) ( 7) ( 8) ( 9) (10) |
   +----------     -----------+
 
-     SPI       Switches
+SPI
 
-( 1) -         3 
-( 2) SCK       2
-( 3) MISO      1
-( 4) MOSI      0
-( 5) GND       7
-( 6) SS        6
-( 7) SS DISP   Sel (GND)
-( 8) SS        - / Sel
-( 9) ??        5 
-(10)           4 
+( 1) -
+( 2) SCK
+( 3) MISO
+( 4) MOSI
+( 5) GND
+( 6) SS25 Solenoids
+( 7) SS24 Display
+( 8) SS23 Switches
+( 9) SS22 Lamps
+(10) SS18 LED Stripe
+
+Switches
+
+( 1) 3
+( 2) 2
+( 3) 1
+( 4) 0
+( 5) 7
+( 6) 6
+( 7) Sel (GND)
+( 8) - / Sel
+( 9) 5
+(10) 4
 
