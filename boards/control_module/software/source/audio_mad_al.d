@@ -335,9 +335,9 @@ class Sound: Task {
 		}
 
 		bool fill_buffer(ALuint buffer_id) {
-			short[BUFFER_SIZE / 2] buffer;
+			short[BUFFER_SIZE / 2] buffer = void;
 			short[] to_fill = buffer;
-			int channels;
+			int channels = void;
 
 			tracef("fill_buffer %d", buffer_id);
 
@@ -360,15 +360,16 @@ class Sound: Task {
 				size_t n = min(synth.pcm.length, to_fill.length / channels);
 				if(channels == 1) {
 					for(int i=0; i<n; i++) {
-						to_fill[i] = dither_left(synth.pcm.samples[0][i])
-							.clip .mad_decode!short;
+						to_fill[i] = synth.pcm.samples[0][i]
+							.clip
+							.mad_decode!short;
 					}
 				}
 				else { // Stereo / Dual-channel
 					for(int i=0; i<n; i++) {
-						to_fill[i * 2] = dither_left(synth.pcm.samples[0][i])
+						to_fill[i * 2] = synth.pcm.samples[0][i]
 							.clip .mad_decode!short;
-						to_fill[i * 2 + 1] = dither_right(synth.pcm.samples[1][i])
+						to_fill[i * 2 + 1] = synth.pcm.samples[1][i]
 							.clip .mad_decode!short;
 					}
 				}
@@ -474,7 +475,8 @@ private:
 	}
 
 	T mad_decode(T)(mad_fixed_t sample) {
-		ulong scalebits = MAD_F_FRACBITS + 1 - T.sizeof * 8;
+		//static const ulong scalebits = MAD_F_FRACBITS + 1 - T.sizeof * 8;
+		enum scalebits = 28 + 1 - T.sizeof * 8;
 		return cast(T)(sample >> scalebits);
 	}
 
