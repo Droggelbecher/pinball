@@ -1,22 +1,22 @@
 
 import std.stdio: writeln;
+import task : Task;
+import core.thread: Thread;
+import std.datetime;
+import std.conv;
+import core.stdc.stdio;
+import std.string;
+import std.experimental.logger;
+
+import interval: Interval;
+
 
 class Scheduler {
-	import task : Task;
-	import core.thread: Thread;
-	import std.datetime;
-	import std.conv;
-	import core.stdc.stdio;
-	import std.string;
-	import logger: Logger, logf;
-	import interval: Interval;
-
 	enum target_fps = 30.0;
 	enum target_duration = usecs(cast(long)(1_000_000 / target_fps));
 
-	this(Logger logger = null) {
+	this() {
 		this.stopping = false;
-		this.logger = logger;
 	}
 
 	void add(Task task) {
@@ -38,8 +38,8 @@ class Scheduler {
 			frame_start(frame_duration);
 			if(stopping) { break; }
 
-			if(logger && log_interval(frame_duration)) {
-				logger.logf("fps: %f\n", 1_000_000.0 / frame_duration.total!"usecs");
+			if(log_interval(frame_duration)) {
+				infof("fps: %f\n", 1_000_000.0 / frame_duration.total!"usecs");
 			}
 
 			Duration computation_time = sw.peek().to!Duration;
@@ -84,7 +84,6 @@ class Scheduler {
 
 	private:
 		Task[] tasks;
-		Logger logger;
 
 		bool stopping;
 

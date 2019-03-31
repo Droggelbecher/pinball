@@ -19,7 +19,6 @@ class GameLogic(Interface_) : Task {
 	//import audio = mock_audio;
 	import audio_mad_al;
 	import utils: assumeNoGC;
-	import logger: logf;
 
 	alias blit = canvas.blit;
 	alias blit = scrolling.blit;
@@ -68,18 +67,18 @@ class GameLogic(Interface_) : Task {
 
 		this.dtb_scored = Rising(() => iface.switches[Sw.DTB0_0]);
 
-		this.audio_interface = AudioInterface(this.iface.logger);
+		this.audio_interface = new AudioInterface();
 
 		this.playlist = new Playlist(
-			this.iface.logger, "./resources/sounds/utini.mp3",
+			//"./resources/sounds/utini.mp3",
 			"./resources/music/original/01_IV_main_theme.mp3"
-			"./resources/music/original/02_IV_leias_theme.mp3"
+			//"./resources/music/original/02_IV_leias_theme.mp3"
 		);
 		this.playlist.set_volume(0.7);
 		schedule(this.playlist);
 
-		this.score_sound = new MultiSound(this.iface.logger, "./resources/sounds/blip1_s.mp3", 10);
-		schedule(this.score_sound);
+		//this.score_sound = new MultiSound(this.iface.logger, "./resources/sounds/blip1_s.mp3", 10);
+		//schedule(this.score_sound);
 	}
 
 	@nogc

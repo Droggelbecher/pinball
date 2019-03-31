@@ -2,15 +2,25 @@
 import std.datetime.systime;
 import std.datetime;
 import std.format;
+import std.file;
+import std.conv;
 
-import logger;
+import std.experimental.logger.core;
 
 class BufferLogger(int N) : Logger {
 
-	void log(string line) {
-		auto time = Clock.currTime;
+	this(LogLevel lv) {
+		super(lv);
+	}
+
+	override void writeLogMsg(ref LogEntry log_entry) {
+		auto time = log_entry.timestamp;
 		append(
-			format!"%02d:%02d:%02d  %s"(time.hour, time.minute, time.second, line)
+			format!"%02d:%02d:%02d %s %s"(
+				time.hour, time.minute, time.second,
+				log_entry.logLevel.to!string,
+				log_entry.msg
+			)
 		);
 	}
 
@@ -45,10 +55,12 @@ private:
 		if(begin == end) {
 			begin = (begin + 1) % N;
 		}
+
 	}
 
 	int begin = 0;
 	int end = 0;
 	string[N] lines;
+	string filename;
 }
 

@@ -13,9 +13,9 @@ import solenoids;
 import switches;
 import led_actuator;
 
-import sensor_actuator_override;
 import buffer_logger;
 
+import sensor_actuator_override;
 alias SolenoidsIndex Sol;
 
 struct SolenoidState {
@@ -83,12 +83,12 @@ public:
 
 	// Switch states
 
-	this(Solenoids_ solenoids_, Switches_ switches_, LEDStripe_ led_stripe_) {
+	this(Logger logger_, Solenoids_ solenoids_, Switches_ switches_, LEDStripe_ led_stripe_) {
 		solenoids = new Solenoids(solenoids_, No.mask_get, No.mute_set);
 		switches = new Switches(switches_, Yes.mask_get, No.mute_set);
 		led_stripe = led_stripe_;
 		canvas = new Canvas(16, 40);
-		logger = new Logger();
+		logger = logger_;
 
 		nc.initscr();
 		nc.cbreak();
@@ -114,12 +114,14 @@ public:
 	}
 
 	~this() {
+		/*
 		nc.nocbreak();
 		nc.noraw();
 		nc.curs_set(1);
 		nc.echo();
 		nc.nl();
 		endwin();
+		*/
 	}
 
 	override void frame_start(Duration dt) {
@@ -218,6 +220,12 @@ public:
 				solenoids.mute_set = enable_solenoid_control;
 			}
 			else if(ch == quit_key) {
+				nc.nocbreak();
+				nc.noraw();
+				nc.curs_set(1);
+				nc.echo();
+				nc.nl();
+				endwin();
 				this.quit();
 			}
 

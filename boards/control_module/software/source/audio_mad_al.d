@@ -13,38 +13,34 @@ import derelict.alure.alure;
 
 import audio_synth: Sine;
 import utils: assumeNoGC;
-import logger: Logger, logf;
+//import logger: Logger, logf;
 import task: Task;
+import std.experimental.logger;
 
 private {
 	alias mad_fixed_t = int;
 }
 
 
-struct AudioInterface {
+class AudioInterface {
 	public:
 
 		static this() {
 			DerelictAL.load();
 		}
 
-		this(Logger logger) {
-			this.logger = logger;
-
+		this() {
 			ALCdevice* device = alcOpenDevice(null);
 			if(device is null) {
 				check_al("open audio device");
 			}
 
+			infof("Using audio device: %s", to!string(alcGetString(device, ALC_DEVICE_SPECIFIER)));
+
 			context = alcCreateContext(device, null);
 			alcMakeContextCurrent(context);
 			check_al("setting context");
 
-			ALCsizei n;
-			ALCchar** devnames = alureGetDeviceNames(false, &n);
-			for(int i=0; i<n; i++) {
-				logger.logf("Found audio device: %s", to!string(devnames[i]));
-			}
 		}
 
 		@nogc
@@ -53,15 +49,14 @@ struct AudioInterface {
 
 	private:
 		ALCcontext* context = null;
-		Logger logger = null;
 
 }
 
 class Playlist : Sound {
 	public:
-		this(Logger logger, string[] filenames...) {
+		this(string[] filenames...) {
 			this.filenames = filenames.dup;
-			super(logger, this.filenames[0]);
+			super(this.filenames[0]);
 		}
 
 		void clear() {
@@ -74,7 +69,7 @@ class Playlist : Sound {
 		}
 
 		override void play() {
-			logger.logf("Playlist playing: %s", filenames[index]);
+			infof("Playlist playing: %s", filenames[index]);
 			super.play();
 		}
 
@@ -99,10 +94,10 @@ class Playlist : Sound {
 
 
 class MultiSound: Task {
-	this(Logger logger, string filename, int n = 4) {
-		sounds ~= new Sound(logger, filename);
+	this(string filename, int n = 4) {
+		sounds ~= new Sound(filename);
 		for(int i = 1; i < n; i++) {
-			sounds ~= new Sound(logger, sounds[0].map, sounds[0].size);
+			sounds ~= new Sound(sounds[0].map, sounds[0].size);
 		}
 	}
 
@@ -153,8 +148,7 @@ class Sound: Task {
 	enum BUFFERS = 4;
 	enum BUFFER_SIZE = 16 * 1024;
 
-	this(Logger logger, string filename) {
-		this.logger = logger;
+	this(string filename) {
 		this.filename = filename;
 
 		stream = new mad_stream; mad_stream_init(stream);
@@ -170,8 +164,7 @@ class Sound: Task {
 		load_file(filename);
 	}
 
-	this(Logger logger, ubyte* map, ulong size) {
-		this.logger = logger;
+	this(ubyte* map, ulong size) {
 		this.map = map;
 		this.size = size;
 
@@ -185,7 +178,6 @@ class Sound: Task {
 
 		mad_stream_buffer(stream, map, cast(uint)size);
 
-		// TODO: We should not regenerate those on eg. rewind
 		alGenBuffers(buffers.length, buffers.ptr);
 		prefill_buffers();
 	}
@@ -217,11 +209,18 @@ class Sound: Task {
 		rewind();
 	}
 
+	void log_frame(Duration dt) {
+		tracef("frame_start dt=%d", dt.total!"msecs");
+	}
+
 	@nogc
 	override void frame_start(Duration dt) {
+		assumeNoGC(&log_frame)(dt);
+
 		int state;
 		alGetSourcei(source, AL_SOURCE_STATE, &state);
 		if(state == AL_STOPPED) {
+			//logger.logf("%s has stopped playing", this.filename);
 			assumeNoGC(&rewind)();
 		}
 
@@ -249,6 +248,8 @@ class Sound: Task {
 			// Now load new one
 			this.size = getSize(filename);
 			auto file = File(filename, "r");
+
+			tracef("%s (%d bytes)", filename, this.size);
 			/*
 				Note on resource management:
 				- There will be a limited number of sound files being used throughout the whole game
@@ -314,7 +315,7 @@ class Sound: Task {
 			alGetSourcei(source, AL_SOURCE_STATE, &state);
 			if(state != AL_PLAYING) {
 				// If we're not playing we will not consume buffers,
-				// thusno paint in queueing them.
+				// thus no point in queueing them.
 				// That doesn't harm (in terms of functionality) but is not nice either,
 				// lets rather not.
 				return;
@@ -338,15 +339,19 @@ class Sound: Task {
 			short[] to_fill = buffer;
 			int channels;
 
+			tracef("fill_buffer %d", buffer_id);
+
 			do {
+				tracef("mad_frame_decode to_fill=%d", to_fill.length);
 				int r = mad_frame_decode(frame, stream);
 				if(r != 0) {
 					if(stream.error == mad_error.MAD_ERROR_BUFLEN) {
-						break;
+						//break;
+						continue;
 					}
 					else {
 						check_mad(stream.error, "frame_decode");
-						logger.logf("MAD: %s", mad_errorstring[stream.error]);
+						warningf("MAD: %s", mad_errorstring[stream.error]);
 					}
 				}
 				
@@ -372,6 +377,7 @@ class Sound: Task {
 				
 			} while(to_fill.length >= synth.pcm.length * channels);
 
+			tracef("buflen=%d to_fill=%d", buffer.length, to_fill.length);
 			int sz  = cast(int)(buffer.length - to_fill.length) * 2;
 			auto samplerate = frame.header.samplerate;
 			alBufferData(buffer_id,
@@ -383,8 +389,6 @@ class Sound: Task {
 
 			return sz != 0;
 		} // fill_buffer
-
-		Logger logger;
 
 		mad_stream stream;
 		mad_synth synth;
@@ -478,7 +482,7 @@ private:
 		enum {
 			MIN = -0x10000000L,
 			MAX =  0x10000000L - 1
-		};
+		}
 		if(sample > MAX) {
 			sample = MAX;
 		}
