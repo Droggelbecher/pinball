@@ -17,7 +17,8 @@ class GameLogic(Interface_) : Task {
 	import signal;
 	//import audio;
 	//import audio = mock_audio;
-	import audio_mad_al;
+	//import audio_mad_al;
+	import audio_sdl;
 	import utils: assumeNoGC;
 
 	alias blit = canvas.blit;

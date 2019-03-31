@@ -52,8 +52,9 @@ class AudioInterface {
 
 }
 
-class Playlist : Sound {
+class Playlist : Sound { // TODO: a has-a should be cleaner here than is-a
 	public:
+
 		this(string[] filenames...) {
 			this.filenames = filenames.dup;
 			super(this.filenames[0]);
@@ -87,7 +88,8 @@ class Playlist : Sound {
 		}
 
 	private:
-		Sound sound = null;
+
+
 		uint index = 0;
 		string[] filenames;
 }
@@ -332,10 +334,10 @@ class Sound: Task {
 			short[] to_fill = buffer;
 			int channels = void;
 
-			tracef("fill_buffer %d", buffer_id);
+			//tracef("fill_buffer %d", buffer_id);
 
 			do {
-				tracef(" mad_frame_decode to_fill=%d", to_fill.length);
+				//tracef(" mad_frame_decode to_fill=%d", to_fill.length);
 				int r = mad_frame_decode(frame, stream);
 				if(r != 0) {
 					if(stream.error == mad_error.MAD_ERROR_BUFLEN) {
@@ -354,16 +356,18 @@ class Sound: Task {
 				if(channels == 1) {
 					for(int i=0; i<n; i++) {
 						to_fill[i] = synth.pcm.samples[0][i]
-							.clip
+							//.clip
 							.mad_decode!short;
 					}
 				}
 				else { // Stereo / Dual-channel
 					for(int i=0; i<n; i++) {
 						to_fill[i * 2] = synth.pcm.samples[0][i]
-							.clip .mad_decode!short;
+							//.clip
+							.mad_decode!short;
 						to_fill[i * 2 + 1] = synth.pcm.samples[1][i]
-							.clip .mad_decode!short;
+							//.clip
+							.mad_decode!short;
 					}
 				}
 				
@@ -371,7 +375,7 @@ class Sound: Task {
 				
 			} while(to_fill.length >= synth.pcm.length * channels);
 
-			tracef(" buflen=%d to_fill=%d", buffer.length, to_fill.length);
+			//tracef(" buflen=%d to_fill=%d", buffer.length, to_fill.length);
 			int sz  = cast(int)(buffer.length - to_fill.length) * 2;
 			auto samplerate = frame.header.samplerate;
 			alBufferData(buffer_id,

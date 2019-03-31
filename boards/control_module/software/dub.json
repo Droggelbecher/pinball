@@ -1,20 +1,21 @@
 {
 	"name": "control_module",
 	"authors": [
-		"henning"
+		"Droggelbecher"
 	],
 	"description": "Pinball control module software",
-	"copyright": "Copyright © 2018, henning",
+	"copyright": "Copyright © 2018, Droggelbecher",
 	"license": "proprietary",
 	"dependencies": {
 		"derelict-alure": ">=1.0.2",
+		"derelict-sdl2": "~>1.2.0",
 		"ncurses": "~master"
 	},
-	"dflags-gdc": [ "-pg" ],
+	"dflags-gdc": [ ],
 	"preBuildCommands": [
-		"gcc -pg -c -o bcm2708.o source/bcm2708.c",
-		"gcc -pg -c -o checksum.o ../../../common_software/src/checksum.c -I../../../common_software/include",
-		"gcc -pg -c -o utils.o ../../../common_software/src/utils.c -I../../../common_software/include",
+		"gcc -c -o bcm2708.o source/bcm2708.c",
+		"gcc -c -o checksum.o ../../../common_software/src/checksum.c -I../../../common_software/include",
+		"gcc -c -o utils.o ../../../common_software/src/utils.c -I../../../common_software/include",
 	],
 	"sourceFiles": [
 		"bcm2708.o",
