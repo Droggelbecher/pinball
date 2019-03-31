@@ -71,14 +71,14 @@ class GameLogic(Interface_) : Task {
 
 		this.playlist = new Playlist(
 			//"./resources/sounds/utini.mp3",
-			"./resources/music/original/01_IV_main_theme.mp3"
-			//"./resources/music/original/02_IV_leias_theme.mp3"
+			"./resources/music/original/01_IV_main_theme.mp3",
+			"./resources/music/original/02_IV_leias_theme.mp3"
 		);
 		this.playlist.set_volume(0.7);
 		schedule(this.playlist);
 
-		//this.score_sound = new MultiSound(this.iface.logger, "./resources/sounds/blip1_s.mp3", 10);
-		//schedule(this.score_sound);
+		this.score_sound = new MultiSound("./resources/sounds/blip1_s.mp3", 10);
+		schedule(this.score_sound);
 	}
 
 	@nogc

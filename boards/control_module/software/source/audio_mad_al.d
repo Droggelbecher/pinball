@@ -209,18 +209,11 @@ class Sound: Task {
 		rewind();
 	}
 
-	void log_frame(Duration dt) {
-		tracef("frame_start dt=%d", dt.total!"msecs");
-	}
-
 	@nogc
 	override void frame_start(Duration dt) {
-		assumeNoGC(&log_frame)(dt);
-
 		int state;
 		alGetSourcei(source, AL_SOURCE_STATE, &state);
 		if(state == AL_STOPPED) {
-			//logger.logf("%s has stopped playing", this.filename);
 			assumeNoGC(&rewind)();
 		}
 
@@ -342,12 +335,12 @@ class Sound: Task {
 			tracef("fill_buffer %d", buffer_id);
 
 			do {
-				tracef("mad_frame_decode to_fill=%d", to_fill.length);
+				tracef(" mad_frame_decode to_fill=%d", to_fill.length);
 				int r = mad_frame_decode(frame, stream);
 				if(r != 0) {
 					if(stream.error == mad_error.MAD_ERROR_BUFLEN) {
-						//break;
-						continue;
+						break;
+						//continue;
 					}
 					else {
 						check_mad(stream.error, "frame_decode");
@@ -378,7 +371,7 @@ class Sound: Task {
 				
 			} while(to_fill.length >= synth.pcm.length * channels);
 
-			tracef("buflen=%d to_fill=%d", buffer.length, to_fill.length);
+			tracef(" buflen=%d to_fill=%d", buffer.length, to_fill.length);
 			int sz  = cast(int)(buffer.length - to_fill.length) * 2;
 			auto samplerate = frame.header.samplerate;
 			alBufferData(buffer_id,

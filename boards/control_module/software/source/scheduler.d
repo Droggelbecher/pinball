@@ -3,6 +3,7 @@ import std.stdio: writeln;
 import task : Task;
 import core.thread: Thread;
 import std.datetime;
+import std.datetime.stopwatch;
 import std.conv;
 import core.stdc.stdio;
 import std.string;
@@ -30,7 +31,7 @@ class Scheduler {
 	void run() {
 		static log_interval = Interval!Duration(5000.msecs);
 
-		StopWatch sw;
+		std.datetime.stopwatch.StopWatch sw;
 		Duration frame_duration = target_duration;
 
 		sw.start();
