@@ -145,8 +145,8 @@ class MultiSound: Task {
 
 class Sound: Task {
 
-	enum BUFFERS = 4;
-	enum BUFFER_SIZE = 16 * 1024;
+	enum BUFFERS = 8;
+	enum BUFFER_SIZE = 2 * 2 * 1152;
 
 	this(string filename) {
 		this.filename = filename;
@@ -391,9 +391,9 @@ class Sound: Task {
 			return sz != 0;
 		} // fill_buffer
 
-		mad_stream stream;
-		mad_synth synth;
-		mad_frame frame;
+		mad_stream* stream;
+		mad_synth* synth;
+		mad_frame* frame;
 		ALuint source;
 		ALuint[BUFFERS] buffers;
 

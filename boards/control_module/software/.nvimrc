@@ -1,4 +1,4 @@
 
-set makeprg=dub\ build
+set makeprg=dub\ build\ --compiler=gdc
 
 

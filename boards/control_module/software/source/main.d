@@ -13,7 +13,6 @@ import switches;
 import solenoids;
 import led_actuator;
 import task;
-import audio;
 //import audio = mock_audio;
 import std.experimental.logger;
 
