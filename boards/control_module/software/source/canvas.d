@@ -1,4 +1,5 @@
 
+import std.experimental.logger;
 import coordinate;
 
 enum StorageType {
@@ -45,8 +46,6 @@ do {
 
 @nogc
 void clear(ToCanvas)(ToCanvas to_) if(__traits(hasMember, ToCanvas, "buffer")) {
-	//import core.stdc.string: memset;
-	//memset(to_.buffer.ptr, 0, to_.buffer.length);
 	to_.buffer[] = 0;
 }
 

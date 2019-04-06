@@ -15,6 +15,7 @@ import coordinate;
 import five_eight:   font_5x8_size, font_5x8_data;
 import font:         Font, StringCanvas;
 import scrolling;
+import scrolling:    blit;
 import signal;
 
 alias Font!(font_5x8_size) FontNormal;
@@ -74,10 +75,11 @@ class GameLogic(Interface_) : Task {
 		//schedule(this.score_display);
 	}
 
-	@nogc
 	override void frame_start(Duration dt) {
+		tracef("GameLogic.frame_start {");
+
 		iface.switches.frame_start(dt);
-		reflexes.frame_start(dt);
+		//reflexes.frame_start(dt);
 		iface.solenoids.frame_start(dt);
 
 		//ball_return.frame_start(dt);
@@ -86,11 +88,13 @@ class GameLogic(Interface_) : Task {
 		//assumeNoGC(&check_scoring)(dt);
 		// TODO
 
-		//iface.canvas.clear; // TODO: enabling this lane makes screen always empty. de-confuse order in which frame_start things are happening!
+		iface.canvas.clear; // TODO: enabling this lane makes screen always empty. de-confuse order in which frame_start things are happening!
 		//text_display.frame_start_(dt);
 		//score_display.frame_start_(dt);
 
 		audio_interface.frame_start(dt);
+
+		tracef("GameLogic.frame_start }");
 	}
 
 	void intro() {
@@ -159,8 +163,9 @@ class Reflexes(alias iface) : Task {
 		//infof("%d %d", enable_ball_return, cast(bool)ball_return);
 	//}
 
-	@nogc override
+	override
 	void frame_start(Duration dt) {
+		tracef("Reflexes.frame_start {");
 		//assumeNoGC(&frame_start_)(dt);
 		ball_return.frame_start(dt);
 		with(iface) {
@@ -181,6 +186,7 @@ class Reflexes(alias iface) : Task {
 
 			solenoids[Sol.BALL_RETURN] = enable_ball_return && ball_return;
 		}
+		tracef("Reflexes.frame_start }");
 	}
 }
 
@@ -203,13 +209,15 @@ class TextDisplay(alias iface): Task {
 		);
 	}
 
-	@nogc override
+	override
 	void frame_start(Duration dt) {
+		tracef("TextDisplay.frame_start {");
 			//blit(text, Coord(), text.size, iface.canvas, Coord());
-		//marquee.next_frame(dt);
+		marquee.next_frame(dt);
 		//if(enable) {
 			blit(text, Coord(), text.size, marquee, Coord());
 		//}
+		tracef("TextDisplay.frame_start }");
 	}
 
 	void blank(Duration t = 100.msecs) {
@@ -245,12 +253,14 @@ class ScoreDisplay(alias iface): Task {
 		this.font_normal = new FontNormal(font_5x8_data);
 	}
 
-	@nogc override
+	override
 	void frame_start(Duration dt) {
+		tracef("ScoreDisplay.frame_start {");
 		if(show_score > 0.msecs) {
 			iface.canvas.clear;
 			blit_center!(canvas.blit)(score_text, iface.canvas);
 		}
+		tracef("ScoreDisplay.frame_start }");
 	}
 
 	void check_scoring(Duration dt) {
@@ -280,124 +290,4 @@ class ScoreDisplay(alias iface): Task {
 		this.score_text = font_normal(to!string(score_string.ptr));
 	}
 }
-
-/+
-// Some more or less direct switch -> solenoid mappings
-mixin template Reflexes_() {
-
-	void this_() {
-	}
-
-	@nogc
-	void frame_start_(Duration dt) {
-		with(iface) {
-			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
-			solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
-			solenoids[Sol.SLINGSHOT0]    = switches[Sw.SLINGSHOT0];
-			solenoids[Sol.SLINGSHOT1]    = switches[Sw.SLINGSHOT1];
-			solenoids[Sol.BUMPER0]       = switches[Sw.BUMPER0];
-			solenoids[Sol.BUMPER1]       = switches[Sw.BUMPER1];
-			solenoids[Sol.BUMPER2]       = switches[Sw.BUMPER2];
-
-			solenoids[Sol.DTB0] = 
-				   switches[Sw.DTB0_0]
-				&& switches[Sw.DTB0_1]
-				&& switches[Sw.DTB0_2]
-				&& switches[Sw.DTB0_3]
-				&& switches[Sw.DTB0_4];
-
-			solenoids[Sol.BALL_RETURN] = enable_ball_return && ball_return;
-		}
-	}
-}
-
-
-// Show a piece of potentially scrolling text on the display
-mixin template TextDisplay__() {
-	StringCanvas!FontNormal text;
-	bool show;
-
-	Scrolling!(Interface.Canvas) marquee;
-	
-	void this_() {
-		marquee = new Scrolling!(Interface.Canvas)(
-			iface.canvas,
-			Coord(80, iface.canvas.size.column),
-		);
-	}
-
-	@nogc
-	void frame_start_(Duration dt) {
-		marquee.next_frame(dt);
-		if(show) {
-			blit(text, Coord(), text.size, marquee, Coord());
-		}
-	}
-
-	void blank(Duration t = 100.msecs) {
-		show = false;
-		yield(t);
-	}
-
-	void blink(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
-		auto t = 0.msecs;
-		while(t < duration) {
-			show = !show;
-			yield(interval);
-			t += interval;
-		}
-	}
-}
-
-mixin template ScoreDisplay__() {
-	size_t score;
-	size_t display_score;
-	Duration show_score;
-	StringCanvas!FontNormal score_text;
-
-	void this_() {
-		this.show_score = 0.msecs;
-		this.score = 0;
-	}
-
-	@nogc
-	void frame_start_(Duration dt) {
-		if(show_score > 0.msecs) {
-			iface.canvas.clear;
-			blit_center!(canvas.blit)(score_text, iface.canvas);
-		}
-	}
-
-	void check_scoring(Duration dt) {
-		this.show_score -= dt;
-		if(dtb_scored) {
-			score_sound.play;
-			add_score(100);
-		}
-
-		if(display_score < score) {
-			display_score += 10;
-			render_score();
-		}
-	}
-
-	void add_score(int score) {
-		this.score += score;
-		iface.logger.logf("Score: %d", this.score);
-		this.show_score = 2000.msecs;
-		render_score();
-	}
-
-	void render_score() {
-		char[10] score_string;
-		snprintf(score_string.ptr, score_string.length, "%d", this.display_score);
-		this.score_text = font_normal(to!string(score_string.ptr));
-	}
-}
-+/
-
-
-
-
-
 

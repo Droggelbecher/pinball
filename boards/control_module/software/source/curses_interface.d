@@ -2,6 +2,7 @@
 import std.stdio;
 import std.datetime;
 import std.string;
+import std.experimental.logger;
 
 import deimos.ncurses;
 package alias deimos.ncurses nc;
@@ -16,6 +17,7 @@ import led_actuator;
 import buffer_logger;
 
 import sensor_actuator_override;
+
 alias SolenoidsIndex Sol;
 
 struct SolenoidState {
@@ -129,6 +131,7 @@ public:
 		//if(++mod < 10) { return; }
 		//mod = 0;
 
+		tracef("Interface.frame_Start {");
 		paint_canvas(Coord(2, 2));
 		paint_switch_states(Coord(22, 2));
 		paint_solenoid_states(Coord(25, 2));

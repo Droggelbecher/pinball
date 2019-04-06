@@ -2,25 +2,20 @@
 import std.stdio: writeln;
 import std.datetime;
 import core.thread;
+import std.experimental.logger;
 
 import game_logic : GameLogic;
 import scheduler : Scheduler;
 
 import curses_interface;
+
 import mock_spi: Spi;
 //import bcm2708_spi: Spi;
+
 import switches;
 import solenoids;
 import led_actuator;
 import task;
-//import audio = mock_audio;
-import std.experimental.logger;
-
-void test_audio() {
-	//audio.init();
-	//auto main_theme = new SoundEffect("./resources/music/original/01_IV_main_theme.mp3");
-	//main_theme.play();
-}
 
 void test_spi() {
 	import bcm2708_spi: Spi;
@@ -91,13 +86,12 @@ void run_game() {
 	auto spi = new Spi();
 	auto iface = new Iface(iface_logger, new Sol(spi), new Sw(spi), new LED(spi));
 
-
-	//audio.init();
-
 	auto scheduler = new Scheduler();
 	auto logic = new GameLogic!Iface(iface);
 
 	scheduler.add(logic);
+	
+	iface.priority = 100;
 	scheduler.add(iface);
 	scheduler.run();
 }

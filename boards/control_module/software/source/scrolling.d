@@ -1,4 +1,6 @@
 
+import std.experimental.logger;
+
 import coordinate;
 import canvas;
 
@@ -43,6 +45,7 @@ void blit(FromCanvas, Decorated)(
 		FromCanvas from, Coord from_start, Coord size,
 		Scrolling!(Decorated) to_, Coord to_start
 ) {
+	tracef("scroll blit");
 	scroll(from, from_start, size, to_, to_start);
 }
 

@@ -1,14 +1,16 @@
 
-import std.stdio: writeln;
-import task : Task;
-import core.thread: Thread;
-import std.datetime;
-import std.datetime.stopwatch;
-import std.conv;
 import core.stdc.stdio;
-import std.string;
+import core.thread: Thread;
+import std.conv;
+import std.datetime.stopwatch;
+import std.datetime;
 import std.experimental.logger;
+import std.stdio: writeln;
+import std.string;
+import std.range;
+import std.algorithm.sorting;
 
+import task : Task;
 import interval: Interval;
 
 
@@ -21,7 +23,13 @@ class Scheduler {
 	}
 
 	void add(Task task) {
-		tasks ~= task;
+		Task[] new_tasks = [ task ];
+		add(new_tasks);
+	}
+
+	void add(Task[] new_tasks) {
+		completeSort!(pred, SwapStrategy.stable, Task[], Task[])(tasks, new_tasks);
+		tasks = assumeSorted!pred(tasks.release() ~ new_tasks);
 	}
 
 	void stop() {
@@ -80,11 +88,14 @@ class Scheduler {
 		foreach(task; tasks) {
 			to_schedule ~= task.pop_schedule_requests();
 		}
-		tasks ~= to_schedule;
+		//tasks ~= to_schedule;
+		add(to_schedule);
 	}
 
 	private:
-		Task[] tasks;
+		enum string pred = "a.priority < b.priority";
+
+		SortedRange!(Task[], pred) tasks;
 
 		bool stopping;
 

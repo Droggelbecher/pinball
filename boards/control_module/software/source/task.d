@@ -7,6 +7,8 @@ import condition;
 
 class Task {
 
+	int priority = 0;
+
 	this() {
 		fiber = new Fiber(&run);
 	}
