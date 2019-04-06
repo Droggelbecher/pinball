@@ -27,9 +27,22 @@ class Scheduler {
 		add(new_tasks);
 	}
 
+	void add(Task task, int priority) {
+		task.priority = priority;
+		Task[] new_tasks = [ task ];
+		add(new_tasks);
+	}
+
 	void add(Task[] new_tasks) {
 		completeSort!(pred, SwapStrategy.stable, Task[], Task[])(tasks, new_tasks);
 		tasks = assumeSorted!pred(tasks.release() ~ new_tasks);
+	}
+
+	void add(Task[] new_tasks, int priority) {
+		foreach(task; new_tasks) {
+			task.priority = priority;
+		}
+		add(new_tasks);
 	}
 
 	void stop() {

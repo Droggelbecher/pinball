@@ -83,16 +83,20 @@ void run_game() {
 	auto iface_logger = new Iface.Logger(LogLevel.info);
 	init_logging(iface_logger);
 
-	auto spi = new Spi();
-	auto iface = new Iface(iface_logger, new Sol(spi), new Sw(spi), new LED(spi));
-
 	auto scheduler = new Scheduler();
+
+	auto spi = new Spi();
+	auto solenoids = new Sol(spi);
+	auto switches = new Sw(spi);
+	auto leds = new LED(spi);
+
+	auto iface = new Iface(iface_logger, solenoids, switches, leds);
+
 	auto logic = new GameLogic!Iface(iface);
 
-	scheduler.add(logic);
-	
-	iface.priority = 100;
-	scheduler.add(iface);
+	scheduler.add([solenoids, switches, leds], -100);
+	scheduler.add(logic, 0);
+	scheduler.add(iface, 100);
 	scheduler.run();
 }
 

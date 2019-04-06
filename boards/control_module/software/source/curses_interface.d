@@ -127,11 +127,6 @@ public:
 	}
 
 	override void frame_start(Duration dt) {
-		//static int mod = 0;
-		//if(++mod < 10) { return; }
-		//mod = 0;
-
-		tracef("Interface.frame_Start {");
 		paint_canvas(Coord(2, 2));
 		paint_switch_states(Coord(22, 2));
 		paint_solenoid_states(Coord(25, 2));

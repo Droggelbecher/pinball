@@ -1,7 +1,9 @@
 
 import std.datetime;
 
-class LEDActuator(Spi, int SlaveIdx) {
+import task;
+
+class LEDActuator(Spi, int SlaveIdx): Task {
 
 	enum ColorMode {
 		MOD = 0, // light up every k'th LED in this color
@@ -61,7 +63,7 @@ class LEDActuator(Spi, int SlaveIdx) {
 		command[10] = count;
 	}
 
-	@nogc
+	@nogc override
 	void frame_start(Duration dt) {
 		spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, command);
 	}

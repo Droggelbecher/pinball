@@ -1,6 +1,7 @@
 
+import task;
 
-class BitSensor(Spi, Index_, int SlaveIdx) {
+class BitSensor(Spi, Index_, int SlaveIdx): Task {
 	import std.bitmanip;
 	import std.datetime;
 
@@ -29,7 +30,7 @@ class BitSensor(Spi, Index_, int SlaveIdx) {
 		return state[idx] = v;
 	}
 
-	@nogc
+	@nogc override
 	void frame_start(Duration dt) {
 		const(void[]) answer = spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, state_data[0 .. DATA_WORDS]);
 		if(answer.length == DATA_WORDS) {

@@ -39,9 +39,9 @@ class SensorActuatorOverride(SensorActuator) {
 		this.mask = BitArray(state_data, Index.MAX);
 	}
 
-	@nogc
-	void frame_start(Duration dt) {
-	}
+	//@nogc
+	//void frame_start(Duration dt) {
+	//}
 
 	@nogc
 	bool opIndex(Index idx) {

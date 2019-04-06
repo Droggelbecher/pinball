@@ -31,13 +31,12 @@ class GameLogic(Interface_) : Task {
 		FontNormal font_normal;
 
 		// Ball return
-		Rising dtb_scored;
 
 		AudioInterface audio_interface;
 		Playlist playlist;
 		MultiSound score_sound;
 
-		Reflexes!iface reflexes;
+		PlayingField!iface playing_field;
 		TextDisplay!iface text_display;
 		ScoreDisplay!iface score_display;
 	}
@@ -45,12 +44,6 @@ class GameLogic(Interface_) : Task {
 	this(Interface iface) {
 		this.iface = iface;
 		this.font_normal = new FontNormal(font_5x8_data);
-
-		//reflexes.this_();
-		//text_display.this_();
-		//score_display.this_();
-
-		this.dtb_scored = Rising(() => iface.switches[Sw.DTB0_0]);
 
 		this.audio_interface = new AudioInterface();
 
@@ -65,36 +58,30 @@ class GameLogic(Interface_) : Task {
 		this.score_sound = new MultiSound("./resources/sounds/blip1_s.mp3", 10);
 		schedule(this.score_sound);
 
-		this.reflexes = new Reflexes!(this.iface)();
-		schedule(this.reflexes);
+		this.playing_field = new PlayingField!(this.iface)();
+		schedule(this.playing_field);
 
 		this.text_display = new TextDisplay!(this.iface)();
 		schedule(this.text_display);
 
 		this.score_display = new ScoreDisplay!(this.iface)();
-		//schedule(this.score_display);
+		schedule(this.score_display);
 	}
 
 	override void frame_start(Duration dt) {
-		tracef("GameLogic.frame_start {");
+		iface.canvas.clear;
 
-		iface.switches.frame_start(dt);
-		//reflexes.frame_start(dt);
-		iface.solenoids.frame_start(dt);
+		audio_interface.frame_start(dt); // TODO: Move this to a task or fixate on SDL which doesn't need this
+		check_scoring();
+	}
 
-		//ball_return.frame_start(dt);
-		dtb_scored.frame_start(dt);
-
-		//assumeNoGC(&check_scoring)(dt);
-		// TODO
-
-		iface.canvas.clear; // TODO: enabling this lane makes screen always empty. de-confuse order in which frame_start things are happening!
-		//text_display.frame_start_(dt);
-		//score_display.frame_start_(dt);
-
-		audio_interface.frame_start(dt);
-
-		tracef("GameLogic.frame_start }");
+	void check_scoring() {
+		with(playing_field) {
+			if(dtb_scored) {
+				score_sound.play;
+				score_display.add_score(100);
+			}
+		}
 	}
 
 	void intro() {
@@ -125,21 +112,21 @@ class GameLogic(Interface_) : Task {
 	override void run() {
 		intro();
 		iface.logger.log("Game started.");
-		reflexes.enable_ball_return = true;
+		playing_field.enable_ball_return = true;
 	}
 }
 
-class Reflexes(alias iface) : Task {
+class PlayingField(alias iface) : Task {
 
 	import signal;
 
 	alias Interface = typeof(iface);
 	alias Sol = Interface.Solenoids.Index;
 	alias Sw = Interface.Switches.Index;
-	//Interface iface = iface_;
 
 	public {
 		bool enable_ball_return;
+		Rising dtb_scored;
 	}
 
 	private {
@@ -152,21 +139,12 @@ class Reflexes(alias iface) : Task {
 		// Debounce ball out switch in the sense
 		// that we want it to be "true" for at least 1000 msecs
 		// before reacting so ball has really come to halt
-		this.ball_return = KeepValueDelay(
-			() => iface.switches[Sw.BALL_OUT], true, 1000.msecs
-		);
-
+		this.ball_return = KeepValueDelay(() => iface.switches[Sw.BALL_OUT], true, 1000.msecs);
+		this.dtb_scored = Rising(() => iface.switches[Sw.DTB0_0]);
 	}
-
-	//void frame_start_(Duration dt) {
-		//iface.logger.
-		//infof("%d %d", enable_ball_return, cast(bool)ball_return);
-	//}
 
 	override
 	void frame_start(Duration dt) {
-		tracef("Reflexes.frame_start {");
-		//assumeNoGC(&frame_start_)(dt);
 		ball_return.frame_start(dt);
 		with(iface) {
 			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
@@ -186,7 +164,7 @@ class Reflexes(alias iface) : Task {
 
 			solenoids[Sol.BALL_RETURN] = enable_ball_return && ball_return;
 		}
-		tracef("Reflexes.frame_start }");
+		dtb_scored.frame_start(dt);
 	}
 }
 
@@ -211,13 +189,10 @@ class TextDisplay(alias iface): Task {
 
 	override
 	void frame_start(Duration dt) {
-		tracef("TextDisplay.frame_start {");
-			//blit(text, Coord(), text.size, iface.canvas, Coord());
 		marquee.next_frame(dt);
-		//if(enable) {
+		if(enable) {
 			blit(text, Coord(), text.size, marquee, Coord());
-		//}
-		tracef("TextDisplay.frame_start }");
+		}
 	}
 
 	void blank(Duration t = 100.msecs) {
@@ -255,25 +230,14 @@ class ScoreDisplay(alias iface): Task {
 
 	override
 	void frame_start(Duration dt) {
-		tracef("ScoreDisplay.frame_start {");
-		if(show_score > 0.msecs) {
-			iface.canvas.clear;
-			blit_center!(canvas.blit)(score_text, iface.canvas);
-		}
-		tracef("ScoreDisplay.frame_start }");
-	}
-
-	void check_scoring(Duration dt) {
 		this.show_score -= dt;
-		// TODO
-		//if(dtb_scored) {
-			//score_sound.play;
-			//add_score(100);
-		//}
-
 		if(display_score < score) {
 			display_score += 10;
 			render_score();
+		}
+		if(show_score > 0.msecs) {
+			iface.canvas.clear;
+			blit_center!(canvas.blit)(score_text, iface.canvas);
 		}
 	}
 

@@ -11,11 +11,11 @@ class Spi {
 
 	@nogc
 	const(void[]) transfer_and_check(SlaveIndex slave, void[] input) {
-		buffer[0 .. input.length] = cast(size_t[])input;
+		buffer[0 .. input.length] = cast(ubyte[])input;
 		return buffer[0 .. input.length];
 	}
 
 	private:
-		size_t[40 * 8 * 16 / size_t.sizeof] buffer;
+		ubyte[40 * 8 * 16] buffer;
 }
 
