@@ -35,33 +35,38 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 		);
 	}
 
-	void set_mod(ubyte mod) {
-		command[1] = mod;
+	void set_mod(ubyte mod) { command[1] = mod; }
+
+	void set_color0(ubyte[3] color) { command[2 .. 5] = color; }
+	void set_color0(ubyte r, ubyte g, ubyte b) { set_color0([r, g, b]); }
+
+	void set_color1(ubyte[3] color) { command[5 .. 8] = color; }
+	void set_color1(ubyte r, ubyte g, ubyte b) { set_color1([r, g, b]); }
+
+	void set_color(ubyte[3] color) {
+		set_color0(color);
+		set_color1(color);
 	}
 
-	void set_color0(ubyte r, ubyte g, ubyte b) {
-		command[2] = r;
-		command[3] = g;
-		command[4] = b;
+	void set_dir(ubyte dir) { command[8] = dir; }
+	void set_dt(ubyte dt) { command[9] = dt; }
+	void set_count(ubyte count) { command[10] = count; }
+
+	// convenience methods
+	void full(ubyte[3] color) {
+		set_command(ColorMode.GRADIENT, AnimationMode.FADEOUT);
+		set_color(color);
+		set_dt(0);
 	}
 
-	void set_color1(ubyte r, ubyte g, ubyte b) {
-		command[5] = r;
-		command[6] = g;
-		command[7] = b;
+	void mod(ubyte[3] color, ubyte k, ubyte dt) {
+		set_command(ColorMode.MOD, AnimationMode.ROTATE);
+		set_mod(k);
+		set_color(color);
+		set_dt(dt);
+		set_dir(0);
 	}
 
-	void set_dir(ubyte dir) {
-		command[8] = dir;
-	}
-
-	void set_dt(ubyte dt) {
-		command[9] = dt;
-	}
-
-	void set_count(ubyte count) {
-		command[10] = count;
-	}
 
 	@nogc override
 	void frame_start(Duration dt) {

@@ -77,11 +77,7 @@ class Playlist: Task {
 		}
 	}
 
-	@nogc override void frame_start(Duration dt) {
-		assumeNoGC(&frame_start_)(dt);
-	}
-
-	void frame_start_(Duration dt) {
+	override void frame_start(Duration dt) {
 		if(playing && !Mix_PlayingMusic()) {
 			next();
 			music = Mix_LoadMUS(filenames[index].toStringz);

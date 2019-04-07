@@ -26,6 +26,11 @@ class GameLogic(Interface_) : Task {
 	alias Sw = Interface.Switches.Index;
 	alias C = Coordinate!();
 
+	enum {
+		YELLOW = [0xf0, 0xa0, 0x00],
+		BLACK = [0x00, 0x00, 0x00],
+	};
+
 	private {
 		Interface iface;
 		FontNormal font_normal;
@@ -34,7 +39,8 @@ class GameLogic(Interface_) : Task {
 
 		AudioInterface audio_interface;
 		Playlist playlist;
-		MultiSound score_sound;
+		Sound score_sound;
+		Sound score_sound_2;
 
 		PlayingField!iface playing_field;
 		TextDisplay!iface text_display;
@@ -55,8 +61,10 @@ class GameLogic(Interface_) : Task {
 		this.playlist.set_volume(0.7);
 		schedule(this.playlist);
 
-		this.score_sound = new MultiSound("./resources/sounds/blip1_s.mp3", 10);
-		schedule(this.score_sound);
+		this.score_sound = new Sound("./resources/sounds/blip1_s.mp3");
+		//schedule(this.score_sound);
+		this.score_sound_2 = new Sound("./resources/sounds/utini.mp3");
+		//schedule(this.score_sound_2);
 
 		this.playing_field = new PlayingField!(this.iface)();
 		schedule(this.playing_field);
@@ -77,12 +85,20 @@ class GameLogic(Interface_) : Task {
 
 	void check_scoring() {
 		with(playing_field) {
-			if(dtb_scored) {
-				score_sound.play;
-				score_display.add_score(100);
+			foreach(dtb; dtb_scored) {
+				//infof("dtb %d", cast(bool)dtb);
+				if(dtb) {
+					score_sound.play;
+					score_display.add_score(100);
+				}
+			} // foreach
+			if(dtb_all_scored) {
+				score_sound_2.play;
+				score_display.add_score(1000);
+				//iface.solenoids[Sol.DTB0] = true; // reset drop target bank
 			}
-		}
-	}
+		} // playing_field
+	} // check_scoring()
 
 	void intro() {
 		text_display.blank(4200.msecs);
@@ -91,13 +107,16 @@ class GameLogic(Interface_) : Task {
 
 		text_display.text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
 		text_display.enable = true;
+		iface.led_stripe.full(YELLOW);
 
 		yield(2000.msecs);
 		text_display.marquee.speed = Coordinate!double(-5, 0);
+		iface.led_stripe.mod(YELLOW, 4, 100);
 
 		yield(9700.msecs);
 		text_display.marquee.stop;
 		yield(4000.msecs);
+		iface.led_stripe.full(BLACK);
 		text_display.blank(4000.msecs);
 
 		text_display.marquee.reset;
@@ -125,8 +144,9 @@ class PlayingField(alias iface) : Task {
 	alias Sw = Interface.Switches.Index;
 
 	public {
-		bool enable_ball_return;
-		Rising dtb_scored;
+		bool     enable_ball_return;
+		Rising[] dtb_scored;
+		Rising   dtb_all_scored;
 	}
 
 	private {
@@ -140,12 +160,30 @@ class PlayingField(alias iface) : Task {
 		// that we want it to be "true" for at least 1000 msecs
 		// before reacting so ball has really come to halt
 		this.ball_return = KeepValueDelay(() => iface.switches[Sw.BALL_OUT], true, 1000.msecs);
-		this.dtb_scored = Rising(() => iface.switches[Sw.DTB0_0]);
+		this.dtb_scored = [
+			Rising(() => iface.switches[Sw.DTB0_0]),
+			Rising(() => iface.switches[Sw.DTB0_1]),
+			Rising(() => iface.switches[Sw.DTB0_2]),
+			Rising(() => iface.switches[Sw.DTB0_3]),
+			Rising(() => iface.switches[Sw.DTB0_4]),
+		];
+		this.dtb_all_scored = Rising(() => (
+			   iface.switches[Sw.DTB0_0]
+			&& iface.switches[Sw.DTB0_1]
+			&& iface.switches[Sw.DTB0_2]
+			&& iface.switches[Sw.DTB0_3]
+			&& iface.switches[Sw.DTB0_4]
+		));
 	}
 
 	override
 	void frame_start(Duration dt) {
 		ball_return.frame_start(dt);
+		foreach(ref dtb; dtb_scored) {
+			dtb.frame_start(dt);
+		}
+		this.dtb_all_scored.frame_start(dt);
+
 		with(iface) {
 			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
 			solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
@@ -164,8 +202,7 @@ class PlayingField(alias iface) : Task {
 
 			solenoids[Sol.BALL_RETURN] = enable_ball_return && ball_return;
 		}
-		dtb_scored.frame_start(dt);
-	}
+	} // frame_start()
 }
 
 class TextDisplay(alias iface): Task {
@@ -232,7 +269,12 @@ class ScoreDisplay(alias iface): Task {
 	void frame_start(Duration dt) {
 		this.show_score -= dt;
 		if(display_score < score) {
-			display_score += 10;
+			display_score += cast(int)(
+				100.0 * (score - display_score + 10) / (this.show_score.total!"msecs" + 10.0)
+			);
+			if(display_score > score) {
+				display_score = score;
+			}
 			render_score();
 		}
 		if(show_score > 0.msecs) {
