@@ -45,8 +45,20 @@ void load(Command c) {
 	swap_buffers();
 }
 
+Command selftest = {
+	COLOR_MOD | ANIM_ROTATE,
+	2, // modulus
+	0xa0, 0x70, 0x00, // color 0
+	0x00, 0x00, 0x00, // color 1
+	0x01, // direction
+	30, // dt
+	3, // count (unused)
+};
+
+
 int main(void) {
 	setup();
+	setup_spi();
 
 	clear_leds();
 	ws2812_setleds(led, LEDS);
@@ -93,31 +105,23 @@ int main(void) {
 	Command gradient = {
 		COLOR_MOD | ANIM_ROTATE,
 		4, // modulus
-		0x00, 0x00, 0xf0, // color 0
-		0xf0, 0x10, 0x00, // color 1
+		0x00, 0xa0, 0xf0, // color 0
+		0xf0, 0x10, 0x50, // color 1
 		0x01, // direction
 		30, // dt
 		3, // count (unused)
 	};
 
-	// Command flash = {
-	// 	FLASH,
-	// 	0x60, 0x60, 0xff, // color 0
-	// 	40, // DT
-	// 	3, // MOD
-	// 	0x00, 0x00
-	// };
-
-	load(gradient);
+	load(selftest);
 	start_execute();
 
 	/*load(rotate);*/
 	/*execute();*/
 
-	/*phase = 0;*/
+	phase = 0;
 	while(1) {
 		execute();
-		/*xfer_spi();*/
+		xfer_spi();
 
 	}
 
@@ -135,22 +139,33 @@ void clear_leds() {
  * SPI transmission.
  */
 ISR(PCINT0_vect) {
-	spi_xfer = !(PINB & (1 << PB2)); // SS pin high -> end of transmission
+	spi_xfer = !(PINB & (1 << PB0)); // SS pin high -> end of transmission
 }
 
 void xfer_spi(void) {
 	if(!spi_xfer) { return; }
 
+	/*load(selftest);*/
+	/*start_execute();*/
+	/*return;*/
+
 	uint8_t *cmd = command_buffer[!command_idx];
 
-	while(!(SPSR & (1 << SPIF))) { }
+	/*while(!(SPSR & (1 << SPIF))) { }*/
+	/*char _ = SPDR;*/
+	/*(void)_;*/
 
-	for(int i = 0; i < 8; i++) {
+	for(int i = 0; i < sizeof(Command); i++) {
+		while(!(SPSR & (1 << SPIF))) { }
 		cmd[i] = SPDR;
 	}
-	uint8_t chk = SPDR;
-	uint8_t mychecksum = checksum(cmd, 8);
-	if(chk == mychecksum) {
+	/*while(!(SPSR & (1 << SPIF))) { }*/
+	/*uint8_t chk = SPDR;*/
+
+	/*uint8_t mychecksum = checksum(cmd, sizeof(Command));*/
+		/*command_idx = !command_idx;*/
+	/*start_execute();*/
+	/*if(chk == mychecksum) {*/
 		// New command received correctly, switch to it
 		command_idx = !command_idx;
 
@@ -159,7 +174,7 @@ void xfer_spi(void) {
 			/*phase = 0;*/
 			start_execute();
 		}
-	}
+	/*}*/
 
 	spi_xfer = 0;
 }
@@ -180,7 +195,7 @@ void start_execute() {
 
 	switch(color_mode(c)) {
 		case COLOR_MOD:
-			for(int i = 0; i < LEDS / 2; i++) {
+			for(int i = 0; i <= LEDS / 2; i++) {
 				if(i % mod(c) == 0) {
 					led[i].r = r0(c); led[i].g = g0(c); led[i].b = b0(c);
 				}
@@ -193,7 +208,7 @@ void start_execute() {
 
 		case COLOR_GRADIENT: {
 			int n = (LEDS/2) / (mod(c) + 1);
-			for(int i = 0; i < n; i++) {
+			for(int i = 0; i <= n; i++) {
 				for(int offs = 0; offs < LEDS/2; offs += 2 * n) {
 					led[i].r = r0(c) + i * (r1(c) - r0(c)) / (n - 1);
 					led[i].g = g0(c) + i * (g1(c) - g0(c)) / (n - 1);
@@ -276,6 +291,19 @@ void execute() {
 ISR(TIMER1_COMPA_vect)
 {
 	++milliseconds;
+}
+
+void setup_spi(void) {
+	cli();
+	DDRB = (1<<PB3); // PB3=MISO=output
+	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 1
+	// http://maxembedded.com/2013/11/the-spi-of-the-avr/
+	SPCR = (1<<SPE); //|(1<<SPIE); //|(1<<CPHA);
+	// https://sites.google.com/site/qeewiki/books/avr-guide/external-interrupts-on-the-atmega328
+	PCICR |= (1 << PCIE0); // set PCIE0 to enable PCMSK0 scan
+	// Generate interrupt on SS pin change
+	PCMSK0 |= (1 << PCINT0); // atmega2560: pcint0 == SS == PB0
+	sei();
 }
 
 void setup(void) {

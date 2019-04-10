@@ -2,6 +2,9 @@
 import core.stdc.string;
 import core.stdc.errno;
 import std.conv;
+import std.array;
+import std.algorithm;
+import std.experimental.logger;
 
 extern(C) {
 	@nogc int open_gpio();
@@ -44,7 +47,7 @@ class Spi {
 		spi_fd = open_spi();
 	}
 
-	@nogc
+	//@nogc
 	const(void[]) transfer_and_check(SlaveIndex slave, void[] input)
 	in {
 		assert(input.length < BUFFER_SIZE - 1);
@@ -55,6 +58,8 @@ class Spi {
 		//ubyte[input.length] output;
 		ubyte[] output = buffer[0 .. input.length];
 		output[] = 0xAA;
+
+		tracef("SPI[%s] <- %s", slave, map!(to!string)(cast(ubyte[])input).join(" "));
 
 		spi_transfer(spi_fd, cast(int)input.length, cast(ubyte*)input.ptr, output.ptr);
 		gpio_disable_all(SlaveIndex.AllMask);

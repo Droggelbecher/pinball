@@ -56,7 +56,8 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 	void full(ubyte[3] color) {
 		set_command(ColorMode.GRADIENT, AnimationMode.FADEOUT);
 		set_color(color);
-		set_dt(0);
+		set_dt(10);
+		set_mod(1);
 	}
 
 	void mod(ubyte[3] color, ubyte k, ubyte dt) {
@@ -68,7 +69,8 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 	}
 
 
-	@nogc override
+	//@nogc
+	override
 	void frame_start(Duration dt) {
 		spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, command);
 	}

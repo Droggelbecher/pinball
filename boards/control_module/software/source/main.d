@@ -9,8 +9,8 @@ import scheduler : Scheduler;
 
 import curses_interface;
 
-import mock_spi: Spi;
-//import bcm2708_spi: Spi;
+//import mock_spi: Spi;
+import bcm2708_spi: Spi;
 
 import switches;
 import solenoids;
@@ -20,6 +20,20 @@ import task;
 void test_spi() {
 	import bcm2708_spi: Spi;
 	auto s = new Spi();
+}
+
+void test_led() {
+	alias LED = LEDStripe!Spi;
+
+	auto s = new Spi();
+	auto led = new LED(s);
+
+	//led.full([0xff, 0x00, 0x00]);
+	//led.frame_start(10.msecs);
+	//led.full([0x00, 0xff, 0x00]);
+	//led.frame_start(10.msecs);
+	led.full([0x00, 0x00, 0xff]);
+	led.frame_start(10.msecs);
 }
 
 void test_mad() {
@@ -103,7 +117,8 @@ void run_game() {
 void main() {
 	//test_audio();
 	//test_spi();
-	run_game();
+	//run_game();
 	//test_mad();
+	test_led();
 }
 

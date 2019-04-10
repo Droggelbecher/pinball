@@ -30,7 +30,8 @@ class BitSensor(Spi, Index_, int SlaveIdx): Task {
 		return state[idx] = v;
 	}
 
-	@nogc override
+	//@nogc
+	override
 	void frame_start(Duration dt) {
 		const(void[]) answer = spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, state_data[0 .. DATA_WORDS]);
 		if(answer.length == DATA_WORDS) {

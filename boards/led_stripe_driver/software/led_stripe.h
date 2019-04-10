@@ -77,6 +77,7 @@ inline int  count(const Command c) { return c[10]; }
 
 int main(void);
 void setup(void);
+void setup_spi(void);
 void start_execute(void);
 void execute(void);
 void clear_leds(void);

@@ -31,7 +31,8 @@ class BitActuator(Spi, Index_, int SlaveIdx): Task {
 		return state[cast(uint)idx] = v;
 	}
 
-	@nogc override
+	//@nogc
+	override
 	void frame_start(Duration dt) {
 		spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, state_data[0 .. DATA_WORDS]);
 	}
