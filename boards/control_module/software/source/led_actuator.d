@@ -3,7 +3,13 @@ import std.datetime;
 
 import task;
 
+extern(C) {
+	@nogc ubyte checksum(ubyte*, ubyte);
+}
+
 class LEDActuator(Spi, int SlaveIdx): Task {
+	
+	enum DATA_BYTES = 11;
 
 	enum ColorMode {
 		MOD = 0, // light up every k'th LED in this color
@@ -28,56 +34,79 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 		this.spi = spi;
 	}
 
-	void set_command(ColorMode color, AnimationMode animation) {
+	LEDActuator mode(ColorMode color, AnimationMode animation) {
 		command[0] = cast(ubyte)(
 			  (((command[0] & ID_MASK) + ID_INCREMENT) & ID_MASK)
 			| color | animation
 		);
+		return this;
 	}
 
-	void set_mod(ubyte mod) { command[1] = mod; }
-
-	void set_color0(ubyte[3] color) { command[2 .. 5] = color; }
-	void set_color0(ubyte r, ubyte g, ubyte b) { set_color0([r, g, b]); }
-
-	void set_color1(ubyte[3] color) { command[5 .. 8] = color; }
-	void set_color1(ubyte r, ubyte g, ubyte b) { set_color1([r, g, b]); }
-
-	void set_color(ubyte[3] color) {
-		set_color0(color);
-		set_color1(color);
+	LEDActuator mod(ubyte mod) {
+		command[1] = mod;
+		return this;
 	}
 
-	void set_dir(ubyte dir) { command[8] = dir; }
-	void set_dt(ubyte dt) { command[9] = dt; }
-	void set_count(ubyte count) { command[10] = count; }
+	LEDActuator color0(ubyte[3] color) {
+		command[2 .. 5] = color;
+		return this;
+	}
+	//void color0(ubyte r, ubyte g, ubyte b) { color0([r, g, b]); }
+
+	LEDActuator color1(ubyte[3] color) {
+		command[5 .. 8] = color;
+		return this;
+	}
+	//void color1(ubyte r, ubyte g, ubyte b) { color1([r, g, b]); }
+
+	LEDActuator color(ubyte[3] color) {
+		color0(color);
+		color1(color);
+		return this;
+	}
+
+	LEDActuator dir(ubyte dir) {
+		command[8] = dir;
+		return this;
+	}
+
+	LEDActuator dt(ubyte dt) {
+		command[9] = dt;
+		return this;
+	}
+
+	LEDActuator count(ubyte count) {
+		command[10] = count;
+		return this;
+	}
 
 	// convenience methods
-	void full(ubyte[3] color) {
-		set_command(ColorMode.GRADIENT, AnimationMode.FADEOUT);
-		set_color(color);
-		set_dt(10);
-		set_mod(1);
+	LEDActuator full(ubyte[3] color) {
+		mode(ColorMode.GRADIENT, AnimationMode.FADEOUT);
+		this.color(color);
+		dt(0);
+		mod(1);
+		return this;
 	}
 
-	void mod(ubyte[3] color, ubyte k, ubyte dt) {
-		set_command(ColorMode.MOD, AnimationMode.ROTATE);
-		set_mod(k);
-		set_color(color);
-		set_dt(dt);
-		set_dir(0);
+	LEDActuator rotmod(ubyte[3] color, ubyte k, ubyte dt) {
+		mode(ColorMode.MOD, AnimationMode.ROTATE);
+		mod(k);
+		color0(color);
+		color1([0,0,0]);
+		this.dt(dt);
+		dir(0);
+		return this;
 	}
 
-
-	//@nogc
-	override
-	void frame_start(Duration dt) {
+	override void frame_start(Duration dt) {
+		command[DATA_BYTES] = checksum(command.ptr, cast(ubyte)DATA_BYTES);
 		spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, command);
 	}
 
 	private {
 		Spi spi;
-		ubyte[11] command;
+		ubyte[DATA_BYTES + 1] command;
 	}
 }
 

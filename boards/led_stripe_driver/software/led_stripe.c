@@ -7,8 +7,6 @@
 #include <string.h>
 #include <checksum.h>
 
-/*#include <checksum.h>*/
-
 #include "led_stripe.h"
 
 #define LEDS 20
@@ -63,60 +61,18 @@ int main(void) {
 	clear_leds();
 	ws2812_setleds(led, LEDS);
 
-	/*
-	Command yellow = {
-		.mode = FULL,
-		.arg_R0 = 0xff,
-		.arg_G0 = 0xa0,
-		.arg_B0 = 0x00
-	};
+	/*Command gradient = {*/
+		/*COLOR_MOD | ANIM_ROTATE,*/
+		/*4, // modulus*/
+		/*0x00, 0xa0, 0xf0, // color 0*/
+		/*0xf0, 0x10, 0x50, // color 1*/
+		/*0x01, // direction*/
+		/*30, // dt*/
+		/*3, // count (unused)*/
+	/*};*/
 
-	Command mod = {
-		.mode = MOD,
-		.arg_R0 = 0xff,
-		.arg_G0 = 0xa0,
-		.arg_B0 = 0x00,
-		.arg_MOD = 4 //LEDS / 2 // LEDS/2=one LED, every other value: every Xth LED
-	};
-
-	Command gradient2 = {
-		.mode = GRADIENT2,
-		.arg_R0 = 0x30,
-		.arg_G0 = 0x00,
-		.arg_B0 = 0x00,
-
-		.arg_R1 = 0x00,
-		.arg_G1 = 0x20,
-		.arg_B1 = 0x00
-	};
-
-	Command rotate = {
-		.mode = ROTATE,
-		.arg_DT = 10,
-		.arg_MOD = 1 // direction
-	};
-
-	Command fadeout = {
-		.mode = FADEOUT,
-		.arg_DT = 10
-	};
-	*/
-
-	Command gradient = {
-		COLOR_MOD | ANIM_ROTATE,
-		4, // modulus
-		0x00, 0xa0, 0xf0, // color 0
-		0xf0, 0x10, 0x50, // color 1
-		0x01, // direction
-		30, // dt
-		3, // count (unused)
-	};
-
-	load(selftest);
-	start_execute();
-
-	/*load(rotate);*/
-	/*execute();*/
+	/*load(selftest);*/
+	/*start_execute();*/
 
 	phase = 0;
 	while(1) {
@@ -145,10 +101,6 @@ ISR(PCINT0_vect) {
 void xfer_spi(void) {
 	if(!spi_xfer) { return; }
 
-	/*load(selftest);*/
-	/*start_execute();*/
-	/*return;*/
-
 	uint8_t *cmd = command_buffer[!command_idx];
 
 	/*while(!(SPSR & (1 << SPIF))) { }*/
@@ -159,22 +111,18 @@ void xfer_spi(void) {
 		while(!(SPSR & (1 << SPIF))) { }
 		cmd[i] = SPDR;
 	}
-	/*while(!(SPSR & (1 << SPIF))) { }*/
-	/*uint8_t chk = SPDR;*/
+	while(!(SPSR & (1 << SPIF))) { }
+	uint8_t chk = SPDR;
 
-	/*uint8_t mychecksum = checksum(cmd, sizeof(Command));*/
-		/*command_idx = !command_idx;*/
-	/*start_execute();*/
-	/*if(chk == mychecksum) {*/
+	uint8_t mychecksum = checksum(cmd, sizeof(Command));
+	if(chk == mychecksum) {
 		// New command received correctly, switch to it
 		command_idx = !command_idx;
-
 		if(id(cmd) != id(command_buffer[!command_idx])) {
 			// Did command ID change? If yes it means we started a new command (instance)
-			/*phase = 0;*/
 			start_execute();
 		}
-	/*}*/
+	}
 
 	spi_xfer = 0;
 }

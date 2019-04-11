@@ -117,8 +117,9 @@ void run_game() {
 void main() {
 	//test_audio();
 	//test_spi();
-	//run_game();
 	//test_mad();
-	test_led();
+	//test_led();
+	
+	run_game();
 }
 

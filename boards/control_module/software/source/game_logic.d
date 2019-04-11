@@ -107,11 +107,11 @@ class GameLogic(Interface_) : Task {
 
 		text_display.text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
 		text_display.enable = true;
-		iface.led_stripe.full(YELLOW);
+		iface.led_stripe.full(YELLOW).dt(10);
 
 		yield(2000.msecs);
 		text_display.marquee.speed = Coordinate!double(-5, 0);
-		iface.led_stripe.mod(YELLOW, 4, 100);
+		iface.led_stripe.rotmod(YELLOW, 4, 100);
 
 		yield(9700.msecs);
 		text_display.marquee.stop;
