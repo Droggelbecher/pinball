@@ -33,7 +33,7 @@ class GameLogic(Interface_) : Task {
 
 	private {
 		Interface iface;
-		FontNormal font_normal;
+		//FontNormal font_normal;
 
 		// Ball return
 
@@ -43,18 +43,17 @@ class GameLogic(Interface_) : Task {
 		Sound score_sound_2;
 
 		PlayingField!iface playing_field;
-		TextDisplay!iface text_display;
+		TextDisplay!iface text;
 		ScoreDisplay!iface score_display;
 	}
 
 	this(Interface iface) {
 		this.iface = iface;
-		this.font_normal = new FontNormal(font_5x8_data);
+		//this.font_normal = new FontNormal(font_5x8_data);
 
 		this.audio_interface = new AudioInterface();
 
 		this.playlist = new Playlist(
-			//"./resources/sounds/utini.mp3",
 			"./resources/music/original/01_IV_main_theme.mp3",
 			"./resources/music/original/02_IV_leias_theme.mp3"
 		);
@@ -62,31 +61,26 @@ class GameLogic(Interface_) : Task {
 		schedule(this.playlist);
 
 		this.score_sound = new Sound("./resources/sounds/blip1_s.mp3");
-		//schedule(this.score_sound);
 		this.score_sound_2 = new Sound("./resources/sounds/utini.mp3");
-		//schedule(this.score_sound_2);
 
 		this.playing_field = new PlayingField!(this.iface)();
 		schedule(this.playing_field);
 
-		this.text_display = new TextDisplay!(this.iface)();
-		schedule(this.text_display);
+		this.text = new TextDisplay!(this.iface)();
+		schedule(this.text, priority + 10);
 
 		this.score_display = new ScoreDisplay!(this.iface)();
-		schedule(this.score_display);
+		schedule(this.score_display, priority + 20);
 	}
 
 	override void frame_start(Duration dt) {
 		iface.canvas.clear;
-
-		audio_interface.frame_start(dt); // TODO: Move this to a task or fixate on SDL which doesn't need this
 		check_scoring();
 	}
 
 	void check_scoring() {
 		with(playing_field) {
 			foreach(dtb; dtb_scored) {
-				//infof("dtb %d", cast(bool)dtb);
 				if(dtb) {
 					score_sound.play;
 					score_display.add_score(100);
@@ -95,37 +89,47 @@ class GameLogic(Interface_) : Task {
 			if(dtb_all_scored) {
 				score_sound_2.play;
 				score_display.add_score(1000);
-				//iface.solenoids[Sol.DTB0] = true; // reset drop target bank
 			}
 		} // playing_field
 	} // check_scoring()
 
 	void intro() {
-		text_display.blank(4200.msecs);
-		playlist.play();
-		text_display.blank(800.msecs);
+		text.off;
+		yield(4200.msecs);
+		playlist.play;
+		yield(800.msecs);
 
-		text_display.text = font_normal("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
-		text_display.enable = true;
+		text.s("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
+		text.on;
 		iface.led_stripe.full(YELLOW).dt(10);
 
 		yield(2000.msecs);
-		text_display.marquee.speed = Coordinate!double(-5, 0);
+		text.scroll.speed = Coordinate!double(-5, 0);
 		iface.led_stripe.rotmod(YELLOW, 4, 100);
 
 		yield(9700.msecs);
-		text_display.marquee.stop;
+		text.scroll.stop;
 		yield(4000.msecs);
 		iface.led_stripe.full(BLACK);
-		text_display.blank(4000.msecs);
+		text.off;
+		yield(4000.msecs);
 
-		text_display.marquee.reset;
-		text_display.text = font_normal(" READY  \nPLAYER 1", 2);
+		text.scroll.reset;
+		text.s(" READY  \nPLAYER 1", 2);
 		yield(1000.msecs);
-		text_display.blink(500.msecs);
-		text_display.enable = true;
+		blink_text(500.msecs);
+		text.enable = true;
 		yield(1000.msecs);
-		text_display.blank();
+		text.off;
+	}
+
+	void blink_text(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
+		auto t = 0.msecs;
+		while(t < duration) {
+			text.enable = !text.enable;
+			yield(interval);
+			t += interval;
+		}
 	}
 
 	override void run() {
@@ -214,37 +218,52 @@ class TextDisplay(alias iface): Task {
 
 	StringCanvas!FontNormal text;
 	bool enable;
+	FontNormal font_normal;
 
-	Scrolling!(Interface.Canvas) marquee;
+	Scrolling!(Interface.Canvas) scroll;
 
 	this() {
-		marquee = new Scrolling!(Interface.Canvas)(
+		scroll = new Scrolling!(Interface.Canvas)(
 			iface.canvas,
 			Coord(80, iface.canvas.size.column)
 		);
+		font_normal = new FontNormal(font_5x8_data);
+		enable = false;
+	}
+
+	void s(string t, ubyte color = 1) {
+		this.text = font_normal(t, color);
+	}
+
+	void off() {
+		this.enable = false;
+	}
+
+	void on() {
+		this.enable = true;
 	}
 
 	override
 	void frame_start(Duration dt) {
-		marquee.next_frame(dt);
+		scroll.next_frame(dt);
 		if(enable) {
-			blit(text, Coord(), text.size, marquee, Coord());
+			blit(text, Coord(), text.size, scroll, Coord());
 		}
 	}
 
-	void blank(Duration t = 100.msecs) {
-		enable = false;
-		yield(t);
-	}
+	//void blank(Duration t = 100.msecs) {
+		//enable = false;
+		//yield(t);
+	//}
 
-	void blink(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
-		auto t = 0.msecs;
-		while(t < duration) {
-			enable = !enable;
-			yield(interval);
-			t += interval;
-		}
-	}
+	//void blink(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
+		//auto t = 0.msecs;
+		//while(t < duration) {
+			//enable = !enable;
+			//yield(interval);
+			//t += interval;
+		//}
+	//}
 }
 
 class ScoreDisplay(alias iface): Task {

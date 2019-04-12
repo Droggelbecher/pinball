@@ -3,6 +3,7 @@ import std.stdio;
 import std.datetime;
 import std.string;
 import std.experimental.logger;
+import std.typecons;
 
 import deimos.ncurses;
 package alias deimos.ncurses nc;

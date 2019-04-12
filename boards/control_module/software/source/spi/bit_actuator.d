@@ -19,11 +19,8 @@ class BitActuator(Spi, Index_, int SlaveIdx): Task {
 
 	this(Spi spi) {
 		this.spi = spi;
-		//this.state = BitArray(state_data, Index.MAX);
 		this.state_data[] = cast(size_t)0;
 	}
-
-	//alias state this;
 
 	@nogc
 	bool opIndex(Index idx) {
@@ -34,14 +31,14 @@ class BitActuator(Spi, Index_, int SlaveIdx): Task {
 
 	@nogc
 	bool opIndexAssign(bool v, Index idx) {
-		const uint byte_ = cast(uint)idx / 8;
-		const uint bit = cast(uint)idx % 8;
+		const ubyte byte_ = cast(ubyte)idx / 8;
+		const ubyte bit = cast(ubyte)idx % 8;
 
 		if(v) {
 			state_data[byte_] |= (1 << bit);
 		}
 		else {
-			state_data[byte_] &= ~cast(ubyte)(1 << bit);
+			state_data[byte_] &= ~(1 << bit);
 		}
 		return this[idx];
 	}
@@ -54,7 +51,6 @@ class BitActuator(Spi, Index_, int SlaveIdx): Task {
 	private {
 		Spi spi;
 		ubyte[DATA_BYTES + 1] state_data;
-		//BitArray state;
 	}
 }
 

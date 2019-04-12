@@ -16,14 +16,6 @@ import utils;
 class SensorActuatorOverride(SensorActuator) {
 	alias SensorActuator.Index Index;
 
-	/*
-	enum Mode {
-		PASS_THROUGH = 0x00, // set() -> decorated, get() = decorated
-		MASK = 0x01,         // get() -> internal state XOR decorated
-		MUTE = 0x02,         // set() -> no-op
-	}
-	*/
-
 	enum {
 		DATA_BITS = Index.MAX,
 		DATA_BYTES = (DATA_BITS +7) / 8,
@@ -31,17 +23,12 @@ class SensorActuatorOverride(SensorActuator) {
 	}
 
 	this(SensorActuator decorated, Flag!"mask_get" mask_get, Flag!"mute_set" mute_set) {
-		//this.mode = mode;
 		this.mask_get = mask_get;
 		this.mute_set = mute_set;
 		this.decorated = decorated;
 		this.state_data[] = cast(size_t)0;
 		this.mask = BitArray(state_data, Index.MAX);
 	}
-
-	//@nogc
-	//void frame_start(Duration dt) {
-	//}
 
 	@nogc
 	bool opIndex(Index idx) {

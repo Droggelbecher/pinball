@@ -7,6 +7,14 @@ import condition;
 
 class Task {
 
+private:
+	struct ScheduleRequest {
+		Task task;
+		int  relative_priority;
+	}
+
+public:
+
 	int priority = 0;
 
 	this() {
@@ -34,8 +42,8 @@ class Task {
 		want_quit = true;
 	}
 
-	void schedule(Task t) {
-		to_schedule ~= t;
+	void schedule(Task task, int relative_priority = 0) {
+		to_schedule ~= ScheduleRequest(task, relative_priority);
 	}
 
 	//
@@ -52,8 +60,8 @@ class Task {
 		}
 	}
 
-	Task[] pop_schedule_requests() {
-		Task[] r = this.to_schedule;
+	ScheduleRequest[] pop_schedule_requests() {
+		ScheduleRequest[] r = this.to_schedule;
 		this.to_schedule = [];
 		return r;
 	}
@@ -62,7 +70,7 @@ class Task {
 		Condition condition = new TrueCondition;
 		Fiber fiber;
 		bool want_quit = false;
-		Task[] to_schedule;
+		ScheduleRequest[] to_schedule;
 	}
 }
 

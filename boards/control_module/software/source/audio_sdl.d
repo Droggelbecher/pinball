@@ -25,12 +25,9 @@ class AudioInterface {
 		Mix_Quit();
 	}
 
-	@nogc
-	void frame_start(Duration _) {
-	}
 }
 
-class Sound: Task {
+class Sound {
 	this(string filename, int _ = 10) {
 		chunk = Mix_LoadWAV((filename ~ ".wav").toStringz);
 	}
@@ -43,13 +40,9 @@ class Sound: Task {
 		Mix_PlayChannel(-1, chunk, 0);
 	}
 
-	@nogc override void frame_start(Duration dt) { }
-
 	private:
 		Mix_Chunk *chunk;
 }
-
-alias MultiSound = Sound;
 
 class Playlist: Task {
 

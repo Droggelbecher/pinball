@@ -15,7 +15,7 @@ class Sine {
 		}
 
 		double df = 2.0 * PI * f / sample_rate;
-		foreach(int i, ref buf; buffer) {
+		foreach(size_t i, ref buf; buffer) {
 			buf = cast(short)(short.max * sin(phase + i*df));
 		}
 		phase += buffer.length*df;

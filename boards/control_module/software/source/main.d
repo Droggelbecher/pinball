@@ -1,6 +1,7 @@
 
 import std.stdio: writeln;
 import std.datetime;
+import std.format;
 import core.thread;
 import std.experimental.logger;
 
@@ -9,8 +10,8 @@ import scheduler : Scheduler;
 
 import curses_interface;
 
-//import mock_spi: Spi;
-import bcm2708_spi: Spi;
+import mock_spi: Spi;
+//import bcm2708_spi: Spi;
 
 import switches;
 import solenoids;
@@ -34,43 +35,6 @@ void test_led() {
 	//led.frame_start(10.msecs);
 	led.full([0x00, 0x00, 0xff]);
 	led.frame_start(10.msecs);
-}
-
-void test_mad() {
-	import audio_mad_al;
-
-	auto audio_interface = new AudioInterface();
-	auto scheduler = new Scheduler();
-
-	auto sound = new Sound("./resources/music/original/01_IV_main_theme.mp3"); // joint stereo
-	//auto sound = new Sound("./resources/sounds/utini.mp3");
-	//auto sound = new Sound("./resources/sounds/missile_alert.mp3"); // mono
-	//auto sound = new Sound("./resources/sounds/alert.mp3"); // joint stereo
-
-	auto playlist = new Playlist(
-		"./resources/sounds/blip1.mp3",
-		"./resources/sounds/alert.mp3",
-		"./resources/sounds/chime.mp3",
-		"./resources/sounds/utini.mp3",
-	);
-
-
-	class MyTask: Task {
-		override void run() {
-			writeln("Playlist!");
-			playlist.play();
-			yield(1000.msecs);
-			writeln("Uitini!");
-			sound.play();
-		}
-	}
-
-
-	scheduler.add(playlist);
-	//scheduler.add(music);
-	scheduler.add(sound);
-	scheduler.add(new MyTask);
-	scheduler.run();
 }
 
 void init_logging(Logger iface_logger) {

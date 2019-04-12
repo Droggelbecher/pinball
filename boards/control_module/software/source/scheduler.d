@@ -9,6 +9,7 @@ import std.stdio: writeln;
 import std.string;
 import std.range;
 import std.algorithm.sorting;
+import std.algorithm.mutation: SwapStrategy;
 
 import task : Task;
 import interval: Interval;
@@ -33,11 +34,6 @@ class Scheduler {
 		add(new_tasks);
 	}
 
-	void add(Task[] new_tasks) {
-		completeSort!(pred, SwapStrategy.stable, Task[], Task[])(tasks, new_tasks);
-		tasks = assumeSorted!pred(tasks.release() ~ new_tasks);
-	}
-
 	void add(Task[] new_tasks, int priority) {
 		foreach(task; new_tasks) {
 			task.priority = priority;
@@ -45,12 +41,18 @@ class Scheduler {
 		add(new_tasks);
 	}
 
+	void add(Task[] new_tasks) {
+		completeSort!(pred, SwapStrategy.stable, Task[], Task[])(tasks, new_tasks);
+		tasks = assumeSorted!pred(tasks.release() ~ new_tasks);
+	}
+
+
 	void stop() {
 		stopping = true;
 	}
 
 	void run() {
-		static log_interval = Interval!Duration(5000.msecs);
+		static fps_tracker = Interval!Duration(5000.msecs);
 
 		std.datetime.stopwatch.StopWatch sw;
 		Duration frame_duration = target_duration;
@@ -60,8 +62,8 @@ class Scheduler {
 			frame_start(frame_duration);
 			if(stopping) { break; }
 
-			if(log_interval(frame_duration)) {
-				infof("fps: %f\n", 1_000_000.0 / frame_duration.total!"usecs");
+			if(fps_tracker(frame_duration)) {
+				infof("fps: %f\n", 1_000_000.0 / fps_tracker.mean.total!"usecs");
 			}
 
 			Duration computation_time = sw.peek().to!Duration;
@@ -97,12 +99,15 @@ class Scheduler {
 		}
 		
 		// III. Check any other requests from tasks, eg. scheduling of new tasks
-		Task[] to_schedule;
+		//Task[] to_schedule;
 		foreach(task; tasks) {
-			to_schedule ~= task.pop_schedule_requests();
+			//to_schedule ~= task.pop_schedule_requests();
+			foreach(sr; task.pop_schedule_requests()) {
+				add(sr.task, task.priority + sr.relative_priority);
+			}
 		}
 		//tasks ~= to_schedule;
-		add(to_schedule);
+		//add(to_schedule);
 	}
 
 	private:

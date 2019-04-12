@@ -1,5 +1,6 @@
 
 import std.experimental.logger;
+import std.algorithm: min, max;
 import coordinate;
 
 enum StorageType {

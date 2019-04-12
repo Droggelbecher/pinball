@@ -117,8 +117,7 @@ void scroll(SourceCanvas, ScrollingCanvas)(
 		ScrollingCanvas scrolling,
 		Coord scrolling_start
 ) {
-	import font: blit;
-	import std.stdio;
+	import canvas: blit;
 
 	static struct ActualBlit {
 		SourceCanvas from;

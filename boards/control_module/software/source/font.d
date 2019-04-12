@@ -1,8 +1,10 @@
 
-import coordinate;
 import std.traits;
-import canvas;
 import std.stdio;
+import std.algorithm: max;
+
+import coordinate;
+import canvas;
 
 class Font(Coordinate!() size_, int padding_ = 0) {
 	static enum padding = padding_;
