@@ -14,7 +14,7 @@ enum SolenoidsIndex {
 	AUX_0         = 9,
 	AUX_1         = 10,
 	MAX = 16
-};
+}
 
 alias Solenoids(Spi) = BitActuator!(Spi, SolenoidsIndex, Spi.SlaveIndex.Solenoids);
 
