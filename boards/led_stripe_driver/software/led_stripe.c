@@ -9,7 +9,7 @@
 
 #include "led_stripe.h"
 
-#define LEDS 20
+#define LEDS 60
 struct cRGB led[LEDS];
 struct cRGB led_off[LEDS];
 
@@ -44,13 +44,13 @@ void load(Command c) {
 }
 
 Command selftest = {
-	COLOR_MOD | ANIM_ROTATE,
-	2, // modulus
-	0xa0, 0x70, 0x00, // color 0
-	0x00, 0x00, 0x00, // color 1
+	COLOR_GRADIENT | ANIM_ROTATE,
+	1, // modulus
+	0xf0, 0x20, 0x00, // color 0
+	0x00, 0xf0, 0x30, // color 1
 	0x01, // direction
 	30, // dt
-	3, // count (unused)
+	0, // count (unused)
 };
 
 
@@ -76,6 +76,11 @@ int main(void) {
 
 	phase = 0;
 	while(1) {
+		if(!(PINK & (1 << PK3))) {
+			load(selftest);
+			start_execute();
+		}
+
 		execute();
 		xfer_spi();
 
@@ -258,7 +263,10 @@ void setup(void) {
 	// LED data out pin
 	DDRC |= (1 << PC0);
 
-
+	// PC3 = A11 = selftest switch
+	DDRK &= ~(1 << PK3);
+	/*PORTC*/
+	
 	cli();
 	// CTC mode, Clock/8
 	TCCR1B |= (1 << WGM12) | (1 << CS11);
