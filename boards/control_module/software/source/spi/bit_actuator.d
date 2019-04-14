@@ -8,18 +8,22 @@ extern(C) {
 	@nogc ubyte checksum(ubyte*, ubyte);
 }
 
+/**
+Note:
+  Translates between "active low" logic on SPI bus side
+  and "active high" logic on D side.
+  */
 class BitActuator(Spi, Index_, int SlaveIdx): Task {
 
 	alias Index = Index_;
 
 	enum {
-		//DATA_WORDS = (Index.MAX + 8*size_t.sizeof - 1) / (8*size_t.sizeof),
 		DATA_BYTES = (Index.MAX + 7) / 8
 	};
 
 	this(Spi spi) {
 		this.spi = spi;
-		this.state_data[] = cast(size_t)0;
+		this.state_data[] = 0xff;
 	}
 
 	@nogc

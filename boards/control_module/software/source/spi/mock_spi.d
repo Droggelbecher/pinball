@@ -9,8 +9,22 @@ class Spi {
 		Solenoids = 25
 	};
 
+	void select_only(SlaveIndex slave) {
+		// TODO log
+	}
+
+	void deselect_all() {
+		// TODO log
+	}
+
+	void send(ubyte[] mosi) {
+		// TODO log
+	}
+
 	@nogc
 	const(void[]) transfer_and_check(SlaveIndex slave, void[] input) {
+		// TODO log
+
 		buffer[0 .. input.length] = cast(ubyte[])input;
 		return buffer[0 .. input.length];
 	}

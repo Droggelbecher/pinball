@@ -5,18 +5,20 @@ import std.format;
 import core.thread;
 import std.experimental.logger;
 
-import game_logic : GameLogic;
+import story : Story;
 import scheduler : Scheduler;
 
 import curses_interface;
 
-//import mock_spi: Spi;
-import bcm2708_spi: Spi;
+import mock_spi: Spi;
+//import bcm2708_spi: Spi;
 
 import switches;
 import solenoids;
 import led_actuator;
+import display;
 import task;
+import coordinate;
 
 void test_spi() {
 	import bcm2708_spi: Spi;
@@ -76,7 +78,8 @@ void run_game() {
 	alias Sol = Solenoids!Spi;
 	alias Sw = Switches!Spi;
 	alias LED = LEDStripe!Spi;
-	alias Iface = CursesInterface!(Sol, Sw, LED);
+	alias Disp = Display!Spi;
+	alias Iface = CursesInterface!(Sol, Sw, LED, Disp);
 
 	auto iface_logger = new Iface.Logger(LogLevel.info);
 	init_logging(iface_logger);
@@ -87,13 +90,14 @@ void run_game() {
 	auto solenoids = new Sol(spi);
 	auto switches = new Sw(spi);
 	auto leds = new LED(spi);
+	auto disp = new Disp(spi, Coord(16, 8));
 
-	auto iface = new Iface(iface_logger, solenoids, switches, leds);
+	auto iface = new Iface(iface_logger, solenoids, switches, leds, disp);
 
-	auto logic = new GameLogic!Iface(iface);
+	auto story = new Story!Iface(iface);
 
 	scheduler.add([solenoids, switches, leds], -100);
-	scheduler.add(logic, 0);
+	scheduler.add(story, 0);
 	scheduler.add(iface, 100);
 	scheduler.run();
 }

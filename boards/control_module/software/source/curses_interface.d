@@ -38,11 +38,12 @@ struct Key {
 }
 
 
-class CursesInterface(Solenoids_, Switches_, LEDStripe_) : Task {
+class CursesInterface(Solenoids_, Switches_, LEDStripe_, Display_) : Task {
 
 	alias SensorActuatorOverride!Solenoids_ Solenoids;
 	alias SensorActuatorOverride!Switches_ Switches;
 	alias LEDStripe_ LEDStripe;
+	alias Display_ Display;
 	alias BufferCanvas Canvas;
 	alias BufferLogger!(10) Logger;
 
@@ -91,11 +92,21 @@ public:
 
 	// Switch states
 
-	this(Logger logger_, Solenoids_ solenoids_, Switches_ switches_, LEDStripe_ led_stripe_) {
+	this(
+			Logger logger_,
+			Solenoids_ solenoids_,
+			Switches_ switches_,
+			LEDStripe_ led_stripe_,
+			Display display_
+	) {
+		
 		solenoids = new Solenoids(solenoids_, No.mask_get, No.mute_set);
 		switches = new Switches(switches_, Yes.mask_get, No.mute_set);
 		led_stripe = led_stripe_;
-		canvas = new Canvas(16, 40);
+		canvas = new Canvas(16, 8 * 5);
+		physical_display = display_;
+		physical_display.source_buffer = canvas;
+		schedule(physical_display, -1);
 		logger = logger_;
 
 		nc.initscr();
@@ -121,17 +132,6 @@ public:
 		nc.doupdate();
 	}
 
-	~this() {
-		/*
-		nc.nocbreak();
-		nc.noraw();
-		nc.curs_set(1);
-		nc.echo();
-		nc.nl();
-		endwin();
-		*/
-	}
-
 	override void frame_start(Duration dt) {
 		paint_canvas(Coord(2, 2));
 		paint_switch_states(Coord(22, 2));
@@ -146,6 +146,7 @@ public:
 	Switches switches;
 	LEDStripe led_stripe;
 	Canvas canvas;
+	Display physical_display;
 	Logger logger;
 
 	private:

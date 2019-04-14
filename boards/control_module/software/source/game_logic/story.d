@@ -3,7 +3,6 @@ import task: Task;
 import std.datetime: Duration, seconds, msecs;
 
 import std.experimental.logger;
-import utils: assumeNoGC;
 import std.stdio:    writeln;
 import std.conv;
 import core.stdc.stdio;
@@ -18,9 +17,13 @@ import scrolling;
 import scrolling:    blit;
 import signal;
 
+import text_display;
+import score_display;
+import playing_field;
+
 alias Font!(font_5x8_size) FontNormal;
 
-class GameLogic(Interface_) : Task {
+class Story(Interface_) : Task {
 
 	alias Interface = Interface_;
 	alias Sw = Interface.Switches.Index;

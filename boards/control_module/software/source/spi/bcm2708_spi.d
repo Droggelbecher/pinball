@@ -47,15 +47,39 @@ class Spi {
 		spi_fd = open_spi();
 	}
 
-	//@nogc
-	const(void[]) transfer_and_check(SlaveIndex slave, void[] input_)
+	void select_only(SlaveIndex slave) {
+		gpio_enable_only(1 << slave, SlaveIndex.AllMask);
+	}
+
+	void deselect_all() {
+		gpio_disable_all(SlaveIndex.AllMask);
+	}
+
+	/**
+	  Transfer given bytes on SPI MOSI.
+	  Do not change slave select state,
+	  do not generate or verify any checksums,
+	  do not return any received reply.
+	  */
+	void send(ubyte[] mosi) {
+		spi_transfer(spi_fd, cast(int)mosi.length, cast(ubyte*)mosi.ptr, null);
+	}
+
+	/**
+	  Enable SS pin for `slave`,
+	  transfer `input` plus checksum on MOSI,
+	  disable all SS pins,
+	  expect return of the same size (also w/ checksum in last byte).
+	  If received checksum checks out, return received data (w/o checksum), else return [].
+	  */
+	const(void[]) transfer_and_check(SlaveIndex slave, void[] mosi)
 	in {
-		assert(input_.length < BUFFER_SIZE - 1);
+		assert(mosi.length < BUFFER_SIZE - 1);
 	}
 	do {
 		gpio_enable_only(1 << slave, SlaveIndex.AllMask);
 
-		auto input_u = cast(ubyte[])input_;
+		auto input_u = cast(ubyte[])mosi;
 		ubyte[] input = input_u ~ checksum(input_u.ptr, cast(ubyte)(input_u.length));
 
 		//ubyte[input.length] output;
