@@ -8,41 +8,52 @@ class BitSensor(Spi, Index_, int SlaveIdx): Task {
 	alias Index = Index_;
 
 	enum {
-		DATA_WORDS = (Index.MAX + size_t.sizeof - 1) / size_t.sizeof,
+		//DATA_WORDS = (Index.MAX + size_t.sizeof - 1) / size_t.sizeof,
 		DATA_BYTES = (Index.MAX + 7) / 8
 	};
 
 	this(Spi spi) {
 		this.spi = spi;
-		this.state = BitArray(state_data, Index.MAX);
 		this.state_data[] = cast(size_t)0;
 	}
 
-	alias state this;
-
 	@nogc
 	bool opIndex(Index idx) {
-		return state[idx];
+		const uint byte_ = cast(uint)idx / 8;
+		const uint bit = cast(uint)idx % 8;
+		return !((state_data[byte_] >> bit) & 0x01);
 	}
 
 	@nogc
 	bool opIndexAssign(bool v, Index idx) {
-		return state[idx] = v;
+		const ubyte byte_ = cast(ubyte)idx / 8;
+		const ubyte bit = cast(ubyte)idx % 8;
+
+		if(!v) {
+			state_data[byte_] |= (1 << bit);
+		}
+		else {
+			state_data[byte_] &= ~(1 << bit);
+		}
+		return this[idx];
 	}
 
 	//@nogc
 	override
 	void frame_start(Duration dt) {
-		const(void[]) answer = spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, state_data[0 .. DATA_WORDS]);
-		if(answer.length == DATA_WORDS) {
-			this.state_data[0 .. DATA_WORDS] = cast(const size_t[])answer;
+		auto answer = spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, state_data[0 .. DATA_BYTES]);
+		if(answer.length == DATA_BYTES) {
+			this.state_data[] = cast(ubyte[])answer;
+			//tracef("SENSOR[%s] <- %s",
+					//cast(Spi.SlaveIndex)SlaveIdx,
+					//map!(to!string)(state_data).join(" ")
+			//);
 		}
 	}
 
 	private {
 		Spi spi;
-		size_t[DATA_WORDS + 1] state_data;
-		BitArray state;
+		ubyte[DATA_BYTES] state_data;
 	}
 
 }

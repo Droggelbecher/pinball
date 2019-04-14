@@ -27,8 +27,8 @@ class GameLogic(Interface_) : Task {
 	alias C = Coordinate!();
 
 	enum {
-		YELLOW = [0xf0, 0xa0, 0x00],
-		BLACK = [0x00, 0x00, 0x00],
+		YELLOW = [0xf0, 0x60, 0x00],
+		BLACK = [0x00, 0x00, 0x30],
 	};
 
 	private {
@@ -101,11 +101,12 @@ class GameLogic(Interface_) : Task {
 
 		text.s("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
 		text.on;
-		iface.led_stripe.full(YELLOW).dt(10);
+		iface.led_stripe.full(YELLOW).dt(10); // module side fading too slow 
+		// TODO: implement control module side fading
 
 		yield(2000.msecs);
 		text.scroll.speed = Coordinate!double(-5, 0);
-		iface.led_stripe.rotmod(YELLOW, 4, 100);
+		iface.led_stripe.rotmod(YELLOW, 5, 100); // also too slow?!
 
 		yield(9700.msecs);
 		text.scroll.stop;

@@ -48,18 +48,20 @@ class Spi {
 	}
 
 	//@nogc
-	const(void[]) transfer_and_check(SlaveIndex slave, void[] input)
+	const(void[]) transfer_and_check(SlaveIndex slave, void[] input_)
 	in {
-		assert(input.length < BUFFER_SIZE - 1);
+		assert(input_.length < BUFFER_SIZE - 1);
 	}
 	do {
 		gpio_enable_only(1 << slave, SlaveIndex.AllMask);
+
+		auto input_u = cast(ubyte[])input_;
+		ubyte[] input = input_u ~ checksum(input_u.ptr, cast(ubyte)(input_u.length));
 
 		//ubyte[input.length] output;
 		ubyte[] output = buffer[0 .. input.length];
 		output[] = 0xAA;
 
-		tracef("SPI[%s] <- %s", slave, map!(to!string)(cast(ubyte[])input).join(" "));
 
 		spi_transfer(spi_fd, cast(int)input.length, cast(ubyte*)input.ptr, output.ptr);
 		gpio_disable_all(SlaveIndex.AllMask);
@@ -68,6 +70,11 @@ class Spi {
 			return output[0 .. $-1];
 		}
 		else {
+			tracef("SPI[%s] -> %s", slave, map!(to!string)(cast(ubyte[])input).join(" "));
+			tracef("        <- %s", map!(to!string)(cast(ubyte[])output).join(" "));
+			tracef("        CHECKSUM ERROR in.len=%d out.len=%d computed=%d found=%d",
+					input.length, output.length, s, output[$ - 1]
+				  );
 			return [];
 		}
 	}

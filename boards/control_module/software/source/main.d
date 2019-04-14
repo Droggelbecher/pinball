@@ -10,8 +10,8 @@ import scheduler : Scheduler;
 
 import curses_interface;
 
-import mock_spi: Spi;
-//import bcm2708_spi: Spi;
+//import mock_spi: Spi;
+import bcm2708_spi: Spi;
 
 import switches;
 import solenoids;
@@ -33,8 +33,28 @@ void test_led() {
 	//led.frame_start(10.msecs);
 	//led.full([0x00, 0xff, 0x00]);
 	//led.frame_start(10.msecs);
-	led.full([0x00, 0x00, 0xff]);
-	led.frame_start(10.msecs);
+	enum {
+		WHITE = [0xff, 0xff, 0xff],
+		YELLOW = [0xf0, 0x60, 0x00],
+		BLACK = [0x00, 0x00, 0x30],
+	}
+
+	//led.full(YELLOW); //.dt(10);
+
+	led.rotmod(YELLOW, 5, 100);
+	while(true) {
+		//led.full(WHITE);
+		//led.frame_start(40.msecs);
+		//Thread.sleep(40.msecs);
+
+		//led.full(BLACK);
+		//led.frame_start(40.msecs);
+		//Thread.sleep(40.msecs);
+
+		//led.rotmod(YELLOW, 5, 100);
+		led.frame_start(40.msecs);
+		Thread.sleep(40.msecs);
+	}
 }
 
 void init_logging(Logger iface_logger) {

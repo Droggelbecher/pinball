@@ -13,7 +13,7 @@ class BitActuator(Spi, Index_, int SlaveIdx): Task {
 	alias Index = Index_;
 
 	enum {
-		DATA_WORDS = (Index.MAX + 8*size_t.sizeof - 1) / (8*size_t.sizeof),
+		//DATA_WORDS = (Index.MAX + 8*size_t.sizeof - 1) / (8*size_t.sizeof),
 		DATA_BYTES = (Index.MAX + 7) / 8
 	};
 
@@ -26,7 +26,7 @@ class BitActuator(Spi, Index_, int SlaveIdx): Task {
 	bool opIndex(Index idx) {
 		const uint byte_ = cast(uint)idx / 8;
 		const uint bit = cast(uint)idx % 8;
-		return (state_data[byte_] >> bit) & 0x01;
+		return !((state_data[byte_] >> bit) & 0x01);
 	}
 
 	@nogc
@@ -34,7 +34,7 @@ class BitActuator(Spi, Index_, int SlaveIdx): Task {
 		const ubyte byte_ = cast(ubyte)idx / 8;
 		const ubyte bit = cast(ubyte)idx % 8;
 
-		if(v) {
+		if(!v) {
 			state_data[byte_] |= (1 << bit);
 		}
 		else {

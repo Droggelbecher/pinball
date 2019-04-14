@@ -18,6 +18,11 @@
 // the CTC match value in OCR1A.
 #define CTC_MATCH_OVERFLOW ((F_CPU / 1000UL) / 8UL) 
 
+#define PORT_TEST PORTK
+#define DDR_TEST DDRK
+#define PGREY PK5
+#define PVIOLET PK7
+
 // PF0 = Analog 0
 // PC0 = Diginal 37
 // src: https://www.arduino.cc/en/uploads/Hacking/PinMap2560big.png

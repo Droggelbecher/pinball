@@ -82,6 +82,10 @@ public:
 
 		{ '\'', '"', "BLO ", Sw.BALL_OUT,      false },
 		{ ',',  '<', "HOL0", Sw.HOLE0,         false },
+
+		{ 'l', 'L',  "SW01", Sw.SW_01,         false },
+		{ '/', '?',  "SW06", Sw.SW_06,         false },
+		{ '=', '+',  "SW07", Sw.SW_07,         false },
 	];
 
 	// Switch states

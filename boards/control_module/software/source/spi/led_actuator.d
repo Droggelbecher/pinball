@@ -1,5 +1,6 @@
 
 import std.datetime;
+import std.random;
 
 import task;
 
@@ -31,6 +32,7 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 	enum ID_INCREMENT = 0x20;
 
 	this(Spi spi) {
+		command[0] = cast(ubyte)(ID_INCREMENT * uniform(0, 8)); // have some non-zero start fo ID
 		this.spi = spi;
 	}
 
@@ -95,18 +97,18 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 		color0(color);
 		color1([0,0,0]);
 		this.dt(dt);
-		dir(0);
+		dir(1);
 		return this;
 	}
 
 	override void frame_start(Duration dt) {
-		command[DATA_BYTES] = checksum(command.ptr, cast(ubyte)DATA_BYTES);
+		//command[DATA_BYTES] = checksum(command.ptr, cast(ubyte)DATA_BYTES);
 		spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, command);
 	}
 
 	private {
 		Spi spi;
-		ubyte[DATA_BYTES + 1] command;
+		ubyte[DATA_BYTES] command;
 	}
 }
 

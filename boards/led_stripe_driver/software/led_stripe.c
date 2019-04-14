@@ -15,7 +15,7 @@ struct cRGB led_off[LEDS];
 
 volatile unsigned long milliseconds;
 
-int spi_xfer = 0;
+volatile int spi_xfer = 0;
 
 // Command "double buffer" (executing & receiving)
 // command_idx denotes the buffer currently being executed, !command_idx the one usable for sending
@@ -53,6 +53,15 @@ Command selftest = {
 	0, // count (unused)
 };
 
+Command error = {
+	COLOR_MOD | ANIM_ROTATE,
+	1, // modulus
+	0xff, 0x00, 0x00, // color 0
+	0xff, 0xff, 0xff, // color 1
+	0x01, // direction
+	90, // dt
+	0, // count (unused)
+};
 
 int main(void) {
 	setup();
@@ -81,8 +90,20 @@ int main(void) {
 			start_execute();
 		}
 
-		execute();
+		// 1. wait for data from SPI
+		// 2. execute it
+
+		while(!spi_xfer) {
+			// TODO: this kinda defeats the point of doing this via interrupt,
+			// make a better design
+		}
+		PORT_TEST |= (1 << PVIOLET);
 		xfer_spi();
+		PORT_TEST &= ~(1 << PVIOLET);
+
+		PORT_TEST |= (1 << PGREY);
+		execute();
+		PORT_TEST &= ~(1 << PGREY);
 
 	}
 
@@ -113,20 +134,28 @@ void xfer_spi(void) {
 	/*(void)_;*/
 
 	for(int i = 0; i < sizeof(Command); i++) {
-		while(!(SPSR & (1 << SPIF))) { }
+		while(!(SPSR & (1 << SPIF))) {
+			if(!spi_xfer) { return; }
+		}
 		cmd[i] = SPDR;
 	}
-	while(!(SPSR & (1 << SPIF))) { }
+	while(!(SPSR & (1 << SPIF))) {
+		if(!spi_xfer) { return; }
+	}
 	uint8_t chk = SPDR;
 
 	uint8_t mychecksum = checksum(cmd, sizeof(Command));
 	if(chk == mychecksum) {
 		// New command received correctly, switch to it
-		command_idx = !command_idx;
-		if(id(cmd) != id(command_buffer[!command_idx])) {
+		if(id(cmd) != id(command_buffer[command_idx])) {
 			// Did command ID change? If yes it means we started a new command (instance)
+			command_idx = !command_idx;
 			start_execute();
 		}
+	}
+	else {
+		load(error);
+		start_execute();
 	}
 
 	spi_xfer = 0;
@@ -208,12 +237,16 @@ void execute() {
 					led[LEDS - 1] = last;
 				}
 			}
+
+			PORT_TEST |= (1 << PVIOLET);
 			ws2812_setleds(led, LEDS);
+			PORT_TEST &= ~(1 << PVIOLET);
 			break;
 
 		case ANIM_FADEOUT:
 			if(milliseconds >= next_action_ms) {
 				next_action_ms = milliseconds + dt(c) * 10;
+				// this is too slow! rather fade on control module side!
 				for(int i = 0; i < LEDS; i++) {
 					if(led[i].r) { led[i].r = (led[i].r - 1) * 0.9; }
 					if(led[i].g) { led[i].g = (led[i].g - 1) * 0.9; }
@@ -263,8 +296,15 @@ void setup(void) {
 	// LED data out pin
 	DDRC |= (1 << PC0);
 
-	// PC3 = A11 = selftest switch
+	// PK3 = A11 = selftest switch
 	DDRK &= ~(1 << PK3);
+
+	// PK5 = A13 = grey test point
+	DDR_TEST |= (1 << PGREY) | (1 << PVIOLET);
+
+	// test points to low
+	PORT_TEST &= ~((1 << PGREY) | (1 << PVIOLET));
+
 	/*PORTC*/
 	
 	cli();
