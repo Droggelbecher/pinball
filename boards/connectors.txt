@@ -13,6 +13,20 @@ Bottom view:
   | (10) ( 9) ( 8) ( 7) ( 6) |
   +----------     -----------+
 
+Nose down towards cable, black left colors:
+
+( 1) Brown
+( 2) Orange
+( 3) Green
+( 4) Violet
+( 5) White
+( 6) Black
+( 7) Grey
+( 8) Blue
+( 9) Yellow
+(10) Red
+
+
 SPI Pins
 
 ( 1) -
@@ -28,6 +42,7 @@ SPI Pins
 
 Switches
 
+TODO XXX Check this! Top/Bottom view confusion?
 ( 1) 3
 ( 2) 2
 ( 3) 1

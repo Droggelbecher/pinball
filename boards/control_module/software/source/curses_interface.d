@@ -61,9 +61,10 @@ public:
 		{ 'd', "BMP0", Sol.BUMPER0 },
 		{ 'h', "BMP1", Sol.BUMPER1 },
 		{ 't', "BMP2", Sol.BUMPER2 },
-		{ 'n', "BLRT", Sol.BALL_RETURN },
-		{ 's', "AUX0", Sol.AUX_0 },
-		{ '-', "AUX1", Sol.AUX_1 }
+		{ 'n', "SOL_08", Sol.SOL_08 },
+		{ 's', "BLRT", Sol.BALL_RETURN },
+		{ '-',  "SOL_10", Sol.SOL_10 },
+		{ '\\', "SOL_11", Sol.SOL_11 },
 	];
 
 	Key[] key_table = [

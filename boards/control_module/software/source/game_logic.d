@@ -101,12 +101,11 @@ class GameLogic(Interface_) : Task {
 
 		text.s("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
 		text.on;
-		iface.led_stripe.full(YELLOW).dt(10); // module side fading too slow 
-		// TODO: implement control module side fading
+		iface.led_stripe.full(YELLOW).dt(10);
 
 		yield(2000.msecs);
 		text.scroll.speed = Coordinate!double(-5, 0);
-		iface.led_stripe.rotmod(YELLOW, 5, 100); // also too slow?!
+		iface.led_stripe.rotmod(YELLOW, 5, 100);
 
 		yield(9700.msecs);
 		text.scroll.stop;

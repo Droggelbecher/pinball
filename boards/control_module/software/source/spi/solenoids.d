@@ -10,9 +10,10 @@ enum SolenoidsIndex {
 	BUMPER0       = 5,
 	BUMPER1       = 6,
 	BUMPER2       = 7,
-	BALL_RETURN   = 8,
-	AUX_0         = 9,
-	AUX_1         = 10,
+	SOL_08        = 8,
+	BALL_RETURN   = 9,
+	SOL_10        = 10,
+	SOL_11        = 11,
 	MAX = 16
 }
 

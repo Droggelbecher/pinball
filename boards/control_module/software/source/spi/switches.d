@@ -3,10 +3,10 @@ import bit_sensor;
 
 enum SwitchesIndex {
 	SW_01 = 1,
-	SLINGSHOT0 = 2,
-	FLIPPER_LEFT = 4,
+	SLINGSHOT1 = 2,
 	FLIPPER_RIGHT = 3,
-	SLINGSHOT1 = 5,
+	FLIPPER_LEFT = 4,
+	SLINGSHOT0 = 5,
 	SW_06 = 6,
 	SW_07 = 7,
 
@@ -18,8 +18,10 @@ enum SwitchesIndex {
 	BUMPER0 = 13,
 	BUMPER1 = 14,
 	BUMPER2 = 15,
+
 	BALL_OUT = 22,
 	HOLE0 = 23,
+
 	MAX = 64
 };
 
