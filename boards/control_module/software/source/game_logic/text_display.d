@@ -5,6 +5,8 @@ import task: Task;
 import five_eight:   font_5x8_size, font_5x8_data;
 import font:         Font, StringCanvas;
 import scrolling;
+import coordinate;
+import canvas;
 
 class TextDisplay(alias iface): Task {
 
@@ -47,18 +49,4 @@ class TextDisplay(alias iface): Task {
 			blit(text, Coord(), text.size, scroll, Coord());
 		}
 	}
-
-	//void blank(Duration t = 100.msecs) {
-		//enable = false;
-		//yield(t);
-	//}
-
-	//void blink(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
-		//auto t = 0.msecs;
-		//while(t < duration) {
-			//enable = !enable;
-			//yield(interval);
-			//t += interval;
-		//}
-	//}
 }

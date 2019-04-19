@@ -25,7 +25,7 @@ class Spi {
 	const(void[]) transfer_and_check(SlaveIndex slave, void[] input) {
 		// TODO log
 
-		buffer[0 .. input.length] = cast(ubyte[])input;
+		buffer[0 .. input.length] = 0xff; //cast(ubyte[])input;
 		return buffer[0 .. input.length];
 	}
 

@@ -1,8 +1,10 @@
 
-import task: Task;
 import std.datetime: Duration, seconds, msecs;
 import std.experimental.logger;
+import std.conv;
+import core.stdc.stdio: snprintf;
 
+import task: Task;
 import canvas;
 import scrolling;
 
@@ -55,6 +57,7 @@ class ScoreDisplay(alias iface): Task {
 	void render_score() {
 		char[10] score_string;
 		snprintf(score_string.ptr, score_string.length, "%d", this.display_score);
+		// Alas, not entirely nogc, but lets try to reduce the per-frame allocations to a necessary minimum
 		this.score_text = font_normal(to!string(score_string.ptr));
 	}
 }
