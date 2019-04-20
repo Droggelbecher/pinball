@@ -104,9 +104,9 @@ public:
 		switches = new Switches(switches_, Yes.mask_get, No.mute_set);
 		led_stripe = led_stripe_;
 		canvas = new Canvas(16, 8 * 5);
-		physical_display = display_;
-		physical_display.source_buffer = canvas;
-		schedule(physical_display, -1);
+		display = display_;
+		display.source_buffer = canvas;
+		schedule(display, -1);
 		logger = logger_;
 
 		nc.initscr();
@@ -146,7 +146,7 @@ public:
 	Switches switches;
 	LEDStripe led_stripe;
 	Canvas canvas;
-	Display physical_display;
+	Display display;
 	Logger logger;
 
 	private:

@@ -22,7 +22,7 @@
 		"checksum.o",
 		"utils.o"
 	],
-	"_libs": [
-		"mad"
+	"libs": [
+		"png"
 	]
 }

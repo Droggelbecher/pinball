@@ -59,6 +59,11 @@ void test_led() {
 	}
 }
 
+void test_png() {
+	import image_canvas;
+	read_png("/home/henning/host/Desktop/test.png");
+}
+
 void init_logging(Logger iface_logger) {
 
 	auto time = Clock.currTime;
@@ -107,6 +112,7 @@ void main() {
 	//test_spi();
 	//test_mad();
 	//test_led();
+	//test_png();
 	
 	run_game();
 }
