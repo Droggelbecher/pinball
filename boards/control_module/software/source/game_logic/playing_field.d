@@ -3,12 +3,15 @@ import std.datetime: Duration, seconds, msecs;
 
 import task: Task;
 import signal;
+import switchable;
 
 class PlayingField(alias iface) : Task {
 
 	alias Interface = typeof(iface);
 	alias Sol = Interface.Solenoids.Index;
 	alias Sw = Interface.Switches.Index;
+
+	mixin Switchable;
 
 	public {
 		bool     enable_ball_return;
@@ -21,8 +24,6 @@ class PlayingField(alias iface) : Task {
 	}
 
 	this() {
-		this.enable_ball_return = false;
-
 		// Debounce ball out switch in the sense
 		// that we want it to be "true" for at least 1000 msecs
 		// before reacting so ball has really come to halt
@@ -51,7 +52,7 @@ class PlayingField(alias iface) : Task {
 		}
 		this.dtb_all_scored.frame_start(dt);
 
-		with(iface) {
+		if(enabled) with(iface) {
 			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
 			solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
 			solenoids[Sol.SLINGSHOT0]    = switches[Sw.SLINGSHOT0];
@@ -67,7 +68,7 @@ class PlayingField(alias iface) : Task {
 				&& switches[Sw.DTB0_3]
 				&& switches[Sw.DTB0_4];
 
-			solenoids[Sol.BALL_RETURN] = enable_ball_return && ball_return;
+			solenoids[Sol.BALL_RETURN] = cast(bool)ball_return;
 		}
 	} // frame_start()
 }

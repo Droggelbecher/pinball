@@ -68,6 +68,7 @@ class Story(Interface_) : Task {
 		this.score_sound_2 = new Sound("./resources/sounds/utini.mp3");
 
 		this.playing_field = new PlayingField!(this.iface)();
+		this.playing_field.off;
 		schedule(this.playing_field);
 
 		this.text = new TextDisplay!(this.iface)();
@@ -82,7 +83,7 @@ class Story(Interface_) : Task {
 				this.iface.canvas,
 				Yes.loop
 		);
-		schedule(this.animation, priority + 5);
+		//schedule(this.animation, priority + 5);
 	}
 
 	override void frame_start(Duration dt) {
@@ -108,13 +109,13 @@ class Story(Interface_) : Task {
 		} // playing_field
 	} // check_scoring()
 
-	void intro() {
-		text.off;
-		//auto png_buf = read_png("/home/henning/host/Desktop/test.png");
-		//blit(png_buf, Coord(0, 0), Coord(16, 40), iface.canvas, Coord(0,0));
-	}
+	//void intro() {
+		//text.off;
+		////auto png_buf = read_png("/home/henning/host/Desktop/test.png");
+		////blit(png_buf, Coord(0, 0), Coord(16, 40), iface.canvas, Coord(0,0));
+	//}
 
-	void intro_() {
+	void intro() {
 		text.off;
 		yield(4200.msecs);
 		playlist.play;
@@ -155,7 +156,7 @@ class Story(Interface_) : Task {
 	override void run() {
 		intro();
 		iface.logger.log("Game started.");
-		playing_field.enable_ball_return = true;
+		playing_field.on;
 	}
 }
 
