@@ -1,4 +1,4 @@
-
+/+
 import std.stdio;
 
 import pngconf;
@@ -66,5 +66,5 @@ BufferCanvas read_png(string filename) {
 
 	return r;
 }
-
++/
 

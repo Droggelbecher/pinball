@@ -18,6 +18,7 @@ import led_actuator;
 import buffer_logger;
 
 import sensor_actuator_override;
+import testable_display;
 
 alias SolenoidsIndex Sol;
 
@@ -42,14 +43,15 @@ class CursesInterface(Solenoids_, Switches_, LEDStripe_, Display_) : Task {
 
 	alias SensorActuatorOverride!Solenoids_ Solenoids;
 	alias SensorActuatorOverride!Switches_ Switches;
+	alias TestableDisplay!Display_ Display;
 	alias LEDStripe_ LEDStripe;
-	alias Display_ Display;
 	alias BufferCanvas Canvas;
 	alias BufferLogger!(10) Logger;
 
 public:
 	// Solenoids
 	enum enable_solenoid_control_key = KEY_F(1);
+	enum enable_display_test_key = KEY_F(2);
 	enum quit_key = KEY_F(12);
 	bool enable_solenoid_control = false;
 
@@ -97,14 +99,14 @@ public:
 			Solenoids_ solenoids_,
 			Switches_ switches_,
 			LEDStripe_ led_stripe_,
-			Display display_
+			Display_ display_
 	) {
 		
 		solenoids = new Solenoids(solenoids_, No.mask_get, No.mute_set);
 		switches = new Switches(switches_, Yes.mask_get, No.mute_set);
 		led_stripe = led_stripe_;
 		canvas = new Canvas(16, 8 * 5);
-		display = display_;
+		display = new Display(display_);
 		display.source_buffer = canvas;
 		schedule(display, -1);
 		logger = logger_;
@@ -160,7 +162,7 @@ public:
 			foreach(int row; 0 .. canvas.size.row) {
 				nc.move(pos.row + row, pos.column);
 				foreach(int column; 0 .. canvas.size.column) {
-					int c = canvas[row, column];
+					int c = display.source_buffer[row, column];
 					nc.addch(color_symbols[c] | COLOR_PAIR(c + 1) | A_NORMAL);
 					nc.addch(color_symbols[c] | COLOR_PAIR(c + 1) | A_NORMAL);
 				}
@@ -197,6 +199,10 @@ public:
 				printw(" ");
 			}
 			attrset(COLOR_PAIR(0));
+
+			attrset(display.test ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
+			printw(" F2:DISPLAY TEST ");
+			attrset(COLOR_PAIR(0));
 		}
 
 		void paint_log(Coord pos) {
@@ -228,6 +234,11 @@ public:
 				// If user controls solenoids, cut off game logic
 				solenoids.mute_set = enable_solenoid_control;
 			}
+			else if(ch == enable_display_test_key) {
+				//enable_display_test = !enable_display_test;
+				display.test = !display.test;
+			}
+
 			else if(ch == quit_key) {
 				nc.nocbreak();
 				nc.noraw();

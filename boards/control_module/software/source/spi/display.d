@@ -1,5 +1,6 @@
 
 import std.datetime;
+import std.experimental.logger: tracef;
 import core.thread;
 
 import task;
@@ -50,12 +51,19 @@ class Display(Spi): Task {
 		this.modules = cast(ubyte)(buffer.size.column / module_buffer.size.column);
 	}
 
+	@property
+	BufferCanvas source_buffer() {
+		return this.buffer;
+	}
+
 	override
 	void frame_start(Duration dt) {
 		if(!buffer) {
+			tracef("SPI Display: No source buffer!");
 			return;
 		}
 
+		tracef("SPI Display: SS enable");
 		spi.select_only(Spi.SlaveIndex.Display);
 
 		for(int i = 0; i < modules; i++) {
@@ -70,6 +78,7 @@ class Display(Spi): Task {
 		}
 
 		spi.deselect_all();
+		tracef("SPI Display: SS disable");
 	}
 
 	private:

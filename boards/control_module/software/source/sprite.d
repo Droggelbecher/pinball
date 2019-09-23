@@ -45,6 +45,7 @@ class Sprite(Target): Task {
 		int i;
 }
 
+/+
 class PNGSprite(Target): Sprite!Target {
 	this(string path, Duration dt, Target target, Flag!"loop" loop = No.loop) {
 		auto pngs = dirEntries(path, "*.png", SpanMode.shallow).array.sort;
@@ -53,5 +54,6 @@ class PNGSprite(Target): Sprite!Target {
 		super(pngs.map!read_png.array, dt, target, loop);
 	}
 }
++/
 
 

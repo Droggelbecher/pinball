@@ -23,6 +23,5 @@
 		"utils.o"
 	],
 	"libs": [
-		"png"
 	]
 }

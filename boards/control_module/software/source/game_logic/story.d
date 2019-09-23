@@ -21,7 +21,7 @@ import signal;
 import text_display;
 import score_display;
 import playing_field;
-import read_png;
+//import read_png;
 import sprite;
 
 alias Font!(font_5x8_size) FontNormal;
@@ -49,7 +49,7 @@ class Story(Interface_) : Task {
 		TextDisplay!iface text;
 		ScoreDisplay!iface score_display;
 
-		PNGSprite!(Interface.Canvas) animation;
+		//PNGSprite!(Interface.Canvas) animation;
 	}
 
 	this(Interface iface) {
@@ -77,12 +77,12 @@ class Story(Interface_) : Task {
 		this.score_display = new ScoreDisplay!(this.iface)();
 		schedule(this.score_display, priority + 20);
 
-		this.animation = new PNGSprite!(Interface.Canvas)(
-				"./resources/sprites/deathstar_01",
-				300.msecs,
-				this.iface.canvas,
-				Yes.loop
-		);
+		//this.animation = new PNGSprite!(Interface.Canvas)(
+				//"./resources/sprites/deathstar_01",
+				//300.msecs,
+				//this.iface.canvas,
+				//Yes.loop
+		//);
 		//schedule(this.animation, priority + 5);
 	}
 

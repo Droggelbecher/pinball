@@ -1,4 +1,6 @@
 
+import std.experimental.logger;
+
 class Spi {
 
 	enum SlaveIndex {
@@ -8,6 +10,11 @@ class Spi {
 		Display = 24,
 		Solenoids = 25
 	};
+
+	this() {
+		warningf("Using MOCK SPI!");
+	}
+
 
 	void select_only(SlaveIndex slave) {
 		// TODO log

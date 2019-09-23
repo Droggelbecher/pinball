@@ -20,5 +20,6 @@ rsync -CHaPx $LOCAL_DIR/ ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_DIR}/ \
 	--exclude CMakeCache.txt \
 	--exclude cmake_install.cmake \
 	--exclude .dep \
+	--exclude 'log-*' \
 	--exclude '*.o' \
 	--exclude '*.swp'

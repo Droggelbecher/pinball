@@ -10,8 +10,8 @@ import scheduler : Scheduler;
 
 import curses_interface;
 
-import mock_spi: Spi;
-//import bcm2708_spi: Spi;
+//import mock_spi: Spi;
+import bcm2708_spi: Spi;
 
 import switches;
 import solenoids;
@@ -59,10 +59,10 @@ void test_led() {
 	}
 }
 
-void test_png() {
-	import image_canvas;
-	read_png("/home/henning/host/Desktop/test.png");
-}
+//void test_png() {
+	//import image_canvas;
+	//read_png("/home/henning/host/Desktop/test.png");
+//}
 
 void init_logging(Logger iface_logger) {
 
