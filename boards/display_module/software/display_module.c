@@ -137,7 +137,7 @@ inline int get_screen(int row, int column, int color) {
 inline int try_read_spi(void) {
 	asm volatile ("nop");
 	if(SPSR & (1 << SPIF)) { goto success; }
-	for(int i = 0; i < 8; i++) {
+	for(int i = 0; i < 16; i++) {
 		if(SPSR & (1 << SPIF)) { goto success; }
 		if(SPSR & (1 << SPIF)) { goto success; }
 		if(SPSR & (1 << SPIF)) { goto success; }
