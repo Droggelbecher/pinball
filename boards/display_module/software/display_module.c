@@ -32,16 +32,16 @@ unsigned long phase = 0;
 
 unsigned int palette[][COLORS] = {
 
-	// G     R
+	// R     G
 
 	{ 0x00, 0x00 }, // Black
 	{ 0xff, 0x00 }, // Full red
 	{ 0x00, 0xff }, // Full green
-	{ 0x40, 0x80 }, // Yellow
-	{ 0x80, 0x80 }, // Orange
-	{ 0x00, 0x40 }, // Dark Red
-	{ 0x10, 0x00 }, // Dark Green
-	{ 0x10, 0x10 }  // Blood Orange
+	{ 0xf8, 0xff }, // Yellow
+	{ 0xe0, 0xe0 }, // Orange
+	{ 0xe0, 0x00 }, // Dark Red
+	{ 0x00, 0xe0 }, // Dark Green
+	{ 0xd0, 0xd0 }  // Blood Orange
 
 };
 
@@ -59,7 +59,7 @@ int main(void) {
 
 	while(1) {
 		// Activate pullups
-		PORT_TLC5940 |= (1 << P_TEST); // | (1 << P_AUX);
+		PORT_TLC5940 |= (1 << P_TEST);
 		selftest = !(PIN_TLC5940 & (1 << P_TEST));
 		if(selftest) {
 			p += PHASE_RATE * (1.0 / FRAME_RATE);
@@ -69,12 +69,7 @@ int main(void) {
 			}
 			render_selftest(phase);
 		}
-
 		output_screen();
-
-		/*if(!selftest) {*/
-			/*xfer_spi();*/
-		/*}*/
 	}
 }
 
@@ -105,7 +100,7 @@ inline int encode_physical_screen_index(ScreenIndex si) {
 
 inline int encode_lm23088_screen_index(ScreenIndex si) {
 	// Index that corrects for the circuit layout pin order
-	si.row = 15 - si.row;
+	/*si.row = 15 - si.row;*/
 	si.column = 7 - si.column;
 	return encode_physical_screen_index(si);
 }
@@ -161,17 +156,10 @@ inline void xfer_spi(void) {
 
 		int screen_index = 0;
 
-		/*while(!(SPSR & (1 << SPIF))) { }*/
-		/*int ch_interrupt = SPDR;*/
-		/*(void)ch_interrupt;*/
-
 		while(!(SPSR & (1 << SPIF))) { }
 		int ch= SPDR;
 
 		PORT_TLC5940 |= (1 << P_AUX);
-		/*(void)chx;*/
-		/*int ch =  try_read_spi();*/
-		/*if(ch == -1) { goto timeout; }*/
 
 		// read in all but the last byte
 		// after the last byte we need to quickly activate the next display
@@ -180,27 +168,15 @@ inline void xfer_spi(void) {
 
 		for( ; screen_index != PIXELS - 1; ++screen_index) {
 
-			// the nop is for timing optimization
-			/*asm volatile ("nop");*/
-			/*while(!(SPSR & (1 << SPIF))) { }*/
-			/*char ch = SPDR;*/
-
 			ScreenIndex idx = decode_master_screen_index(screen_index);
 			idx.color = IDX_GREEN;
-			screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_GREEN];
+			screen[ encode_physical_screen_index(idx) ] = palette[(int)ch][IDX_GREEN];
 			idx.color = IDX_RED;
-			screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_RED];
+			screen[ encode_physical_screen_index(idx) ] = palette[(int)ch][IDX_RED];
 
 			ch = try_read_spi();
 			if(ch == -1) { goto timeout; }
 		}
-
-		// the nop is for timing optimization
-		/*asm volatile ("nop");*/
-		/*while(!(SPSR & (1 << SPIF))) { }*/
-		/*char ch = SPDR;*/
-		/*ch = try_read_spi();*/
-		/*if(ch == -1) { goto timeout; }*/
 
 		// enable_next(), pull SS pin of next module low
 		// so following bytes will be passed through to it
@@ -208,9 +184,9 @@ inline void xfer_spi(void) {
 
 		ScreenIndex idx = decode_master_screen_index(screen_index);
 		idx.color = IDX_GREEN;
-		screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_GREEN];
+		screen[ encode_physical_screen_index(idx) ] = palette[(int)ch][IDX_GREEN];
 		idx.color = IDX_RED;
-		screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_RED];
+		screen[ encode_physical_screen_index(idx) ] = palette[(int)ch][IDX_RED];
 
 	timeout:
 		spi_xfer = 0;

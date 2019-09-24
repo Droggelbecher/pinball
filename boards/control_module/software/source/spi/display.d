@@ -66,7 +66,7 @@ class Display(Spi): Task {
 		//tracef("SPI Display: SS enable");
 		spi.select_only(Spi.SlaveIndex.Display);
 
-		for(int i = 0; i < modules; i++) {
+		for(int i = modules - 1; i >= 0; i--) {
 			blit(
 				buffer, Coord(0, i * module_buffer.size.column), module_buffer.size,
 				module_buffer, Coord(0, 0)
