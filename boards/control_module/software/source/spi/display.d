@@ -63,7 +63,7 @@ class Display(Spi): Task {
 			return;
 		}
 
-		tracef("SPI Display: SS enable");
+		//tracef("SPI Display: SS enable");
 		spi.select_only(Spi.SlaveIndex.Display);
 
 		for(int i = 0; i < modules; i++) {
@@ -78,7 +78,7 @@ class Display(Spi): Task {
 		}
 
 		spi.deselect_all();
-		tracef("SPI Display: SS disable");
+		//tracef("SPI Display: SS disable");
 	}
 
 	private:

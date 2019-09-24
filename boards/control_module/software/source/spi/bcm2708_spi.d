@@ -90,7 +90,6 @@ class Spi {
 		spi_transfer(spi_fd, cast(int)input.length, cast(ubyte*)input.ptr, output.ptr);
 
 		gpio_disable_all(SlaveIndex.AllMask);
-		tracef("SPI[%s] SS disable", slave);
 		ubyte s = checksum(output.ptr, cast(ubyte)(output.length - 1));
 		if(s == output[$ - 1]) {
 			return output[0 .. $-1];
