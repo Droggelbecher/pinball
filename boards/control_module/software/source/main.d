@@ -66,12 +66,14 @@ void test_led() {
 
 void init_logging(Logger iface_logger) {
 
+	// TODO: Some basic logrotate?
+
 	auto time = Clock.currTime;
 	auto filename = format!"log-%04d-%02d-%02d--%02d-%02d.txt"(
 		time.year, time.month, time.day,
 		time.hour, time.minute
 	);
-	auto file_logger = new FileLogger(filename, LogLevel.all);
+	auto file_logger = new FileLogger(filename, LogLevel.info);
 
 	auto global_logger = new MultiLogger(LogLevel.all);
 	global_logger.insertLogger("iface_logger", iface_logger);

@@ -127,7 +127,7 @@ class Story(Interface_) : Task {
 
 		yield(2000.msecs);
 		text.scroll.speed = Coordinate!double(-5, 0);
-		iface.led_stripe.rotmod(YELLOW, 5, 100);
+		iface.led_stripe.rotmod(YELLOW, 5, 100).dir(0);
 
 		yield(9700.msecs);
 		text.scroll.stop;
