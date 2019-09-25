@@ -1,19 +1,27 @@
 
 mixin template Switchable() {
 	void off() {
-		this.enabled = false;
+		this._enabled = false;
 	}
 
 	void on() {
-		this.enabled = true;
+		this._enabled = true;
 	}
 
 	void toggle() {
-		this.enabled = !this.enabled;
+		this._enabled = !this._enabled;
+	}
+
+	bool enabled() {
+		return _enabled && enabled_condition();
+	}
+
+	bool enabled_condition() {
+		return true;
 	}
 
 	private {
-		bool enabled = false;
+		bool _enabled = false;
 	}
 }
 

@@ -32,10 +32,12 @@ class Story(Interface_) : Task {
 	alias Sw = Interface.Switches.Index;
 	alias C = Coordinate!();
 
-	enum {
+	enum RGB {
 		YELLOW = [0xf0, 0x60, 0x00],
-		BLACK = [0x00, 0x00, 0x30],
+		BLACK = [0x20, 0x20, 0x20],
 	};
+
+	alias DColor = Interface.Display.Color;
 
 	Interface iface;
 
@@ -95,6 +97,10 @@ class Story(Interface_) : Task {
 	}
 
 	void check_scoring() {
+		if(!playing_field.enabled) {
+			return;
+		}
+		
 		with(playing_field) {
 			foreach(dtb; dtb_scored) {
 				if(dtb) {
@@ -121,23 +127,23 @@ class Story(Interface_) : Task {
 		playlist.play;
 		yield(800.msecs);
 
-		text.s("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", 3);
+		text.s("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", DColor.YELLOW);
 		text.on;
-		iface.led_stripe.full(YELLOW).dt(10);
+		iface.led_stripe.full(RGB.YELLOW).dt(10);
 
 		yield(2000.msecs);
 		text.scroll.speed = Coordinate!double(-5, 0);
-		iface.led_stripe.rotmod(YELLOW, 5, 100).dir(0);
+		iface.led_stripe.rotmod(RGB.YELLOW, 5, 100).dir(0);
 
 		yield(9700.msecs);
 		text.scroll.stop;
 		yield(4000.msecs);
-		iface.led_stripe.full(BLACK);
+		iface.led_stripe.full(RGB.BLACK);
 		text.off;
 		yield(4000.msecs);
 
 		text.scroll.reset;
-		text.s(" READY  \nPLAYER 1", 2);
+		text.s(" READY  \nPLAYER 1", DColor.YELLOW);
 		yield(1000.msecs);
 		blink_text(500.msecs);
 		text.on;

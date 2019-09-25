@@ -17,6 +17,7 @@ class PlayingField(alias iface) : Task {
 		bool     enable_ball_return;
 		Rising[] dtb_scored;
 		Rising   dtb_all_scored;
+		bool     resetting;
 	}
 
 	private {
@@ -45,14 +46,40 @@ class PlayingField(alias iface) : Task {
 	}
 
 	override
+	void run() {
+
+		resetting = true;
+		while(iface.switches[Sw.DTB0_0]
+				|| iface.switches[Sw.DTB0_1]
+				|| iface.switches[Sw.DTB0_2]
+				|| iface.switches[Sw.DTB0_3]
+				|| iface.switches[Sw.DTB0_4]) {
+			iface.solenoids[Sol.DTB0] = true;
+			yield(10.msecs);
+		}
+		iface.solenoids[Sol.DTB0] = false;
+		resetting = false;
+
+	}
+
+	bool enabled_condition() {
+		return !resetting;
+	}
+
+	override
 	void frame_start(Duration dt) {
+
+		if(!enabled) {
+			return;
+		}
+
 		ball_return.frame_start(dt);
 		foreach(ref dtb; dtb_scored) {
 			dtb.frame_start(dt);
 		}
 		this.dtb_all_scored.frame_start(dt);
 
-		if(enabled) with(iface) {
+		with(iface) {
 			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
 			solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
 			solenoids[Sol.SLINGSHOT0]    = switches[Sw.SLINGSHOT0];

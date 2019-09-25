@@ -9,6 +9,8 @@ import canvas;
 
 class TestableDisplay(Display): Task {
 
+	alias Color = Display.Color;
+
 	this(Display display) {
 		this.display = display;
 	}
