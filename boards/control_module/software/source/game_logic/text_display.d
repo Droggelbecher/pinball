@@ -26,7 +26,7 @@ class TextDisplay(alias iface): Task {
 	this() {
 		scroll = new Scrolling!(Interface.Canvas)(
 			iface.canvas,
-			Coord(80, iface.canvas.size.column)
+			Coord(160, iface.canvas.size.column)
 		);
 		font_normal = new FontNormal(font_5x8_data);
 	}

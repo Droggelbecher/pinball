@@ -30,6 +30,7 @@ class Story(Interface_) : Task {
 
 	alias Interface = Interface_;
 	alias Sw = Interface.Switches.Index;
+	alias Lamp = Interface.LEDStripe.Lamp;
 	alias C = Coordinate!();
 
 	enum RGB {
@@ -46,6 +47,7 @@ class Story(Interface_) : Task {
 		Playlist playlist;
 		Sound score_sound;
 		Sound score_sound_2;
+		Sound explode_sound;
 
 		PlayingField!iface playing_field;
 		TextDisplay!iface text;
@@ -68,6 +70,7 @@ class Story(Interface_) : Task {
 
 		this.score_sound = new Sound("./resources/sounds/blip1_s.mp3");
 		this.score_sound_2 = new Sound("./resources/sounds/utini.mp3");
+		this.explode_sound = new Sound("./resources/sounds/death_star_explode.mp3");
 
 		this.playing_field = new PlayingField!(this.iface)();
 		this.playing_field.off;
@@ -79,21 +82,21 @@ class Story(Interface_) : Task {
 		this.score_display = new ScoreDisplay!(this.iface)();
 		schedule(this.score_display, priority + 20);
 
-		//this.animation = new PNGSprite!(Interface.Canvas)(
-				//"./resources/sprites/deathstar_01",
-				//300.msecs,
-				//this.iface.canvas,
-				//Yes.loop
-		//);
-		//schedule(this.animation, priority + 5);
 	}
 
 	override void frame_start(Duration dt) {
 		iface.canvas.clear;
 
-		//this.animation.frame_start(dt);
-
 		check_scoring();
+
+		if(!playing_field.enabled) {
+			return;
+		}
+		if(playing_field.hole0_hit) {
+			explode_sound.play();
+			score_display.add_score(10000);
+			iface.led_stripe.lamp(Lamp.DS_LIGHT);
+		}
 	}
 
 	void check_scoring() {
@@ -115,19 +118,13 @@ class Story(Interface_) : Task {
 		} // playing_field
 	} // check_scoring()
 
-	//void intro() {
-		//text.off;
-		////auto png_buf = read_png("/home/henning/host/Desktop/test.png");
-		////blit(png_buf, Coord(0, 0), Coord(16, 40), iface.canvas, Coord(0,0));
-	//}
-
 	void intro() {
 		text.off;
 		yield(4200.msecs);
 		playlist.play;
 		yield(800.msecs);
 
-		text.s("  STAR  \n  WARS  \n\n\n Ep. IV \n\n  A new \n  hope  ", DColor.YELLOW);
+		text.s("  STAR  \n  WARS  \n\n\nPinball \n\n   by   \n Hartmut\n  and   \n Henning\nHasemann\n\n\n\n", DColor.YELLOW);
 		text.on;
 		iface.led_stripe.full(RGB.YELLOW).dt(10);
 
@@ -135,7 +132,7 @@ class Story(Interface_) : Task {
 		text.scroll.speed = Coordinate!double(-5, 0);
 		iface.led_stripe.rotmod(RGB.YELLOW, 5, 100).dir(0);
 
-		yield(9700.msecs);
+		yield(19200.msecs); // ~1600msecs per row beyond the first two
 		text.scroll.stop;
 		yield(4000.msecs);
 		iface.led_stripe.full(RGB.BLACK);

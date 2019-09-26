@@ -14,10 +14,14 @@ class PlayingField(alias iface) : Task {
 	mixin Switchable;
 
 	public {
-		bool     enable_ball_return;
+		// Overall state of the playing field
+		bool     resetting;
+
+		// Playing field items abstractions
 		Rising[] dtb_scored;
 		Rising   dtb_all_scored;
-		bool     resetting;
+
+		Rising   hole0_hit;
 	}
 
 	private {
@@ -43,6 +47,8 @@ class PlayingField(alias iface) : Task {
 			&& iface.switches[Sw.DTB0_3]
 			&& iface.switches[Sw.DTB0_4]
 		));
+
+		this.hole0_hit = Rising(() => iface.switches[Sw.HOLE0], false);
 	}
 
 	override
@@ -77,7 +83,8 @@ class PlayingField(alias iface) : Task {
 		foreach(ref dtb; dtb_scored) {
 			dtb.frame_start(dt);
 		}
-		this.dtb_all_scored.frame_start(dt);
+		dtb_all_scored.frame_start(dt);
+		hole0_hit.frame_start(dt);
 
 		with(iface) {
 			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
