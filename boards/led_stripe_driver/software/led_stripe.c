@@ -239,8 +239,8 @@ void start_execute() {
 		default:
 			break;
 	}
-	ws2812_setleds(led, LEDS);
 	PORT_LAMPS0 = lamps(c)[0];
+	ws2812_setleds(led, LEDS);
 }
 
 void execute() {

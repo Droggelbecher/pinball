@@ -10,6 +10,7 @@ class PlayingField(alias iface) : Task {
 	alias Interface = typeof(iface);
 	alias Sol = Interface.Solenoids.Index;
 	alias Sw = Interface.Switches.Index;
+	alias Lamp = Interface.LEDStripe.Lamp;
 
 	mixin Switchable;
 
@@ -94,6 +95,10 @@ class PlayingField(alias iface) : Task {
 			solenoids[Sol.BUMPER0]       = switches[Sw.BUMPER0];
 			solenoids[Sol.BUMPER1]       = switches[Sw.BUMPER1];
 			solenoids[Sol.BUMPER2]       = switches[Sw.BUMPER2];
+
+			led_stripe[Lamp.BMP0] = switches[Sw.BUMPER0];
+			led_stripe[Lamp.BMP1] = switches[Sw.BUMPER1];
+			led_stripe[Lamp.BMP2] = switches[Sw.BUMPER2];
 
 			solenoids[Sol.DTB0] = 
 				   switches[Sw.DTB0_0]

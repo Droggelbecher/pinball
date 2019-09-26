@@ -109,6 +109,8 @@ class Story(Interface_) : Task {
 				if(dtb) {
 					score_sound.play;
 					score_display.add_score(100);
+					// DEBUG: toggle DS_WEAPON on score so we know it works
+					iface.led_stripe[Lamp.DS_WEAPON] = !iface.led_stripe[Lamp.DS_WEAPON];
 				}
 			} // foreach
 			if(dtb_all_scored) {
