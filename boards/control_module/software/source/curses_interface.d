@@ -38,7 +38,6 @@ struct Key {
 	bool state;
 }
 
-
 class CursesInterface(Solenoids_, Switches_, LEDStripe_, Display_) : Task {
 
 	alias SensorActuatorOverride!Solenoids_ Solenoids;
@@ -48,26 +47,50 @@ class CursesInterface(Solenoids_, Switches_, LEDStripe_, Display_) : Task {
 	alias BufferCanvas Canvas;
 	alias BufferLogger!(10) Logger;
 
+	alias LEDStripe.Lamp Lamp;
+
+	static struct LampState {
+		int key;
+		string str;
+		Lamp index;
+	}
+
 public:
 	// Solenoids
-	enum enable_solenoid_control_key = KEY_F(1);
-	enum enable_display_test_key = KEY_F(2);
+	enum enable_display_test_key = KEY_F(1);
+	enum enable_solenoid_control_key = KEY_F(2);
+	enum enable_lamps_control_key = KEY_F(3);
+
 	enum quit_key = KEY_F(12);
 	bool enable_solenoid_control = false;
+	bool enable_lamp_control = false;
 
 	SolenoidState[] solenoid_states = [
-		{ 'a', "FL L", Sol.FLIPPER_LEFT },
-		{ 'o', "FL R", Sol.FLIPPER_RIGHT },
-		{ 'e', "DTB0", Sol.DTB0 },
-		{ 'u', "SS 0", Sol.SLINGSHOT0 },
-		{ 'i', "SS 1", Sol.SLINGSHOT1 },
-		{ 'd', "BMP0", Sol.BUMPER0 },
-		{ 'h', "BMP1", Sol.BUMPER1 },
-		{ 't', "BMP2", Sol.BUMPER2 },
-		{ 'n', "SOL_08", Sol.SOL_08 },
-		{ 's', "BLRT", Sol.BALL_RETURN },
-		{ '-',  "SOL_10", Sol.SOL_10 },
-		{ '\\', "SOL_11", Sol.SOL_11 },
+		{ 'a', "FL_L ", Sol.FLIPPER_LEFT },
+		{ 'o', "FL_R ", Sol.FLIPPER_RIGHT },
+		{ 'e', "DTB0 ", Sol.DTB0 },
+		{ 'u', "SS_0 ", Sol.SLINGSHOT0 },
+		{ 'i', "SS_1 ", Sol.SLINGSHOT1 },
+		{ 'd', "BMP0 ", Sol.BUMPER0 },
+		{ 'h', "BMP1 ", Sol.BUMPER1 },
+		{ 't', "BMP2 ", Sol.BUMPER2 },
+		{ 'n', "SOL08", Sol.SOL_08 },
+		{ 's', "BLRT ", Sol.BALL_RETURN },
+		{ '-', "SOL10", Sol.SOL_10 },
+		{ '\\',"SOL11", Sol.SOL_11 },
+	];
+
+	LampState[] lamp_states = [
+		{ ';', "WEAP ", Lamp.DS_WEAPON },
+		{ 'q', "LIGHT", Lamp.DS_LIGHT },
+		{ 'j', "TGT  ", Lamp.TARGET },
+		{ 'k', "VADER", Lamp.VADER },
+		{ 'x', "FALCN", Lamp.FALCON },
+		{ 'b', "BMP0 ", Lamp.BMP0 },
+		{ 'm', "BMP1 ", Lamp.BMP1 },
+		{ 'w', "BMP2 ", Lamp.BMP2 },
+		{ 'v', "SS_0 ", Lamp.SS0 },
+		{ 'z', "SS_1 ", Lamp.SS1 },
 	];
 
 	Key[] key_table = [
@@ -138,7 +161,8 @@ public:
 		paint_canvas(Coord(2, 2));
 		paint_switch_states(Coord(22, 2));
 		paint_solenoid_states(Coord(25, 2));
-		paint_log(Coord(28, 2));
+		paint_lamp_states(Coord(28, 2));
+		paint_log(Coord(31, 2));
 		nc.wnoutrefresh(nc.stdscr);
 		nc.doupdate();
 		read_keys;
@@ -167,6 +191,9 @@ public:
 					nc.addch(color_symbols[c] | COLOR_PAIR(c + 1) | A_NORMAL);
 				}
 			}
+			attrset(display.test ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
+			printw(" F1:DISPLAY TEST ");
+			attrset(COLOR_PAIR(0));
 		}
 
 		void paint_switch_states(Coord pos) {
@@ -189,7 +216,7 @@ public:
 		void paint_solenoid_states(Coord pos) {
 			nc.wmove(nc.stdscr, pos.row, pos.column);
 			attrset(enable_solenoid_control ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
-			printw(" F1:ENABLE ");
+			printw(" F2:ENABLE ");
 			attrset(COLOR_PAIR(0));
 			printw(" ");
 			foreach(SolenoidState s; solenoid_states) {
@@ -200,9 +227,22 @@ public:
 			}
 			attrset(COLOR_PAIR(0));
 
-			attrset(display.test ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
-			printw(" F2:DISPLAY TEST ");
+		}
+
+		void paint_lamp_states(Coord pos) {
+			nc.wmove(nc.stdscr, pos.row, pos.column);
+			attrset(enable_lamp_control ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
+			printw(" F3:ENABLE ");
 			attrset(COLOR_PAIR(0));
+			printw(" ");
+			foreach(LampState l; lamp_states) {
+				attrset(led_stripe[l.index] ? (COLOR_PAIR(7) | A_REVERSE) : COLOR_PAIR(0));
+				printw(" %c:%s ", l.key, l.str.toStringz);
+				attrset(COLOR_PAIR(0));
+				printw(" ");
+			}
+			attrset(COLOR_PAIR(0));
+
 		}
 
 		void paint_log(Coord pos) {
@@ -233,6 +273,9 @@ public:
 
 				// If user controls solenoids, cut off game logic
 				solenoids.mute_set = enable_solenoid_control;
+			}
+			else if(ch == enable_lamps_control_key) {
+				enable_lamp_control = !enable_lamp_control;
 			}
 			else if(ch == enable_display_test_key) {
 				//enable_display_test = !enable_display_test;
@@ -268,6 +311,12 @@ public:
 					solenoids.decorated[solenoid.index] = (ch == solenoid.key);
 				} // for solenoid
 			} // if enable solenoid contral
+
+			if(enable_lamp_control) {
+				foreach(ref LampState lamp; lamp_states) {
+					led_stripe[lamp.index] = (ch == lamp.key);
+				} // for solenoid
+			} // if lamp control
 		}
 
 		alias canvas this;

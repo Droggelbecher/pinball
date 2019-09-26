@@ -40,8 +40,8 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 		BMP0     ,
 		BMP1     ,
 		BMP2     ,
-		SSL      ,
-		SSR
+		SS0      ,
+		SS1
 	};
 
 
@@ -116,15 +116,26 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 	}
 
 	LEDActuator lamp(Lamp index, bool on=true) {
+		this[index] = on;
+		return this;
+	}
+
+	bool opIndex(Lamp index) {
 		int bit = index % 8;
 		int byte_ = index / 8;
-		if(on) {
+		return (command[11 + byte_] & (1 << cast(int)index)) != 0;
+	}
+
+	bool opIndexAssign(bool v, Lamp index) {
+		int bit = index % 8;
+		int byte_ = index / 8;
+		if(v) {
 			command[11 + byte_] |= (1 << cast(int)index);
 		}
 		else {
 			command[11 + byte_] &= ~(1 << cast(int)index);
 		}
-		return this;
+		return this[index];
 	}
 
 	override void frame_start(Duration dt) {
