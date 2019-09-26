@@ -19,15 +19,20 @@
 #define CTC_MATCH_OVERFLOW ((F_CPU / 1000UL) / 8UL) 
 
 #define PORT_TEST PORTK
+#define PIN_TEST PINK
 #define DDR_TEST DDRK
-#define PGREY PK5
-#define PVIOLET PK7
+#define PGREEN PK0
+#define PVIOLET PK4
+#define PSELFTEST PK3
+
+#define PORT_LAMPS0 PORTA
+#define DDR_LAMPS0 DDRA
 
 // PF0 = Analog 0
 // PC0 = Diginal 37
 // src: https://www.arduino.cc/en/uploads/Hacking/PinMap2560big.png
 
-typedef uint8_t Command[11];
+typedef uint8_t Command[15];
 
 /*
  * IIIAAACC
@@ -53,7 +58,7 @@ typedef enum {
 } AnimationMode;
 
 enum {
-	ID_MASK = 0xe0
+	ID_MASK = 0xe0 // top 3 bits
 	//ID_MASK = (0xff << (ANIM_BITS + COLOR_BITS)) & 0xff
 };
 
@@ -78,6 +83,8 @@ inline int  b1   (const Command c) { return c[ 7]; }
 inline int  dir  (const Command c) { return c[ 8]; }
 inline int  dt   (const Command c) { return c[ 9]; }
 inline int  count(const Command c) { return c[10]; }
+
+const uint8_t*lamps(const Command c) { return c + 11; }
 
 
 int main(void);

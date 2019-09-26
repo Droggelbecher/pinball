@@ -10,7 +10,7 @@ extern(C) {
 
 class LEDActuator(Spi, int SlaveIdx): Task {
 	
-	enum DATA_BYTES = 11;
+	enum DATA_BYTES = 15;
 
 	enum ColorMode {
 		MOD = 0, // light up every k'th LED in this color
@@ -31,8 +31,22 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 	enum ID_MASK = 0xe0;
 	enum ID_INCREMENT = 0x20;
 
+	enum Lamp {
+		DS_WEAPON,
+		DS_LIGHT ,
+		TARGET   ,
+		VADER    ,
+		FALCON   ,
+		BMP0     ,
+		BMP1     ,
+		BMP2     ,
+		SSL      ,
+		SSR
+	};
+
+
 	this(Spi spi) {
-		command[0] = cast(ubyte)(ID_INCREMENT * uniform(0, 8)); // have some non-zero start fo ID
+		command[0] = cast(ubyte)(ID_INCREMENT * uniform(1, 8)); // have some non-zero start fo ID
 		this.spi = spi;
 	}
 
@@ -98,6 +112,18 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 		color1([0,0,0]);
 		this.dt(dt);
 		dir(1);
+		return this;
+	}
+
+	LEDActuator lamp(Lamp index, bool on=true) {
+		int bit = index % 8;
+		int byte_ = index / 8;
+		if(on) {
+			command[11 + byte_] |= (1 << cast(int)index);
+		}
+		else {
+			command[11 + byte_] &= ~(1 << cast(int)index);
+		}
 		return this;
 	}
 

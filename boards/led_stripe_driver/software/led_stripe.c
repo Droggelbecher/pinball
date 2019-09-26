@@ -43,6 +43,17 @@ void load(Command c) {
 	swap_buffers();
 }
 
+Command init = {
+	COLOR_GRADIENT | ANIM_FADEOUT,
+	1, // modulus
+	0x00, 0x00, 0x00, // color 0
+	0x00, 0x00, 0x00, // color 1
+	0x01, // direction
+	30, // dt
+	0, // count (unused)
+	0, 0, 0, 0
+};
+
 Command selftest = {
 	COLOR_GRADIENT | ANIM_ROTATE,
 	1, // modulus
@@ -51,6 +62,7 @@ Command selftest = {
 	0x01, // direction
 	30, // dt
 	0, // count (unused)
+	0, 0, 0, 0
 };
 
 Command error = {
@@ -61,49 +73,60 @@ Command error = {
 	0x01, // direction
 	90, // dt
 	0, // count (unused)
+	0, 0, 0, 0
+};
+
+Command error2 = {
+	COLOR_MOD | ANIM_ROTATE,
+	2, // modulus
+	0xff, 0x00, 0x00, // color 0
+	0xff, 0xff, 0xff, // color 1
+	0x01, // direction
+	90, // dt
+	0, // count (unused)
+	0, 0, 0, 0
 };
 
 int main(void) {
 	setup();
+
 	setup_spi();
 
 	clear_leds();
 	ws2812_setleds(led, LEDS);
 
-	/*Command gradient = {*/
-		/*COLOR_MOD | ANIM_ROTATE,*/
-		/*4, // modulus*/
-		/*0x00, 0xa0, 0xf0, // color 0*/
-		/*0xf0, 0x10, 0x50, // color 1*/
-		/*0x01, // direction*/
-		/*30, // dt*/
-		/*3, // count (unused)*/
-	/*};*/
-
-	/*load(selftest);*/
-	/*start_execute();*/
+	load(init);
+	start_execute();
 
 	phase = 0;
 	while(1) {
-		if(!(PINK & (1 << PK3))) {
-			load(selftest);
-			start_execute();
-		}
-
 		// 1. wait for data from SPI
 		// 2. execute it
 
 		while(!spi_xfer) {
 			// TODO: this kinda defeats the point of doing this via interrupt,
 			// make a better design
+
+			if(!(PIN_TEST & (1 << PSELFTEST))) {
+				load(selftest);
+				start_execute();
+			}
+
 		}
+
+		// Measured 9/2019:
+		// ~ 500us xfer_spi()
+		// ~2200us execute()
+		//
+		// Note: at 30FPS, SPI transfer should happen every ~3300us
+
 		PORT_TEST |= (1 << PVIOLET);
 		xfer_spi();
 		PORT_TEST &= ~(1 << PVIOLET);
 
-		PORT_TEST |= (1 << PGREY);
+		PORT_TEST |= (1 << PGREEN);
 		execute();
-		PORT_TEST &= ~(1 << PGREY);
+		PORT_TEST &= ~(1 << PGREEN);
 
 	}
 
@@ -122,16 +145,22 @@ void clear_leds() {
  */
 ISR(PCINT0_vect) {
 	spi_xfer = !(PINB & (1 << PB0)); // SS pin high -> end of transmission
+
+	// Clear SPIF
+	int x = SPSR;
+	x = SPDR;
+	(void)x;
 }
 
 void xfer_spi(void) {
+	// It can happen (apparently quite regularly) that we do not get the full SPI
+	// data here, eg. because transfer started in the midst of execute() / ws2812_setleds().
+	//
+	// In that case we can do nothing but just abort this transfer and wait for the next frame.
+	// (due to the loop in main we are guarenteed to wait for a complete transfer after each execute() call)
 	if(!spi_xfer) { return; }
 
 	uint8_t *cmd = command_buffer[!command_idx];
-
-	/*while(!(SPSR & (1 << SPIF))) { }*/
-	/*char _ = SPDR;*/
-	/*(void)_;*/
 
 	for(int i = 0; i < sizeof(Command); i++) {
 		while(!(SPSR & (1 << SPIF))) {
@@ -147,9 +176,11 @@ void xfer_spi(void) {
 	uint8_t mychecksum = checksum(cmd, sizeof(Command));
 	if(chk == mychecksum) {
 		// New command received correctly, switch to it
-		if(id(cmd) != id(command_buffer[command_idx])) {
-			// Did command ID change? If yes it means we started a new command (instance)
-			command_idx = !command_idx;
+		// Do this in any case, new command might set different lamp states!
+		swap_buffers();
+		if(id(command_buffer[!command_idx]) != id(command_buffer[command_idx])) {
+			// Did command ID change? If yes it means we started a new command (-instance),
+			// So start it from beginning
 			start_execute();
 		}
 	}
@@ -209,10 +240,14 @@ void start_execute() {
 			break;
 	}
 	ws2812_setleds(led, LEDS);
+	PORT_LAMPS0 = lamps(c)[0];
 }
 
 void execute() {
 	uint8_t *c = active_buffer();
+
+	PORT_LAMPS0 = lamps(c)[0];
+
 	if(dt(c) == 0) {
 		return;
 	}
@@ -238,9 +273,7 @@ void execute() {
 				}
 			}
 
-			PORT_TEST |= (1 << PVIOLET);
 			ws2812_setleds(led, LEDS);
-			PORT_TEST &= ~(1 << PVIOLET);
 			break;
 
 		case ANIM_FADEOUT:
@@ -296,14 +329,17 @@ void setup(void) {
 	// LED data out pin
 	DDRC |= (1 << PC0);
 
+	DDR_LAMPS0 = 0xff;
+	PORT_LAMPS0 = 0x00;
+
 	// PK3 = A11 = selftest switch
-	DDRK &= ~(1 << PK3);
+	DDR_TEST &= ~(1 << PSELFTEST);
 
 	// PK5 = A13 = grey test point
-	DDR_TEST |= (1 << PGREY) | (1 << PVIOLET);
+	DDR_TEST |= (1 << PGREEN) | (1 << PVIOLET);
 
 	// test points to low
-	PORT_TEST &= ~((1 << PGREY) | (1 << PVIOLET));
+	PORT_TEST &= ~((1 << PGREEN) | (1 << PVIOLET));
 
 	/*PORTC*/
 	
