@@ -13,11 +13,7 @@ mixin template Switchable() {
 	}
 
 	bool enabled() {
-		return _enabled && enabled_condition();
-	}
-
-	bool enabled_condition() {
-		return true;
+		return _enabled;
 	}
 
 	private {

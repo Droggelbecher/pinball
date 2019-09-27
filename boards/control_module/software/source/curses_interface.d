@@ -107,12 +107,12 @@ public:
 		{ '[', '{', "BMP_1", Sw.BUMPER1,       false },
 		{ ']', '}', "BMP_2", Sw.BUMPER2,       false },
 
-		{ '\'', '"', "BLO ", Sw.BALL_OUT,      false },
-		{ ',',  '<', "HOL0", Sw.HOLE0,         false },
+		{ '\'', '"',"BALL ", Sw.BALL_OUT,      false },
+		{ ',',  '<',"HOLE0", Sw.HOLE0,         false },
 
-		{ 'l', 'L',  "SW01", Sw.SW_01,         false },
-		{ '/', '?',  "SW06", Sw.SW_06,         false },
-		{ '=', '+',  "SW07", Sw.SW_07,         false },
+		{ 'l', 'L', "SW_01", Sw.SW_01,         false },
+		{ '/', '?', "SW_06", Sw.SW_06,         false },
+		{ '=', '+', "SPIN",  Sw.SPINNER,       false },
 	];
 
 	// Switch states

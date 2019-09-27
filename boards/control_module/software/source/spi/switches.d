@@ -2,13 +2,14 @@
 import bit_sensor;
 
 enum SwitchesIndex {
+	SW_00 = 0,
 	SW_01 = 1,
 	SLINGSHOT1 = 2,
 	FLIPPER_RIGHT = 3,
 	FLIPPER_LEFT = 4,
 	SLINGSHOT0 = 5,
 	SW_06 = 6,
-	SW_07 = 7,
+	SPINNER = 7,
 
 	DTB0_0 = 8,
 	DTB0_1 = 9,

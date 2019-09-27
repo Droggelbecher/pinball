@@ -105,6 +105,10 @@ class Story(Interface_) : Task {
 		}
 		
 		with(playing_field) {
+			if(spinner_scored) {
+				score_display.add_score(10);
+			}
+
 			foreach(dtb; dtb_scored) {
 				if(dtb) {
 					score_sound.play;
@@ -159,7 +163,7 @@ class Story(Interface_) : Task {
 	}
 
 	override void run() {
-		intro();
+		//intro();
 		iface.logger.log("Game started.");
 		playing_field.on;
 	}

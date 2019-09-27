@@ -23,6 +23,7 @@ class PlayingField(alias iface) : Task {
 		Rising   dtb_all_scored;
 
 		Rising   hole0_hit;
+		Rising   spinner_scored;
 	}
 
 	private {
@@ -50,6 +51,7 @@ class PlayingField(alias iface) : Task {
 		));
 
 		this.hole0_hit = Rising(() => iface.switches[Sw.HOLE0], false);
+		this.spinner_scored = Rising(() => iface.switches[Sw.SPINNER], true);
 	}
 
 	override
@@ -69,10 +71,6 @@ class PlayingField(alias iface) : Task {
 
 	}
 
-	bool enabled_condition() {
-		return !resetting;
-	}
-
 	override
 	void frame_start(Duration dt) {
 
@@ -86,6 +84,7 @@ class PlayingField(alias iface) : Task {
 		}
 		dtb_all_scored.frame_start(dt);
 		hole0_hit.frame_start(dt);
+		spinner_scored.frame_start(dt);
 
 		with(iface) {
 			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
