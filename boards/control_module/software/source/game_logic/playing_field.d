@@ -2,7 +2,7 @@
 import std.datetime: Duration, seconds, msecs;
 
 import task: Task;
-import signal;
+import signal: KeepValueDelay, Rising;
 import switchable;
 
 class PlayingField(alias iface) : Task {
@@ -24,34 +24,35 @@ class PlayingField(alias iface) : Task {
 
 		Rising   hole0_hit;
 		Rising   spinner_scored;
-	}
 
-	private {
-		KeepValueDelay ball_return;
+		//KeepValueDelay ball_out;
+		Rising   ball_out;
 	}
 
 	this() {
 		// Debounce ball out switch in the sense
-		// that we want it to be "true" for at least 1000 msecs
+		// that we want it to be "true" for some time
 		// before reacting so ball has really come to halt
-		this.ball_return = KeepValueDelay(() => iface.switches[Sw.BALL_OUT], true, 1000.msecs);
+		this.ball_out = new Rising(
+				new KeepValueDelay(() => iface.switches[Sw.BALL_OUT], true, 500.msecs),
+		);
 		this.dtb_scored = [
-			Rising(() => iface.switches[Sw.DTB0_0]),
-			Rising(() => iface.switches[Sw.DTB0_1]),
-			Rising(() => iface.switches[Sw.DTB0_2]),
-			Rising(() => iface.switches[Sw.DTB0_3]),
-			Rising(() => iface.switches[Sw.DTB0_4]),
+			new Rising(() => iface.switches[Sw.DTB0_0]),
+			new Rising(() => iface.switches[Sw.DTB0_1]),
+			new Rising(() => iface.switches[Sw.DTB0_2]),
+			new Rising(() => iface.switches[Sw.DTB0_3]),
+			new Rising(() => iface.switches[Sw.DTB0_4]),
 		];
-		this.dtb_all_scored = Rising(() => (
+		this.dtb_all_scored = new Rising(() =>
 			   iface.switches[Sw.DTB0_0]
 			&& iface.switches[Sw.DTB0_1]
 			&& iface.switches[Sw.DTB0_2]
 			&& iface.switches[Sw.DTB0_3]
 			&& iface.switches[Sw.DTB0_4]
-		));
+		);
 
-		this.hole0_hit = Rising(() => iface.switches[Sw.HOLE0], false);
-		this.spinner_scored = Rising(() => iface.switches[Sw.SPINNER], true);
+		this.hole0_hit = new Rising(() => iface.switches[Sw.HOLE0], false);
+		this.spinner_scored = new Rising(() => iface.switches[Sw.SPINNER], true);
 	}
 
 	override
@@ -78,7 +79,7 @@ class PlayingField(alias iface) : Task {
 			return;
 		}
 
-		ball_return.frame_start(dt);
+		ball_out.frame_start(dt);
 		foreach(ref dtb; dtb_scored) {
 			dtb.frame_start(dt);
 		}
@@ -106,7 +107,7 @@ class PlayingField(alias iface) : Task {
 				&& switches[Sw.DTB0_3]
 				&& switches[Sw.DTB0_4];
 
-			solenoids[Sol.BALL_RETURN] = cast(bool)ball_return;
+			//solenoids[Sol.BALL_RETURN] = cast(bool)ball_out;
 		}
 	} // frame_start()
 }

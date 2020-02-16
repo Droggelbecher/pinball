@@ -4,14 +4,15 @@ import std.datetime;
 import std.format;
 import core.thread;
 import std.experimental.logger;
+import std.compiler;
 
 import story : Story;
 import scheduler : Scheduler;
 
 import curses_interface;
 
-//import mock_spi: Spi;
-import bcm2708_spi: Spi;
+import mock_spi: Spi;
+//import bcm2708_spi: Spi;
 
 import switches;
 import solenoids;
@@ -79,6 +80,8 @@ void init_logging(Logger iface_logger) {
 	global_logger.insertLogger("iface_logger", iface_logger);
 	global_logger.insertLogger("file_logger", file_logger);
 	sharedLog = global_logger;
+
+	//infof("Built with D%d.%d using %s", version_major, version_minor, name);
 }
 
 void run_game() {
@@ -110,12 +113,6 @@ void run_game() {
 }
 
 void main() {
-	//test_audio();
-	//test_spi();
-	//test_mad();
-	//test_led();
-	//test_png();
-	
 	run_game();
 }
 

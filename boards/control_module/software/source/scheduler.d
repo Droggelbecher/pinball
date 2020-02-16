@@ -52,7 +52,7 @@ class Scheduler {
 	}
 
 	void run() {
-		static fps_tracker = Interval!Duration(5000.msecs);
+		static fps_tracker = Interval!Duration(60000.msecs);
 
 		std.datetime.stopwatch.StopWatch sw;
 		Duration frame_duration = target_duration;
