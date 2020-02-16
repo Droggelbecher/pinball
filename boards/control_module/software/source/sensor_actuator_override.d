@@ -4,6 +4,7 @@ import std.datetime;
 import std.stdio;
 import std.typecons;
 import utils;
+import std.format;
 
 /**
  * Decorate a given SensorActutator in the following way:

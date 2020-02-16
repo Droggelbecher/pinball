@@ -2,7 +2,7 @@
 import std.datetime: Duration, seconds, msecs;
 
 import task: Task;
-import signal;
+import signal: KeepValueDelay, Rising, Signal;
 import switchable;
 
 class PlayingField(alias iface) : Task {
@@ -19,39 +19,51 @@ class PlayingField(alias iface) : Task {
 		bool     resetting;
 
 		// Playing field items abstractions
-		Rising[] dtb_scored;
-		Rising   dtb_all_scored;
+		Signal[] dtb_scored;
+		Signal   dtb_all_scored;
 
-		Rising   hole0_hit;
-		Rising   spinner_scored;
+		Signal   hole0_hit;
+		Signal   spinner_scored;
+		Signal   bumper_scored;
+
+		//KeepValueDelay ball_out;
+		Signal   ball_out;
 	}
 
 	private {
-		KeepValueDelay ball_return;
+		bool _enable_ball_return = false;
 	}
 
 	this() {
 		// Debounce ball out switch in the sense
-		// that we want it to be "true" for at least 1000 msecs
+		// that we want it to be "true" for some time
 		// before reacting so ball has really come to halt
-		this.ball_return = KeepValueDelay(() => iface.switches[Sw.BALL_OUT], true, 1000.msecs);
+		this.ball_out = new Rising(
+				new KeepValueDelay(() => iface.switches[Sw.BALL_OUT], true, 500.msecs),
+		);
 		this.dtb_scored = [
-			Rising(() => iface.switches[Sw.DTB0_0]),
-			Rising(() => iface.switches[Sw.DTB0_1]),
-			Rising(() => iface.switches[Sw.DTB0_2]),
-			Rising(() => iface.switches[Sw.DTB0_3]),
-			Rising(() => iface.switches[Sw.DTB0_4]),
+			new Rising(() => iface.switches[Sw.DTB0_0]),
+			new Rising(() => iface.switches[Sw.DTB0_1]),
+			new Rising(() => iface.switches[Sw.DTB0_2]),
+			new Rising(() => iface.switches[Sw.DTB0_3]),
+			new Rising(() => iface.switches[Sw.DTB0_4]),
 		];
-		this.dtb_all_scored = Rising(() => (
+		this.dtb_all_scored = new Rising(() =>
 			   iface.switches[Sw.DTB0_0]
 			&& iface.switches[Sw.DTB0_1]
 			&& iface.switches[Sw.DTB0_2]
 			&& iface.switches[Sw.DTB0_3]
 			&& iface.switches[Sw.DTB0_4]
-		));
+		);
 
-		this.hole0_hit = Rising(() => iface.switches[Sw.HOLE0], false);
-		this.spinner_scored = Rising(() => iface.switches[Sw.SPINNER], true);
+		this.bumper_scored = new Rising(() =>
+			   iface.switches[Sw.BUMPER0]
+			|| iface.switches[Sw.BUMPER1]
+			|| iface.switches[Sw.BUMPER2]
+		);
+
+		this.hole0_hit = new Rising(() => iface.switches[Sw.HOLE0], false);
+		this.spinner_scored = new Rising(() => iface.switches[Sw.SPINNER], true);
 	}
 
 	override
@@ -74,15 +86,20 @@ class PlayingField(alias iface) : Task {
 	override
 	void frame_start(Duration dt) {
 
+		// Clear this even if playing field is not enabled,
+		// otherwise it can happen that this is on for a long time
+		iface.solenoids[Sol.BALL_RETURN] = false;
+
 		if(!enabled) {
 			return;
 		}
 
-		ball_return.frame_start(dt);
+		ball_out.frame_start(dt);
 		foreach(ref dtb; dtb_scored) {
 			dtb.frame_start(dt);
 		}
 		dtb_all_scored.frame_start(dt);
+		bumper_scored.frame_start(dt);
 		hole0_hit.frame_start(dt);
 		spinner_scored.frame_start(dt);
 
@@ -106,7 +123,18 @@ class PlayingField(alias iface) : Task {
 				&& switches[Sw.DTB0_3]
 				&& switches[Sw.DTB0_4];
 
-			solenoids[Sol.BALL_RETURN] = cast(bool)ball_return;
+			if(_enable_ball_return) {
+				iface.solenoids[Sol.BALL_RETURN] = iface.switches[Sw.BALL_OUT];
+			}
 		}
 	} // frame_start()
+
+	void return_ball() {
+		_enable_ball_return = true;
+		while(iface.switches[Sw.BALL_OUT]) {
+			//infof("return_ball(): ball is out");
+			yield(100.msecs);
+		}
+		_enable_ball_return = false;
+	}
 }
