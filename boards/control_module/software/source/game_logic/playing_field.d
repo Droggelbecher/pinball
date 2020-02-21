@@ -2,7 +2,7 @@
 import std.datetime: Duration, seconds, msecs;
 
 import task: Task;
-import signal: KeepValueDelay, Rising;
+import signal: KeepValueDelay, Rising, Signal;
 import switchable;
 
 class PlayingField(alias iface) : Task {
@@ -19,14 +19,15 @@ class PlayingField(alias iface) : Task {
 		bool     resetting;
 
 		// Playing field items abstractions
-		Rising[] dtb_scored;
-		Rising   dtb_all_scored;
+		Signal[] dtb_scored;
+		Signal   dtb_all_scored;
 
-		Rising   hole0_hit;
-		Rising   spinner_scored;
+		Signal   hole0_hit;
+		Signal   spinner_scored;
+		Signal   bumper_scored;
 
 		//KeepValueDelay ball_out;
-		Rising   ball_out;
+		Signal   ball_out;
 	}
 
 	this() {
@@ -49,6 +50,12 @@ class PlayingField(alias iface) : Task {
 			&& iface.switches[Sw.DTB0_2]
 			&& iface.switches[Sw.DTB0_3]
 			&& iface.switches[Sw.DTB0_4]
+		);
+
+		this.bumper_scored = new Rising(() =>
+			   iface.switches[Sw.BUMPER0]
+			|| iface.switches[Sw.BUMPER1]
+			|| iface.switches[Sw.BUMPER2]
 		);
 
 		this.hole0_hit = new Rising(() => iface.switches[Sw.HOLE0], false);
@@ -84,6 +91,7 @@ class PlayingField(alias iface) : Task {
 			dtb.frame_start(dt);
 		}
 		dtb_all_scored.frame_start(dt);
+		bumper_scored.frame_start(dt);
 		hole0_hit.frame_start(dt);
 		spinner_scored.frame_start(dt);
 

@@ -70,15 +70,15 @@ class ScoreDisplay(alias iface): Task {
 	}
 
 	void add_score(int score) {
-		this._player.score += score;
+		this._player.score += score * this._player.multiplier;
 		//iface.logger.logf("Score: %d", this._player.score);
 		this.show_score = 2000.msecs;
 		render_score();
 	}
 
 	void render_score() {
-		char[10] score_string;
-		snprintf(score_string.ptr, score_string.length, "%d", this.display_score);
+		char[20] score_string;
+		snprintf(score_string.ptr, score_string.length, "     x%d\n%d", this._player.multiplier, this.display_score);
 		// Alas, not entirely nogc, but lets try to reduce the per-frame allocations to a necessary minimum
 		this.score_text = font_normal(to!string(score_string.ptr));
 	}

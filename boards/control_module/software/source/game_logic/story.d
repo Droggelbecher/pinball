@@ -54,6 +54,10 @@ class Story(Interface_) : Task {
 		Sound score_sound;
 		Sound score_sound_2;
 		Sound explode_sound;
+		Sound bumper_sound;
+		Sound[] character_sounds;
+		Sound[] dtb_sounds;
+		Sound failure_sound;
 
 		PlayingField!iface playing_field;
 		SwitchesAsInput!iface switches_as_input;
@@ -81,6 +85,21 @@ class Story(Interface_) : Task {
 		this.score_sound = new Sound("./resources/sounds/blip1_s.mp3");
 		this.score_sound_2 = new Sound("./resources/sounds/utini.mp3");
 		this.explode_sound = new Sound("./resources/sounds/death_star_explode.mp3");
+
+		this.character_sounds = [
+			new Sound("./resources/sounds/utini.mp3"),
+			new Sound("./resources/sounds/R3D4.mp3"),
+			new Sound("./resources/sounds/utini.mp3"),
+			new Sound("./resources/sounds/R3D4.mp3"),
+			new Sound("./resources/sounds/utini.mp3"),
+			// TODO: C3PO
+			// TODO: Obi Wan
+			// TODO: ???
+		];
+		this.dtb_sounds = character_sounds;
+
+		this.bumper_sound = new Sound("./resources/sounds/short/blop1.mp3");
+		this.failure_sound = new Sound("./resources/sounds/loss/failure_sound.mp3");
 
 		this.playing_field = new PlayingField!(this.iface)();
 		this.playing_field.off;
@@ -129,12 +148,18 @@ class Story(Interface_) : Task {
 				score_display.add_score(10);
 			}
 
-			foreach(dtb; dtb_scored) {
+			if(bumper_scored()) {
+				bumper_sound.play;
+				score_display.add_score(100);
+			}
+
+			foreach(i, dtb; dtb_scored) {
 				if(dtb()) {
-					score_sound.play;
-					score_display.add_score(100);
+					dtb_sounds[i].play;
+					score_display.add_score(1000);
+					players[current_player].increase_multiplier(2);
 					// DEBUG: toggle DS_WEAPON on score so we know it works
-					iface.led_stripe[Lamp.DS_WEAPON] = !iface.led_stripe[Lamp.DS_WEAPON];
+					//iface.led_stripe[Lamp.DS_WEAPON] = !iface.led_stripe[Lamp.DS_WEAPON];
 				}
 			} // foreach
 			if(dtb_all_scored()) {
@@ -195,24 +220,55 @@ class Story(Interface_) : Task {
 		}
 
 		current_player = 0;
-		score_display.player = players[current_player];
 	}
 
 	void player_go(int n) {
 		current_player = n;
 		ball_out = false;
 
+		players[current_player].reset();
 		text.scroll.reset;
 		text.s(format!"PLAYER %d\n%d BALLS"(current_player + 1, players[current_player].balls), DColor.GREEN);
 		text.on;
 		yield(2000.msecs);
 		blink_text(1000.msecs);
-		//text.on;
-		//yield(1000.msecs);
 		text.off;
+
+
+		// Story
+
+		// Phase I
+		// - Goal: Get to score X
+		// - Theme: Main Theme
+		// - Effects: Falcon
+		// - Drop targets -> R2D2/Utini/etc... -> Multiplier
+		// (- Alle Drop targets: Cantina Band special mit Multiball?)
+		// -> "Helft mir Obi Wan Kenobi, ihr seid meine letzte Hoffnung"
+
+		// Phase Ia
+		// - Goal: Death star (easy door)
+		// -> "Das ist kein Mond, das ist eine Raumstation"
+
+		// Phase II: Inside Death star
+		// - Goal: Free leia & disable energy (death star hard door & drop targets)
+		// - Theme: Imperial March
+		// - Effects: Darth Vader
+		// - Sounds: Darth Vader breathing, Leia?, Muellschlucker?, Stromtrooper/laser, lichtschwertkampf, obi/darth
+		// - Bonus: Kill X stormtroopers (spinner)
+
+		// Phase III: Angriff auf Todesstern
+		// - Goal:
+		//     1. Tuerme ausschalten (drop targets)
+		//     2. Death star (easy door)
+		// - Theme: Here they come
+		// - Sounds: Weiter aufs Ziel zu, Vertraue der Macht
+		// - Effects: Target leds
+
 	}
 
 	void lost_ball() {
+		failure_sound.play;
+
 		players[current_player].balls -= 1;
 		text.scroll.reset;
 		text.on;
@@ -244,7 +300,8 @@ class Story(Interface_) : Task {
 		iface.logger.log("Starting intro");
 		//intro();
 		iface.logger.log("Choosing player count");
-		choose_player_count();
+		//choose_player_count();
+		score_display.player = players[current_player];
 
 		iface.logger.log("Game started.");
 		playing_field.on;

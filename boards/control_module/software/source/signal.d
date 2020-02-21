@@ -117,7 +117,7 @@ class Rising: Signal {
 
 	this(T)(T f, bool active_side = true) {
 		super(f, active_side);
-		this.state = false;
+		this.state = true;
 	}
 
 	override
