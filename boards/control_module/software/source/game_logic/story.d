@@ -58,6 +58,9 @@ class Story(Interface_) : Task {
 		Sound[] character_sounds;
 		Sound[] dtb_sounds;
 		Sound failure_sound;
+		Sound start_sound;
+		Sound select_sound;
+		Sound spin_sound;
 
 		PlayingField!iface playing_field;
 		SwitchesAsInput!iface switches_as_input;
@@ -100,6 +103,9 @@ class Story(Interface_) : Task {
 
 		this.bumper_sound = new Sound("./resources/sounds/short/blop1.mp3");
 		this.failure_sound = new Sound("./resources/sounds/loss/failure_sound.mp3");
+		this.start_sound = new Sound("./resources/sounds/beam_me_up_2.mp3");
+		this.select_sound = new Sound("./resources/sounds/short/swirl2.mp3");
+		this.spin_sound = new Sound("./resources/sounds/short/swirl3.mp3");
 
 		this.playing_field = new PlayingField!(this.iface)();
 		this.playing_field.off;
@@ -145,6 +151,7 @@ class Story(Interface_) : Task {
 		
 		with(playing_field) {
 			if(spinner_scored()) {
+				spin_sound.play;
 				score_display.add_score(10);
 			}
 
@@ -211,6 +218,7 @@ class Story(Interface_) : Task {
 			Command c = switches_as_input.query;
 
 			if(c == Command.NEXT) {
+				select_sound.play;
 				n_players++;
 				if(n_players > MAX_PLAYERS) { n_players = 1; }
 			}
@@ -224,9 +232,13 @@ class Story(Interface_) : Task {
 
 	void player_go(int n) {
 		current_player = n;
-		ball_out = false;
-
 		players[current_player].reset();
+		score_display.player = players[current_player];
+
+		ball_out = false;
+		playing_field.return_ball;
+		start_sound.play;
+
 		text.scroll.reset;
 		text.s(format!"PLAYER %d\n%d BALLS"(current_player + 1, players[current_player].balls), DColor.GREEN);
 		text.on;
@@ -269,7 +281,6 @@ class Story(Interface_) : Task {
 	void lost_ball() {
 		failure_sound.play;
 
-		players[current_player].balls -= 1;
 		text.scroll.reset;
 		text.on;
 		text.s(format!"PLAYER %d\n%d BALLS"(current_player + 1, players[current_player].balls), DColor.RED);
@@ -280,10 +291,11 @@ class Story(Interface_) : Task {
 		yield(1000.msecs);
 
 		current_player++;
-		if(current_player > n_players) {
+		if(current_player >= n_players) {
 			current_player = 0;
 		}
 		player_go(current_player);
+		text.off;
 	}
 
 	void blink_text(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
@@ -298,10 +310,9 @@ class Story(Interface_) : Task {
 	override void run() {
 
 		iface.logger.log("Starting intro");
-		//intro();
+		intro();
 		iface.logger.log("Choosing player count");
-		//choose_player_count();
-		score_display.player = players[current_player];
+		choose_player_count();
 
 		iface.logger.log("Game started.");
 		playing_field.on;

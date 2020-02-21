@@ -31,7 +31,7 @@ class ScoreDisplay(alias iface): Task {
 	}
 
 	this() {
-		this.show_score = 0.msecs;
+		this.show_score = 2000.msecs;
 		this.font_normal = new FontNormal(font_5x8_data);
 	}
 
@@ -53,10 +53,8 @@ class ScoreDisplay(alias iface): Task {
 		}
 
 		if(enabled) {
-		//if(show_score > 0.msecs) {
 			iface.canvas.clear;
 			blit_center!(canvas.blit)(score_text, iface.canvas);
-		//}
 		}
 	}
 
@@ -65,13 +63,14 @@ class ScoreDisplay(alias iface): Task {
 		this._player = value;
 
 		// set display score to a little less so we show tehe new players score
-		this.display_score = cast(size_t)(this._player.score * 0.9);
+		//this.display_score = cast(size_t)(this._player.score * 0.9);
+		this.display_score = 0;
+		render_score();
 		return this._player;
 	}
 
 	void add_score(int score) {
 		this._player.score += score * this._player.multiplier;
-		//iface.logger.logf("Score: %d", this._player.score);
 		this.show_score = 2000.msecs;
 		render_score();
 	}

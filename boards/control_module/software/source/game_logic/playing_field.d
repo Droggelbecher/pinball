@@ -30,6 +30,10 @@ class PlayingField(alias iface) : Task {
 		Signal   ball_out;
 	}
 
+	private {
+		bool _enable_ball_return = false;
+	}
+
 	this() {
 		// Debounce ball out switch in the sense
 		// that we want it to be "true" for some time
@@ -115,7 +119,18 @@ class PlayingField(alias iface) : Task {
 				&& switches[Sw.DTB0_3]
 				&& switches[Sw.DTB0_4];
 
-			//solenoids[Sol.BALL_RETURN] = cast(bool)ball_out;
+			if(_enable_ball_return) {
+				iface.solenoids[Sol.BALL_RETURN] = iface.switches[Sw.BALL_OUT];
+			}
 		}
 	} // frame_start()
+
+	void return_ball() {
+		_enable_ball_return = true;
+		while(iface.switches[Sw.BALL_OUT]) {
+			//infof("return_ball(): ball is out");
+			yield(100.msecs);
+		}
+		_enable_ball_return = false;
+	}
 }
