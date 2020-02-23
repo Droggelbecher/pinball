@@ -1,0 +1,6 @@
+
+command! Test echo 'hallo'
+
+let &l:makeprg="cd ".g:localvimrc_script_dir_unresolved." && dub build"
+execute "command! MakeTags !cd ".g:localvimrc_script_dir_unresolved." && dub run dscanner -- --ctags . >tags"
+

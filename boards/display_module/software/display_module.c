@@ -27,20 +27,21 @@
 inline void xfer_spi(void);
 
 int spi_xfer = 0;
+int selftest = 0;
 unsigned long phase = 0;
 
 unsigned int palette[][COLORS] = {
 
-	// G     R
+	// R     G
 
 	{ 0x00, 0x00 }, // Black
 	{ 0xff, 0x00 }, // Full red
 	{ 0x00, 0xff }, // Full green
-	{ 0x40, 0x80 }, // Yellow
-	{ 0x80, 0x80 }, // Orange
-	{ 0x00, 0x40 }, // Dark Red
-	{ 0x10, 0x00 }, // Dark Green
-	{ 0x10, 0x10 }  // Blood Orange
+	{ 0xf8, 0xff }, // Yellow
+	{ 0xe0, 0xe0 }, // Orange
+	{ 0xe0, 0x00 }, // Dark Red
+	{ 0x00, 0xe0 }, // Dark Green
+	{ 0xd0, 0xd0 }  // Blood Orange
 
 };
 
@@ -58,8 +59,8 @@ int main(void) {
 
 	while(1) {
 		// Activate pullups
-		PORT_TLC5940 |= (1 << P_TEST) | (1 << P_AUX);
-		volatile int selftest = !(PIN_TLC5940 & (1 << P_TEST));
+		PORT_TLC5940 |= (1 << P_TEST);
+		selftest = !(PIN_TLC5940 & (1 << P_TEST));
 		if(selftest) {
 			p += PHASE_RATE * (1.0 / FRAME_RATE);
 			if(p >= 1.0) {
@@ -68,12 +69,7 @@ int main(void) {
 			}
 			render_selftest(phase);
 		}
-
 		output_screen();
-
-		if(!selftest) {
-			xfer_spi();
-		}
 	}
 }
 
@@ -104,7 +100,7 @@ inline int encode_physical_screen_index(ScreenIndex si) {
 
 inline int encode_lm23088_screen_index(ScreenIndex si) {
 	// Index that corrects for the circuit layout pin order
-	si.row = 15 - si.row;
+	/*si.row = 15 - si.row;*/
 	si.column = 7 - si.column;
 	return encode_physical_screen_index(si);
 }
@@ -133,15 +129,37 @@ inline int get_screen(int row, int column, int color) {
 	return screen[idx]; 
 }
 
+inline int try_read_spi(void) {
+	asm volatile ("nop");
+	if(SPSR & (1 << SPIF)) { goto success; }
+	for(int i = 0; i < 16; i++) {
+		if(SPSR & (1 << SPIF)) { goto success; }
+		if(SPSR & (1 << SPIF)) { goto success; }
+		if(SPSR & (1 << SPIF)) { goto success; }
+		if(SPSR & (1 << SPIF)) { goto success; }
+		if(SPSR & (1 << SPIF)) { goto success; }
+		if(SPSR & (1 << SPIF)) { goto success; }
+		if(SPSR & (1 << SPIF)) { goto success; }
+		if(SPSR & (1 << SPIF)) { goto success; }
+	}
+	return -1;
+
+success:
+	return (int)SPDR;
+}
+
+
 
 // We have about 300us time from SS high->low until transmission starts!
 inline void xfer_spi(void) {
-	if(spi_xfer) {
+	if(spi_xfer && !selftest) {
+
 		int screen_index = 0;
 
 		while(!(SPSR & (1 << SPIF))) { }
-		char chx = SPDR;
-		(void)chx;
+		int ch= SPDR;
+
+		PORT_TLC5940 |= (1 << P_AUX);
 
 		// read in all but the last byte
 		// after the last byte we need to quickly activate the next display
@@ -150,23 +168,15 @@ inline void xfer_spi(void) {
 
 		for( ; screen_index != PIXELS - 1; ++screen_index) {
 
-			// the nop is for timing optimization
-			asm volatile ("nop");
-			while(!(SPSR & (1 << SPIF))) { }
-			char ch = SPDR;
-
 			ScreenIndex idx = decode_master_screen_index(screen_index);
 			idx.color = IDX_GREEN;
-			screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_GREEN];
+			screen[ encode_physical_screen_index(idx) ] = palette[(int)ch][IDX_GREEN];
 			idx.color = IDX_RED;
-			screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_RED];
+			screen[ encode_physical_screen_index(idx) ] = palette[(int)ch][IDX_RED];
 
+			ch = try_read_spi();
+			if(ch == -1) { goto timeout; }
 		}
-
-		// the nop is for timing optimization
-		asm volatile ("nop");
-		while(!(SPSR & (1 << SPIF))) { }
-		char ch = SPDR;
 
 		// enable_next(), pull SS pin of next module low
 		// so following bytes will be passed through to it
@@ -174,11 +184,14 @@ inline void xfer_spi(void) {
 
 		ScreenIndex idx = decode_master_screen_index(screen_index);
 		idx.color = IDX_GREEN;
-		screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_GREEN];
+		screen[ encode_physical_screen_index(idx) ] = palette[(int)ch][IDX_GREEN];
 		idx.color = IDX_RED;
-		screen[ encode_lm23088_screen_index(idx) ] = palette[(int)ch][IDX_RED];
+		screen[ encode_physical_screen_index(idx) ] = palette[(int)ch][IDX_RED];
 
+	timeout:
 		spi_xfer = 0;
+
+		PORT_TLC5940 &= ~(1 << P_AUX);
 	}
 }
 
@@ -198,6 +211,7 @@ void setup_spi(void) {
 	// PB3 = input (MOSI)
 	// PB4 = output (MISO)
 	DDRB |= (1 << PB0) | (1 << PB4);
+	PORTB |= (1 << PB2);
 
 	// Enable SPI, Slave, set clock rate fck/16, SPI MODE 1
 	// http://maxembedded.com/2013/11/the-spi-of-the-avr/
@@ -218,10 +232,10 @@ void setup_spi(void) {
 
 void setup_tlc5940(void) {
 	DDR_TLC5940 = (1 << P_SIN) | (1 << P_SCLK) | (1 << P_XLAT) | (1 << P_BLANK)
-		| (0 << P_TEST) | (0 << P_AUX);
+		| (0 << P_TEST) | (1 << P_AUX);
 
 	// Activate pullups
-	PORT_TLC5940 |= (1 << P_TEST) | (1 << P_AUX);
+	PORT_TLC5940 |= (1 << P_TEST); // | (1 << P_AUX);
 
 	// Timer sources:
 	// https://sites.google.com/site/qeewiki/books/avr-guide/timers-on-the-atmega328
@@ -269,6 +283,12 @@ void setup_mosfets(void) {
  */
 ISR(PCINT0_vect) {
 	spi_xfer = !(PINB & (1 << PB2)); // SS pin high -> end of transmission
+
+	// Clear SPIF
+	int x = SPSR;
+	x = SPDR;
+	(void)x;
+
 	if(!spi_xfer) {
 		disable_next();
 	}

@@ -1,0 +1,11 @@
+{
+	"fileVersion": 1,
+	"versions": {
+		"derelict-al": "1.0.3",
+		"derelict-alure": "1.0.2",
+		"derelict-sdl2": "1.2.16",
+		"derelict-util": "2.0.6",
+		"ncurses": "~master",
+		"nice-curses": "0.2.4"
+	}
+}

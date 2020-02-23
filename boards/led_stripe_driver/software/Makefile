@@ -26,7 +26,8 @@
 
 
 # MCU name
-MCU = atmega328p
+#MCU = atmega328p
+MCU = atmega2560
 F_CPU = 16000000
 
 
@@ -56,7 +57,7 @@ FORMAT = ihex
 
 
 # Target file name (without extension).
-TARGET = display_module
+TARGET = led_stripe
 
 
 # Object files directory
@@ -64,11 +65,13 @@ OBJDIR = obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c
+SRC = $(TARGET).c light_ws2812.c 
+EXTSRCDIR = ../../../common_software/src
+EXTSRC = ../../../common_software/src/checksum.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
-CPPSRC =
+CPPSRC = #$(TARGET).cpp FastLED/*.cpp
 
 
 # List Assembler source files here.
@@ -84,7 +87,8 @@ ASRC =
 # Optimization level, can be [0, 1, 2, 3, s].
 #     0 = turn off optimization. s = optimize for size.
 #     (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
-OPT = s
+#OPT = s
+OPT = 2
 
 
 # Debugging format.
@@ -98,7 +102,7 @@ DEBUG = dwarf-2
 #     Each directory must be seperated by a space.
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
-EXTRAINCDIRS =
+EXTRAINCDIRS = ../../../common_software/include/ 
 
 
 # Compiler flag to set the C Standard level.
@@ -110,11 +114,11 @@ CSTANDARD = -std=gnu99
 
 
 # Place -D or -U options here for C sources
-CDEFS = -DF_CPU=$(F_CPU)UL
+CDEFS = -DF_CPU=$(F_CPU)UL -DNEED_CXX_BITS
 
 
 # Place -D or -U options here for C++ sources
-CPPDEFS = -DF_CPU=$(F_CPU)UL
+CPPDEFS = -DF_CPU=$(F_CPU)UL -DNEED_CXX_BITS
 #CPPDEFS += -D__STDC_LIMIT_MACROS
 #CPPDEFS += -D__STDC_CONSTANT_MACROS
 
@@ -142,12 +146,13 @@ CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wundef
 #CFLAGS += -Wunreachable-code
 #CFLAGS += -Wsign-compare
-CFLAGS += -Wa,-adhlns=$(<:%.c=$(OBJDIR)/%.lst)
+CFLAGS += -Wa,-adhlns=$(@:$(OBJDIR)/%.o=$(OBJDIR)/%.lst)
+#CFLAGS += -Wa,-adhlns=$(EXTSRC:$(EXTSRCDIR)/%.c=$(OBJDIR)/%.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 
 #CFLAGS+= --combine -fwhole-program
-CFLAGS+=-fwhole-program
+#CFLAGS+=-fwhole-program
 
 
 #---------------- Compiler Options C++ ----------------
@@ -249,15 +254,14 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # to get a full listing.
 #
 #AVRDUDE_PROGRAMMER = avrispv2
-#AVRDUDE_PROGRAMMER = arduino
-AVRDUDE_PROGRAMMER = avrisp
+#AVRDUDE_PROGRAMMER = stk500v1
+AVRDUDE_PROGRAMMER = wiring
+
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
 AVRDUDE_PORT = /dev/ttyACM3
 
-AVRDUDE_BAUDRATE = 19200
-
-AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
+AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex:i
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
 
@@ -273,15 +277,15 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # Increase verbosity level.  Please use this when submitting bug
 # reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude>
 # to submit bug reports.
-AVRDUDE_VERBOSE = -v -v
-#AVRDUDE_BAUDRATE = 115200
+AVRDUDE_VERBOSE = -v
 
 #AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 57600
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_BAUDRATE)
+AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 115200 -D
+#AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 19200
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
-AVRDUDE_FLAGS += -U lfuse:w:0xff:m -U hfuse:w:0xde:m -U efuse:w:0xfd:m
+
 
 
 #---------------- Debugging Options ----------------
@@ -354,10 +358,10 @@ MSG_CREATING_LIBRARY = Creating library:
 
 
 # Define all object files.
-OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o)
+OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o) $(EXTSRC:$(EXTSRCDIR)/%.c=$(OBJDIR)/%.o)
 
 # Define all listing files.
-LST = $(SRC:%.c=$(OBJDIR)/%.lst) $(CPPSRC:%.cpp=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst)
+LST = $(SRC:%.c=$(OBJDIR)/%.lst) $(CPPSRC:%.cpp=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst) $(EXTSRC:$(EXTSRCDIR)/%.c=$(OBJDIR)/%.lst)
 
 
 # Compiler flags to generate dependency files.
@@ -430,7 +434,6 @@ gccversion :
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 	$(AVRDUDE_WRITE_EEPROM)
-
 
 
 # Generate avr-gdb config/init file which does the following:
@@ -532,6 +535,11 @@ extcoff: $(TARGET).elf
 
 # Compile: create object files from C source files.
 $(OBJDIR)/%.o : %.c
+	@echo
+	@echo $(MSG_COMPILING) $<
+	$(CC) -c $(ALL_CFLAGS) $< -o $@
+
+$(OBJDIR)/%.o : $(EXTSRCDIR)/%.c
 	@echo
 	@echo $(MSG_COMPILING) $<
 	$(CC) -c $(ALL_CFLAGS) $< -o $@
