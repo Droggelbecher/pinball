@@ -190,6 +190,7 @@ class Story(Interface_) : Task {
 
 	void scroll_text(string s, DColor color = DColor.YELLOW, double speed = 5, Duration initial_wait = 0.msecs) {
 		auto n = count(s, '\n');
+		score_text.off;
 		text.scroll.reset;
 		text.s(s, cast(ubyte)color);
 		text.on;
@@ -202,6 +203,7 @@ class Story(Interface_) : Task {
 		text.scroll.stop;
 		iface.led_stripe.full(RGB.BLACK);
 		text.off;
+		score_text.on;
 	}
 
 	void intro() {
@@ -239,6 +241,7 @@ class Story(Interface_) : Task {
 	}
 
 	void player_go(int n) {
+		score_display.off;
 		iface.logger.logf("Player %d's turn.", n + 1);
 		current_player = n;
 		player.reset();
@@ -255,6 +258,7 @@ class Story(Interface_) : Task {
 		text.on;
 		blink_text(1000.msecs);
 		text.off;
+		score_display.on;
 		//scroll_text("1\n2\n3\n4\n5\n");
 		//scroll_text("A\nB\nC\nD\nE\n");
 
@@ -267,6 +271,12 @@ class Story(Interface_) : Task {
 		// - Drop targets -> R2D2/Utini/etc... -> Multiplier
 		// (- Alle Drop targets: Cantina Band special mit Multiball?)
 		// -> "Helft mir Obi Wan Kenobi, ihr seid meine letzte Hoffnung"
+
+		yield(() => player.score >= 10_000 || ball_out);
+		if(ball_out) { return; }
+
+		score_display.off;
+		scroll_text("\n\nYeah!\n\n", DColor.GREEN, 10.0);
 
 		// Phase Ia
 		// - Goal: Death star (easy door)
@@ -292,6 +302,7 @@ class Story(Interface_) : Task {
 	void lost_ball() {
 		failure_sound.play;
 
+		score_display.off;
 		text.scroll.reset;
 		text.on;
 		text.s(format!"PLAYER %d\n %2d\x03"(current_player + 1, player.balls), DColor.GREEN);
@@ -305,8 +316,8 @@ class Story(Interface_) : Task {
 		if(current_player >= n_players) {
 			current_player = 0;
 		}
-		player_go(current_player);
 		text.off;
+		score_display.on;
 	}
 
 	void blink_text(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
@@ -321,23 +332,22 @@ class Story(Interface_) : Task {
 	override void run() {
 
 		iface.logger.log("Starting intro");
-		intro();
+		//intro();
 		iface.logger.log("Choosing player count");
 		choose_player_count();
 
 		iface.logger.log("Game started.");
 		playing_field.on;
+		score_display.on;
 
 		player_go(0);
 
-		score_display.on;
 		while(true) {
 			if(ball_out) {
-				score_display.off;
 				lost_ball();
-				score_display.on;
+				player_go(current_player);
 			}
-			yield(100.msecs);
+			yield(() => ball_out);
 		}
 		//for(int i=0; i<players; i++) {
 			//player_go(i);
