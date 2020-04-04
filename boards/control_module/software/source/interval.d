@@ -24,24 +24,28 @@ struct Interval(T) {
 		this.total = zero;
 		this.zero = zero;
 		this.calls = 0;
-		this.reset = false;
+		this._reset = false;
 	}
 
 	bool opCall(T v) {
-		if(reset) {
+		if(_reset) {
 			aggregate = zero;
 			calls = 0;
-			reset = false;
+			_reset = false;
 		}
 
 		aggregate += v;
 		total += v;
 		calls++;
 		if(aggregate >= threshold) {
-			reset = true;
+			_reset = true;
 			return true;
 		}
 		return false;
+	}
+
+	void reset() {
+		_reset = true;
 	}
 
 	@property
@@ -57,6 +61,6 @@ struct Interval(T) {
 		T aggregate;
 		T zero;
 		uint calls;
-		bool reset;
+		bool _reset;
 }
 

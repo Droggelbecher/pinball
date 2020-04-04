@@ -4,8 +4,8 @@ mixin template Switchable() {
 		this._enabled = false;
 	}
 
-	void on() {
-		this._enabled = true;
+	void on(bool enabled=true) {
+		this._enabled = enabled;
 	}
 
 	void toggle() {

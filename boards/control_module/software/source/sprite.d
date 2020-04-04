@@ -12,48 +12,50 @@ import buffer_canvas;
 import canvas;
 import coordinate;
 
-class Sprite(Target): Task {
+/**
+  A canvas that changes its content periodically
+  to be used for animations.
+ */
+class Sprite : Task {
+	static enum storage_type = BufferCanvas.storage_type;
 
-	this(BufferCanvas[] frames, Duration dt, Target target, Flag!"loop" loop = No.loop) {
+	this(BufferCanvas[] frames, Duration dt, Flag!"loop" loop = No.loop) {
+		// TODO: Maybe assert same size?
+
 		this.fps_tracker = Interval!Duration(dt);
 		this.frames = frames;
-		this.target = target;
 		this.loop = loop;
 		this.i = 0;
+		this.buffer = frames[i].buffer;
+		this.size = frames[i].size;
+	}
+
+	void rewind() {
+		i = 0;
+		fps_tracker.reset();
 	}
 
 	override void frame_start(Duration dt) {
-		if(i >= frames.length && loop) {
-			i = 0;
-		}
-
-		if(i < frames.length) {
-			blit(frames[i], Coord(0, 0), frames[0].size,
-					target, Coord(0, 0));
-
-			if(fps_tracker(dt)) {
-				i++;
+		if(fps_tracker(dt)) {
+			i++;
+			if(i >= frames.length && loop) {
+				i = 0;
+			}
+			if(i < frames.length) {
+				buffer = frames[i].buffer;
+				size = frames[i].size;
 			}
 		}
 	}
 
+	public:
+		ubyte[] buffer;
+		Coord size;
+		Flag!"loop" loop;
+
 	private:
 		Interval!Duration fps_tracker;
 		BufferCanvas[] frames;
-		Target target;
-		Flag!"loop" loop;
 		int i;
 }
-
-/+
-class PNGSprite(Target): Sprite!Target {
-	this(string path, Duration dt, Target target, Flag!"loop" loop = No.loop) {
-		auto pngs = dirEntries(path, "*.png", SpanMode.shallow).array.sort;
-
-		import read_png;
-		super(pngs.map!read_png.array, dt, target, loop);
-	}
-}
-+/
-
 
