@@ -46,6 +46,10 @@ public:
 		to_schedule ~= ScheduleRequest(task, relative_priority);
 	}
 
+	void schedule(void delegate() dg, int relative_priority = 0) {
+		this.schedule(new DelegateTask(dg), relative_priority);
+	}
+
 	//
 	// For use from scheduler side...
 	//
@@ -71,6 +75,20 @@ public:
 		Fiber fiber;
 		bool want_quit = false;
 		ScheduleRequest[] to_schedule;
+	}
+}
+
+class DelegateTask: Task {
+	this(void delegate() dg) {
+		this.dg = dg;
+	}
+
+	override void run() {
+		this.dg();
+	}
+
+	private {
+		void delegate() dg;
 	}
 }
 

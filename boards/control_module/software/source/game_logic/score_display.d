@@ -77,7 +77,11 @@ class ScoreDisplay(alias iface): Task {
 
 	void render_score() {
 		char[20] score_string;
-		snprintf(score_string.ptr, score_string.length, "%2d\x03  x%d\n%7d$", this._player.balls, this._player.multiplier, this.display_score);
+		auto s = this.display_score;
+		if(s > 99999999) {
+			s = 99999999;
+		}
+		snprintf(score_string.ptr, score_string.length, "%2d\x03  x%d\n%8d", this._player.balls, this._player.multiplier, s);
 		// Alas, not entirely nogc, but lets try to reduce the per-frame allocations to a necessary minimum
 		this.score_text = font_normal(to!string(score_string.ptr));
 	}

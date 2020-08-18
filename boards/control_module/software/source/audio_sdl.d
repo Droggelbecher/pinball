@@ -1,6 +1,9 @@
 
-import std.datetime;
+import std.datetime: Duration, msecs;
 import std.string;
+import std.file;
+import std.path;
+import std.random: uniform;
 
 import derelict.sdl2.sdl;
 import derelict.sdl2.mixer;
@@ -27,21 +30,30 @@ class AudioInterface {
 
 }
 
-class Sound {
-	this(string filename, int _ = 10) {
-		chunk = Mix_LoadWAV((filename ~ ".wav").toStringz);
+/**
+  Preload & play sounds (.wav files) from a directory on the filesystem.
+  */
+class SoundRepository {
+	this(string dir) {
+		foreach(string path; dirEntries(dir, "*.wav", SpanMode.breadth)) {
+			string name = baseName(stripExtension(path));
+			chunks[name] = Mix_LoadWAV(path.toStringz);
+		}
 	}
 
 	~this() {
-		Mix_FreeChunk(chunk);
+		foreach(chunk; chunks.byValue) {
+			Mix_FreeChunk(chunk);
+		}
+		chunks.clear;
 	}
 
-	void play() {
-		Mix_PlayChannel(-1, chunk, 0);
+	void play(string name) {
+		Mix_PlayChannel(-1, chunks[name], 0);
 	}
 
 	private:
-		Mix_Chunk *chunk;
+		Mix_Chunk*[string] chunks;
 }
 
 class Playlist: Task {
@@ -52,22 +64,43 @@ class Playlist: Task {
 	}
 
 	void play() {
-		playing = true;
+		this.playing = true;
 	}
 
 	void set_volume(double v) {
 		Mix_VolumeMusic(cast(int)(v * MIX_MAX_VOLUME));
 	}
 
-	@nogc void next() {
+	void set_random(bool r) {
+		this.random = r;
+	}
+
+	void next() {
 		if(music) {
 			Mix_FreeMusic(music);
 			music = null;
-			index++;
+			
+			if(this.random) {
+				index = cast(uint)uniform(0, this.filenames.length);
+			}
+			else {
+				index++;
+			}
+
 			if(index >= filenames.length) {
 				index = 0;
 			}
 		}
+	}
+
+	Duration fade_out() {
+		int duration = 3000;
+		if(playing && music) {
+			playing = false;
+			Mix_FadeOutMusic(duration);
+			return msecs(duration);
+		}
+		return 0.msecs;
 	}
 
 	override void frame_start(Duration dt) {
@@ -83,5 +116,6 @@ class Playlist: Task {
 		string[] filenames;
 		uint index = 0;
 		bool playing = false;
+		bool random = false;
 }
 

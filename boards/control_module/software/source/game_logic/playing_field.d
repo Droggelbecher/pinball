@@ -24,6 +24,7 @@ class PlayingField(alias iface) : Task {
 
 		Signal   hole0_hit;
 		Signal   spinner_scored;
+		Signal   slingshot_scored;
 		Signal   bumper_scored;
 
 		//KeepValueDelay ball_out;
@@ -63,13 +64,24 @@ class PlayingField(alias iface) : Task {
 		);
 
 		this.hole0_hit = new Rising(() => iface.switches[Sw.HOLE0], false);
-		this.spinner_scored = new Rising(() => iface.switches[Sw.SPINNER], true);
+		this.spinner_scored = new Rising(() => iface.switches[Sw.SPINNER]);
+		this.slingshot_scored = new Rising(() => iface.switches[Sw.SLINGSHOT0] || iface.switches[Sw.SLINGSHOT1]);
+	}
+
+	void reset() {
+		run();
 	}
 
 	override
 	void run() {
-
 		resetting = true;
+
+		iface.led_stripe.lamp(Lamp.DS_WEAPON, false);
+		iface.led_stripe.lamp(Lamp.DS_LIGHT, false);
+		iface.led_stripe.lamp(Lamp.TARGET, false);
+		iface.led_stripe.lamp(Lamp.VADER, false);
+		iface.led_stripe.lamp(Lamp.FALCON, false);
+
 		while(iface.switches[Sw.DTB0_0]
 				|| iface.switches[Sw.DTB0_1]
 				|| iface.switches[Sw.DTB0_2]
@@ -79,12 +91,15 @@ class PlayingField(alias iface) : Task {
 			yield(10.msecs);
 		}
 		iface.solenoids[Sol.DTB0] = false;
-		resetting = false;
 
+		resetting = false;
 	}
 
 	override
 	void frame_start(Duration dt) {
+		if(resetting) {
+			return;
+		}
 
 		// Clear this even if playing field is not enabled,
 		// otherwise it can happen that this is on for a long time
@@ -102,12 +117,15 @@ class PlayingField(alias iface) : Task {
 		bumper_scored.frame_start(dt);
 		hole0_hit.frame_start(dt);
 		spinner_scored.frame_start(dt);
+		slingshot_scored.frame_start(dt);
 
 		with(iface) {
 			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
 			solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
 			solenoids[Sol.SLINGSHOT0]    = switches[Sw.SLINGSHOT0];
 			solenoids[Sol.SLINGSHOT1]    = switches[Sw.SLINGSHOT1];
+			led_stripe[Lamp.SS0]         = switches[Sw.SLINGSHOT0];
+			led_stripe[Lamp.SS1]         = switches[Sw.SLINGSHOT1];
 			solenoids[Sol.BUMPER0]       = switches[Sw.BUMPER0];
 			solenoids[Sol.BUMPER1]       = switches[Sw.BUMPER1];
 			solenoids[Sol.BUMPER2]       = switches[Sw.BUMPER2];

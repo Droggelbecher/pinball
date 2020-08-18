@@ -9,6 +9,7 @@ import std.algorithm: count;
 import std.typecons;
 import core.stdc.stdio;
 import std.format;
+import std.random: choice;
 
 import audio_sdl;
 import canvas:       blit, blit_center, clear, set_color;
@@ -55,17 +56,9 @@ class Story(Interface_) : Task {
 	private {
 		AudioInterface audio_interface;
 		Playlist playlist;
-		Sound score_sound;
-		Sound score_sound_2;
-		Sound explode_sound;
-		Sound bumper_sound;
-		Sound[] character_sounds;
-		Sound[] dtb_sounds;
-		Sound failure_sound;
-		Sound start_sound;
-		Sound select_sound;
-		Sound spin_sound;
-		Sound highscore_sound;
+		SoundRepository sounds;
+		string[] dtb_sounds;
+		string[] fail_sounds;
 
 		PlayingField!iface playing_field;
 		SwitchesAsInput!iface switches_as_input;
@@ -87,38 +80,38 @@ class Story(Interface_) : Task {
 		//
 
 		this.audio_interface = new AudioInterface();
+		this.sounds = new SoundRepository("./resources/sounds/");
+
+		/**
+			TODO: How do we want to manage playlist in particular the main theme?
+
+			a) playlist is generally independent from player/game state, start with main theme synced up to STAR WARS prompt
+			b) playlist per player state, move the "STAR WARS" into player init
+			c) playlist per player state, use main theme only for STAR WARS intro and maybe later
+		*/
 
 		this.playlist = new Playlist(
 			"./resources/music/original/01_IV_main_theme.mp3",
-			"./resources/music/original/02_IV_leias_theme.mp3"
+			//"./resources/music/original/02_IV_leias_theme.mp3"
+			"./resources/music/original/09_IV_cantina_band.mp3",
+			//"./resources/music/original/03_IV_the_little_people.mp3",
+			"./resources/music/original/04_V_imperial_march.mp3",
+			"./resources/music/original/05_V_yodas_theme.mp3",
+			"./resources/music/original/10_IV_here_they_come.mp3",
+			// 03 the little people
 		);
-		this.playlist.set_volume(0.7);
+
+		this.playlist.set_volume(0.5);
+		this.playlist.set_random(true);
 		schedule(this.playlist);
 
-		this.score_sound = new Sound("./resources/sounds/blip1_s.mp3");
-		this.score_sound_2 = new Sound("./resources/sounds/utini.mp3");
-		this.explode_sound = new Sound("./resources/sounds/death_star_explode.mp3");
-
-		this.character_sounds = [
-			new Sound("./resources/sounds/utini.mp3"),
-			new Sound("./resources/sounds/R3D4.mp3"),
-			new Sound("./resources/sounds/utini.mp3"),
-			new Sound("./resources/sounds/R3D4.mp3"),
-			new Sound("./resources/sounds/utini.mp3"),
-			// TODO: C3PO
-			// TODO: Obi Wan
-			// TODO: ???
+		this.fail_sounds = [
+			"obi_du_musst_tun", "vader_beklagenswert"
 		];
-		this.dtb_sounds = character_sounds;
 
-		this.bumper_sound = new Sound("./resources/sounds/short/blop1.mp3");
-		this.failure_sound = new Sound("./resources/sounds/loss/failure_sound.mp3");
-		this.start_sound = new Sound("./resources/sounds/beam_me_up_2.mp3");
-		this.select_sound = new Sound("./resources/sounds/short/swirl2.mp3");
-		this.spin_sound = new Sound("./resources/sounds/short/swirl3.mp3");
-		this.highscore_sound = new Sound("./resources/sounds/lorbeeren");
-
-
+		this.dtb_sounds = [
+			"utini", "r2d2_02", "obi_druiden", "han_rasender_falke", "leia_so_klein"
+		];
 
 		this.playing_field = new PlayingField!(this.iface)();
 		this.playing_field.off;
@@ -129,10 +122,8 @@ class Story(Interface_) : Task {
 		schedule(this.switches_as_input);
 
 		this.text = new TextDisplay!(this.iface)();
-		//schedule(this.text, priority + 10);
 
 		this.score_display = new ScoreDisplay!(this.iface)();
-		//schedule(this.score_display, priority - 20);
 		this.score_display.off;
 
 		for(int i=0; i<MAX_PLAYERS; i++) {
@@ -174,18 +165,23 @@ class Story(Interface_) : Task {
 		
 		with(playing_field) {
 			if(spinner_scored()) {
-				spin_sound.play;
+				sounds.play("spin");
 				score_display.add_score(1);
 			}
 
+			if(slingshot_scored()) {
+				sounds.play("bumper");
+				score_display.add_score(10);
+			}
+
 			if(bumper_scored()) {
-				bumper_sound.play;
+				sounds.play("bumper");
 				score_display.add_score(10);
 			}
 
 			foreach(i, dtb; dtb_scored) {
 				if(dtb()) {
-					dtb_sounds[i].play;
+					sounds.play(dtb_sounds[i]);
 					score_display.add_score(100);
 					player.increase_multiplier(2);
 					// DEBUG: toggle DS_WEAPON on score so we know it works
@@ -193,18 +189,30 @@ class Story(Interface_) : Task {
 				}
 			} // foreach
 			if(dtb_all_scored()) {
-				score_sound_2.play;
+				sounds.play("score_01");
 				score_display.add_score(100);
 			}
 
 			if(hole0_hit()) {
-				explode_sound.play();
+				//sounds.play("explode");
 				score_display.add_score(1000);
-				iface.led_stripe.lamp(Lamp.DS_LIGHT);
+				
+				schedule({
+					for(int i = 0; i < 5; i++) {
+						iface.led_stripe.lamp(Lamp.DS_LIGHT, true);
+						yield(100.msecs);
+						iface.led_stripe.lamp(Lamp.DS_LIGHT, false);
+						yield(100.msecs);
+					}
+				});
 			}
 		} // playing_field
 	} // check_scoring()
 
+	/**
+	  Display a given string (may contain newlines) with vertical scrolling for the given amount of time.
+	  Will display scrolling lights on the LED stripe in matching speed and color.
+	*/
 	void scroll_text(string s, DColor color = DColor.YELLOW, double speed = 5, Duration initial_wait = 0.msecs) {
 		auto n = count(s, '\n');
 		score_display.off;
@@ -232,6 +240,10 @@ class Story(Interface_) : Task {
 		scroll_text("  STAR\n  WARS\n\n\n\n", DColor.YELLOW, 5, 2000.msecs);
 	}
 
+	/**
+	  Ask user for player count.
+	  Sets `this.n_players` and `this.current_player`.
+	*/
 	void choose_player_count() {
 		playing_field.off;
 		switches_as_input.on;
@@ -244,7 +256,7 @@ class Story(Interface_) : Task {
 			Command c = switches_as_input.query;
 
 			if(c == Command.NEXT) {
-				select_sound.play;
+				sounds.play("select");
 				n_players++;
 				if(n_players > MAX_PLAYERS) { n_players = 1; }
 			}
@@ -256,26 +268,29 @@ class Story(Interface_) : Task {
 		current_player = 0;
 	}
 
+	/**
+	  Story/game sequence for a single player
+	 */
 	void player_go(int n) {
 		// TODO: Reset playfield, eg. DTBs
+		playing_field.reset;
 
-		score_display.off;
-		iface.logger.logf("Player %d's turn.", n + 1);
-		current_player = n;
-		player.reset();
-		score_display.player = player;
+		{
+			score_display.off;
+			scope(exit) score_display.on;
 
-		scroll_text(format!"\n\nPLAYER %d\n\n %2d\x03  \n\nMAY THE\n FORCE  \nBE WITH\n  YOU  \n\n\n"(current_player + 1, player.balls), DColor.YELLOW, 10.0);
+			iface.logger.logf("Player %d's turn.", n + 1);
 
-		ball_out = false;
-		playing_field.return_ball;
-		start_sound.play;
+			current_player = n;
+			player.reset();
+			score_display.player = player;
 
+			scroll_text(format!"\n\nPLAYER %d\n\n %2d\x03  \n\nMAY THE\n FORCE  \nBE WITH\n  YOU  \n\n\n"(current_player + 1, player.balls), DColor.YELLOW, 10.0);
 
-		scroll_text("\n\n Reach  \n 10000 $", DColor.YELLOW, 10.0);
-		blink_text(1000.msecs);
-
-		// Story
+			ball_out = false;
+			playing_field.return_ball;
+			sounds.play("start");
+		}
 
 		// Phase I
 		// - Goal: Get to score X
@@ -285,22 +300,45 @@ class Story(Interface_) : Task {
 		// (- Alle Drop targets: Cantina Band special mit Multiball?)
 		// -> "Helft mir Obi Wan Kenobi, ihr seid meine letzte Hoffnung"
 
-		yield(() => player.score >= 10_000 || ball_out);
-		if(ball_out) { return; }
+		if(player.score < 17000) {
 
-		score_display.off;
-		scroll_text("\n\nYeah!\n\n", DColor.GREEN, 10.0);
+			yield(() => player.score >= 17000 || ball_out);
+			if(ball_out) { return; }
 
-		// Phase Ia
-		// - Goal: Death star (easy door)
-		// -> "Das ist kein Mond, das ist eine Raumstation"
+			// Leia Sequence
+			{
+				score_display.off;
+				scope(exit) score_display.on;
 
+				yield(playlist.fade_out);
+				scope(exit) playlist.play;
+
+				current_animation = leia_r2d2_sprite;
+				scope(exit) current_animation = null;
+
+				// TODO: Maybe use shorter variant here?
+				sounds.play("leia_helft_mir_kurz");
+				yield(4000.msecs);
+			}
+			score_display.add_score(10000);
+		}
+
+		
 		// Phase II: Inside Death star
 		// - Goal: Free leia & disable energy (death star hard door & drop targets)
 		// - Theme: Imperial March
 		// - Effects: Darth Vader
 		// - Sounds: Darth Vader breathing, Leia?, Muellschlucker?, Stromtrooper/laser, lichtschwertkampf, obi/darth
 		// - Bonus: Kill X stormtroopers (spinner)
+
+		// TODO: Vader breathing
+		iface.led_stripe.lamp(Lamp.VADER, true);
+
+		yield(() => playing_field.hole0_hit() || ball_out);
+		if(ball_out) { return; }
+
+		sounds.play("obi_mond_raumstation");
+		score_display.add_score(10000);
 
 		// Phase III: Angriff auf Todesstern
 		// - Goal:
@@ -310,10 +348,37 @@ class Story(Interface_) : Task {
 		// - Sounds: Weiter aufs Ziel zu, Vertraue der Macht
 		// - Effects: Target leds
 
+		// TODO: Death star closing in sequence animation
+
+		while(true) {
+			// TODO: sound: "weiter aufs ziel zu..."
+			// TODO: sound: "vertraue der macht"
+			iface.led_stripe.lamp(Lamp.VADER, false);
+			iface.led_stripe.lamp(Lamp.TARGET, true);
+
+			yield(() =>
+					   playing_field.hole0_hit()
+					|| ball_out
+					|| playing_field.dtb_all_scored()
+			);
+			if(ball_out) { return; }
+
+			if(playing_field.hole0_hit()) {
+				sounds.play("explode");
+			}
+
+			score_display.add_score(10000);
+		}
 	}
 
-	void lost_ball() {
-		failure_sound.play;
+	/**
+		Return: true iff game is over.
+	*/
+	bool lost_ball() {
+		sounds.play("failure");
+		yield(1000.msecs);
+		//sounds.play("vader_beklagenswert");
+		sounds.play(choice(fail_sounds));
 
 		score_display.off;
 		text.scroll.reset;
@@ -326,11 +391,21 @@ class Story(Interface_) : Task {
 		yield(1000.msecs);
 
 		current_player++;
-		if(current_player >= n_players) {
-			current_player = 0;
+		current_player %= n_players;
+
+		auto full_circle = current_player;
+
+		while(players[current_player].balls == 0) {
+			current_player++;
+			current_player %= n_players;
+			if(current_player == full_circle) {
+				return true;
+			}
 		}
+		
 		text.off;
 		score_display.on;
+		return false;
 	}
 
 	void blink_text(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
@@ -346,17 +421,48 @@ class Story(Interface_) : Task {
 	}
 
 	void highscore() {
-		highscore_sound.play();
+		playing_field.off;
+		switches_as_input.on;
+		text.scroll.reset;
+		yield(playlist.fade_out());
+
+		sounds.play("lorbeeren");
+
+		// TODO: FIXME: seems this doesnt work and leads to and endless busy loop
+		for(int p = 0; p < n_players; p++) {
+			char[4] name = "AAAA";
+			int pos = 0;
+
+			while(true) {
+				// TODO: change this to two blits
+				text.s(format!"Player %d"(p), DColor.YELLOW);
+				text.s(format!"\n  %s"(name), DColor.GREEN);
+				yield(100.msecs);
+
+				Command c = switches_as_input.query;
+				if(c == Command.NEXT) {
+					sounds.play("select");
+					name[pos]++;
+					if(name[pos] > 'Z') {
+						name[pos] = 'A';
+					}
+				}
+				else if(c == Command.SELECT) {
+					pos++;
+					if(pos >= 4) {
+						// TODO: Actually save high score somewhere?
+						break;
+					}
+				}
+			} // while
+		} // for
+
 	}
 
 	override void run() {
 
-		//current_animation = death_star_reach_sprite;
-		current_animation = leia_r2d2_sprite;
-		yield(5000.msecs);
-
 		iface.logger.log("Starting intro");
-		//intro();
+		intro();
 		iface.logger.log("Choosing player count");
 		choose_player_count();
 
@@ -364,18 +470,20 @@ class Story(Interface_) : Task {
 		playing_field.on;
 		score_display.on;
 
-		player_go(0);
+		//player_go(0);
 
-		while(true) {
-			if(ball_out) {
-				lost_ball();
-				player_go(current_player);
-			}
-			yield(() => ball_out);
-		}
-		//for(int i=0; i<players; i++) {
-			//player_go(i);
+		//while(true) {
+			//if(ball_out) {
+				//if(lost_ball()) {
+					//// is the game over?
+					//break;
+				//}
+				//player_go(current_player);
+			//}
+			//yield(() => ball_out);
 		//}
+
+		highscore();
 
 	}
 }

@@ -1,6 +1,9 @@
 
 import bit_actuator;
 
+// DEPRECATED.
+// TODO: Remove
+
 enum LampsIndex {
 	DS_WHITE  ,
 	DS_WEAPON ,
