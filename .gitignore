@@ -13,5 +13,6 @@ obj/
 CMakeCache.txt
 CMakeFiles/
 boards/control_module/software/Makefile
+boards/control_module/software/resources
 Pinball
 cmake_install.cmake
