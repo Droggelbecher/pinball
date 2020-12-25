@@ -10,8 +10,9 @@ import std.typecons;
 import core.stdc.stdio;
 import std.format;
 import std.random: choice;
+import std.file: append;
 
-import audio_sdl;
+import audio_sdl; // initialize_audio
 import canvas:       blit, blit_center, clear, set_color;
 import canvas;
 import coordinate;
@@ -28,12 +29,17 @@ import sprite: Sprite;
 //import img_canvas: ImgCanvas;
 //import string_canvas: string_to_canvas, test_animation;
 import player: Player;
+import condition: make_condition, Condition;
 
 import leia_r2d2: leia_r2d2_sprite;
 import death_star_reach: death_star_reach_sprite;
+import highscore;
 
 alias Font!(font_5x8_size) FontNormal;
 
+/**
+ * Main story flow.
+ */
 class Story(Interface_) : Task {
 
 	alias Interface = Interface_;
@@ -54,7 +60,6 @@ class Story(Interface_) : Task {
 	Interface iface;
 
 	private {
-		AudioInterface audio_interface;
 		Playlist playlist;
 		SoundRepository sounds;
 		string[] dtb_sounds;
@@ -79,27 +84,24 @@ class Story(Interface_) : Task {
 		// Audio
 		//
 
-		this.audio_interface = new AudioInterface();
+		initialize_audio();
 		this.sounds = new SoundRepository("./resources/sounds/");
 
 		/**
-			TODO: How do we want to manage playlist in particular the main theme?
-
-			a) playlist is generally independent from player/game state, start with main theme synced up to STAR WARS prompt
-			b) playlist per player state, move the "STAR WARS" into player init
-			c) playlist per player state, use main theme only for STAR WARS intro and maybe later
-		*/
+		  playlist is generally independent from player/game state, start
+		  with main theme synced up to STAR WARS prompt
+		 */
 
 		this.playlist = new Playlist(
-			"./resources/music/original/01_IV_main_theme.mp3",
-			//"./resources/music/original/02_IV_leias_theme.mp3"
-			"./resources/music/original/09_IV_cantina_band.mp3",
-			//"./resources/music/original/03_IV_the_little_people.mp3",
-			"./resources/music/original/04_V_imperial_march.mp3",
-			"./resources/music/original/05_V_yodas_theme.mp3",
-			"./resources/music/original/10_IV_here_they_come.mp3",
-			// 03 the little people
-		);
+				"./resources/music/original/01_IV_main_theme.mp3",
+				//"./resources/music/original/02_IV_leias_theme.mp3"
+				"./resources/music/original/09_IV_cantina_band.mp3",
+				//"./resources/music/original/03_IV_the_little_people.mp3",
+				"./resources/music/original/04_V_imperial_march.mp3",
+				"./resources/music/original/05_V_yodas_theme.mp3",
+				"./resources/music/original/10_IV_here_they_come.mp3",
+				// 03 the little people
+				);
 
 		this.playlist.set_volume(0.5);
 		this.playlist.set_random(true);
@@ -131,6 +133,10 @@ class Story(Interface_) : Task {
 		}
 	}
 
+	/**
+	  Frame start.
+	  Clear canvas, run animations, track ball-out state.
+	 */
 	override void frame_start(Duration dt) {
 		iface.canvas.clear;
 		text.frame_start(dt);
@@ -153,16 +159,24 @@ class Story(Interface_) : Task {
 		}
 	}
 
+	/**
+	  Return the currently active player.
+	 */
 	@property
-	Player player() {
-		return this.players[this.current_player];
-	}
+		Player player() {
+			return this.players[this.current_player];
+		}
 
+	/**
+	  Check `playing_field` status for any scoring in the past frame and inform
+	  `score_display` about the added score if any. Also schedules scoring
+	  sounds.
+	 */
 	void check_scoring() {
 		if(!playing_field.enabled) {
 			return;
 		}
-		
+
 		with(playing_field) {
 			if(spinner_scored()) {
 				sounds.play("spin");
@@ -196,34 +210,53 @@ class Story(Interface_) : Task {
 			if(hole0_hit()) {
 				//sounds.play("explode");
 				score_display.add_score(1000);
-				
+
 				schedule({
-					for(int i = 0; i < 5; i++) {
+						for(int i = 0; i < 5; i++) {
 						iface.led_stripe.lamp(Lamp.DS_LIGHT, true);
 						yield(100.msecs);
 						iface.led_stripe.lamp(Lamp.DS_LIGHT, false);
 						yield(100.msecs);
-					}
-				});
+						}
+						});
 			}
 		} // playing_field
 	} // check_scoring()
 
 	/**
-	  Display a given string (may contain newlines) with vertical scrolling for the given amount of time.
-	  Will display scrolling lights on the LED stripe in matching speed and color.
-	*/
-	void scroll_text(string s, DColor color = DColor.YELLOW, double speed = 5, Duration initial_wait = 0.msecs) {
+	  Display a given string (may contain newlines) with vertical scrolling for
+	  the given amount of time.  Will display scrolling lights on the LED
+	  stripe in matching speed and color.
+	 */
+	void scroll_text(string s, DColor color = DColor.YELLOW,
+			double speed = 5, Duration initial_wait = 0.msecs, bool interruptible = false)
+	{
 		auto n = count(s, '\n');
 		score_display.off;
 		text.scroll.reset;
 		text.s(s, cast(ubyte)color);
 		text.on;
-		iface.led_stripe.full(RGB.YELLOW).dt(cast(ubyte)(50 / speed));
+		iface.led_stripe.full(RGB.YELLOW).dt(cast(ubyte)(initial_wait.total!"msecs"));
 		yield(initial_wait);
+		iface.led_stripe.rotmod(RGB.YELLOW, 3, cast(ubyte)(100 / speed));
+
 		text.scroll.speed = Coordinate!double(-speed, 0);
 		if(n > 2) {
-			yield(cast(int)(8000.0 * (n - 1) / speed) * 1.msecs);
+			// speed is in pixels per sec
+			// to display all n+1 lines we need to scroll (n+1-1)*8 pixels
+			// which should take (n-1)*8/speed seconds
+			// or 8000*(n-1)/speed msecs
+
+			Condition condition = make_condition(
+					msecs(cast(long)(8000.0 * (n - 1) / speed))
+					);
+			if(interruptible) {
+				condition = condition | make_condition(
+						() => iface.switches[Sw.FLIPPER_LEFT]
+						);
+			}
+
+			yield(condition);
 		}
 		text.scroll.stop;
 		iface.led_stripe.full(RGB.BLACK);
@@ -231,19 +264,27 @@ class Story(Interface_) : Task {
 		score_display.on;
 	}
 
+	/**
+	  Show current highscore and "STAR WARS" intro text
+	 */
 	void intro() {
 		text.off;
-		//yield(4200.msecs);
 		playlist.play;
 		yield(800.msecs);
 
-		scroll_text("  STAR\n  WARS\n\n\n\n", DColor.YELLOW, 5, 2000.msecs);
+		string text = "  STAR\n  WARS\n\n\n\n";
+		foreach(hs; highscore.read) {
+			text ~= format!"%s\n%8d\n"(hs[0], hs[1]);
+		}
+		text ~= "\n\n\n\n";
+
+		scroll_text(text, DColor.YELLOW, 10, 2000.msecs, true);
 	}
 
 	/**
 	  Ask user for player count.
 	  Sets `this.n_players` and `this.current_player`.
-	*/
+	 */
 	void choose_player_count() {
 		playing_field.off;
 		switches_as_input.on;
@@ -261,8 +302,14 @@ class Story(Interface_) : Task {
 				if(n_players > MAX_PLAYERS) { n_players = 1; }
 			}
 			else if(c == Command.SELECT) {
+				sounds.play("select2");
+				yield(200.msecs);
 				break;
 			}
+		}
+
+		for(int i=0; i<n_players; i++) {
+			players[i] = new Player;
 		}
 
 		current_player = 0;
@@ -272,7 +319,6 @@ class Story(Interface_) : Task {
 	  Story/game sequence for a single player
 	 */
 	void player_go(int n) {
-		// TODO: Reset playfield, eg. DTBs
 		playing_field.reset;
 
 		{
@@ -285,10 +331,11 @@ class Story(Interface_) : Task {
 			player.reset();
 			score_display.player = player;
 
-			scroll_text(format!"\n\nPLAYER %d\n\n %2d\x03  \n\nMAY THE\n FORCE  \nBE WITH\n  YOU  \n\n\n"(current_player + 1, player.balls), DColor.YELLOW, 10.0);
-
 			ball_out = false;
 			playing_field.return_ball;
+
+			scroll_text(format!"\n\nPLAYER %d\n\n %2d\x03  \n\nMAY THE\n FORCE  \nBE WITH\n  YOU  \n\n\n"(current_player + 1, player.balls), DColor.YELLOW, 10.0);
+
 			sounds.play("start");
 		}
 
@@ -323,7 +370,7 @@ class Story(Interface_) : Task {
 			score_display.add_score(10000);
 		}
 
-		
+
 		// Phase II: Inside Death star
 		// - Goal: Free leia & disable energy (death star hard door & drop targets)
 		// - Theme: Imperial March
@@ -357,10 +404,10 @@ class Story(Interface_) : Task {
 			iface.led_stripe.lamp(Lamp.TARGET, true);
 
 			yield(() =>
-					   playing_field.hole0_hit()
+					playing_field.hole0_hit()
 					|| ball_out
 					|| playing_field.dtb_all_scored()
-			);
+				 );
 			if(ball_out) { return; }
 
 			if(playing_field.hole0_hit()) {
@@ -372,12 +419,11 @@ class Story(Interface_) : Task {
 	}
 
 	/**
-		Return: true iff game is over.
-	*/
+	  Return true iff the game is over.
+	 */
 	bool lost_ball() {
 		sounds.play("failure");
 		yield(1000.msecs);
-		//sounds.play("vader_beklagenswert");
 		sounds.play(choice(fail_sounds));
 
 		score_display.off;
@@ -402,12 +448,15 @@ class Story(Interface_) : Task {
 				return true;
 			}
 		}
-		
+
 		text.off;
 		score_display.on;
 		return false;
 	}
 
+	/**
+	  Display `this.score_display` in with blinking interval `interval` for a total of `duration`.
+	 */
 	void blink_text(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
 		auto score_display_bak = score_display.enabled();
 		score_display.off;
@@ -420,7 +469,7 @@ class Story(Interface_) : Task {
 		score_display.on(score_display_bak);
 	}
 
-	void highscore() {
+	void enter_highscore() {
 		playing_field.off;
 		switches_as_input.on;
 		text.scroll.reset;
@@ -435,8 +484,8 @@ class Story(Interface_) : Task {
 
 			while(true) {
 				// TODO: change this to two blits
-				text.s(format!"Player %d"(p), DColor.YELLOW);
-				text.s(format!"\n  %s"(name), DColor.GREEN);
+				text.s(format!"Player %d\n  %s"(p+1, name), DColor.YELLOW);
+				//text.s(format!"\n  %s"(name), DColor.GREEN);
 				yield(100.msecs);
 
 				Command c = switches_as_input.query;
@@ -448,9 +497,11 @@ class Story(Interface_) : Task {
 					}
 				}
 				else if(c == Command.SELECT) {
+					sounds.play("select2");
 					pos++;
 					if(pos >= 4) {
 						// TODO: Actually save high score somewhere?
+						append("scores.csv", format!"%s,%d\n"(name, players[p].score));
 						break;
 					}
 				}
@@ -461,29 +512,33 @@ class Story(Interface_) : Task {
 
 	override void run() {
 
-		iface.logger.log("Starting intro");
-		intro();
-		iface.logger.log("Choosing player count");
-		choose_player_count();
+		while(true) {
 
-		iface.logger.log("Game started.");
-		playing_field.on;
-		score_display.on;
+			iface.logger.log("Starting intro");
+			intro();
+			iface.logger.log("Choosing player count");
+			choose_player_count();
 
-		//player_go(0);
+			iface.logger.log("Game started.");
+			playing_field.on;
+			score_display.on;
 
-		//while(true) {
-			//if(ball_out) {
-				//if(lost_ball()) {
-					//// is the game over?
-					//break;
-				//}
-				//player_go(current_player);
-			//}
-			//yield(() => ball_out);
-		//}
+			player_go(0);
 
-		highscore();
+			while(true) {
+				if(ball_out) {
+					if(lost_ball()) {
+						// is the game over?
+						break;
+					}
+					player_go(current_player);
+				}
+				yield(() => ball_out);
+			}
+
+			enter_highscore();
+
+		}
 
 	}
 }

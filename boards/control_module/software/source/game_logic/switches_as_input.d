@@ -10,7 +10,7 @@ class SwitchesAsInput(alias iface): Task {
 	alias Interface = typeof(iface);
 	alias Sw = Interface.Switches.Index;
 
-	mixin Switchable;
+	mixin Switchable switchable;
 
 	enum Command {
 		NONE, NEXT, SELECT
@@ -47,6 +47,17 @@ class SwitchesAsInput(alias iface): Task {
 		Command c = command;
 		command = Command.NONE;
 		return c;
+	}
+
+	void on(bool enabled=true) {
+		if(enabled) {
+			// When turned on, reset switches states, otherwise
+			// we might accidentially fire an event based on
+			// switch presses that happened before
+			this.left.reset;
+			this.right.reset;
+		}
+		switchable.on(enabled);
 	}
 }
 

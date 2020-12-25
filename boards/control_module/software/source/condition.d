@@ -2,8 +2,12 @@
 import std.datetime: Duration;
 import std.datetime.systime: Clock, SysTime;
 
-interface Condition {
-	bool opCall();
+class Condition {
+	bool opCall() { return false; }
+
+	Condition opBinary(string op)(Condition other) if(op == "|") {
+		return new DelegateCondition(() => this.opCall() || other());
+	}
 }
 
 class DelegateCondition : Condition {
@@ -31,6 +35,10 @@ class TrueCondition : Condition {
 
 Condition make_condition() {
 	return new TrueCondition();
+}
+
+Condition make_condition(Condition c) {
+	return c;
 }
 
 class WaitCondition : Condition {

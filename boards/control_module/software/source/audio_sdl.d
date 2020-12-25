@@ -11,33 +11,42 @@ import derelict.sdl2.mixer;
 import task;
 import utils;
 
-class AudioInterface {
-	static this() {
-		DerelictSDL2.load();
-		DerelictSDL2Mixer.load();
-	}
+private {
+	bool _audio_initialized = false;
+}
 
-	this() {
-		Mix_Init(MIX_INIT_MP3);
-		if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-			throw new Exception("Mix_OpenAudio");
-		}
-	}
 
-	~this() {
+void initialize_audio() {
+	Mix_Init(MIX_INIT_MP3);
+	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+		throw new Exception("Mix_OpenAudio");
+	}
+	_audio_initialized = true;
+}
+
+static this() {
+	DerelictSDL2.load();
+	DerelictSDL2Mixer.load();
+}
+
+static ~this() {
+	if(_audio_initialized) {
 		Mix_Quit();
 	}
-
 }
+
 
 /**
   Preload & play sounds (.wav files) from a directory on the filesystem.
   */
 class SoundRepository {
 	this(string dir) {
-		foreach(string path; dirEntries(dir, "*.wav", SpanMode.breadth)) {
-			string name = baseName(stripExtension(path));
-			chunks[name] = Mix_LoadWAV(path.toStringz);
+		if(_audio_initialized) {
+			foreach(string path; dirEntries(dir, "*.wav", SpanMode.breadth)) {
+				string name = baseName(stripExtension(path));
+				chunks[name] = Mix_LoadWAV(path.toStringz);
+				// TODO: print/log
+			}
 		}
 	}
 
@@ -49,6 +58,9 @@ class SoundRepository {
 	}
 
 	void play(string name) {
+		if(!_audio_initialized) {
+			return;
+		}
 		Mix_PlayChannel(-1, chunks[name], 0);
 	}
 
@@ -64,18 +76,30 @@ class Playlist: Task {
 	}
 
 	void play() {
+		if(!_audio_initialized) {
+			return;
+		}
 		this.playing = true;
 	}
 
 	void set_volume(double v) {
+		if(!_audio_initialized) {
+			return;
+		}
 		Mix_VolumeMusic(cast(int)(v * MIX_MAX_VOLUME));
 	}
 
 	void set_random(bool r) {
+		if(!_audio_initialized) {
+			return;
+		}
 		this.random = r;
 	}
 
 	void next() {
+		if(!_audio_initialized) {
+			return;
+		}
 		if(music) {
 			Mix_FreeMusic(music);
 			music = null;
@@ -94,6 +118,9 @@ class Playlist: Task {
 	}
 
 	Duration fade_out() {
+		if(!_audio_initialized) {
+			return 0.msecs;
+		}
 		int duration = 3000;
 		if(playing && music) {
 			playing = false;
@@ -104,6 +131,9 @@ class Playlist: Task {
 	}
 
 	override void frame_start(Duration dt) {
+		if(!_audio_initialized) {
+			return;
+		}
 		if(playing && !Mix_PlayingMusic()) {
 			next();
 			music = Mix_LoadMUS(filenames[index].toStringz);

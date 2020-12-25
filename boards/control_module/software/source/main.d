@@ -11,8 +11,12 @@ import scheduler : Scheduler;
 
 import curses_interface;
 
-import mock_spi: Spi;
-//import bcm2708_spi: Spi;
+debug {
+	import mock_spi: Spi;
+}
+else {
+	import bcm2708_spi: Spi;
+}
 
 import switches;
 import solenoids;
@@ -113,6 +117,12 @@ void run_game() {
 }
 
 void main() {
+	debug {
+		writeln("DEBUG (Mock-SPI) build.");
+	}
+	else {
+		writeln("RELEASE (BCM2708 SPI) build.");
+	}
 	run_game();
 }
 

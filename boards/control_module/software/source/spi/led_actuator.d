@@ -111,7 +111,7 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 		color0(color);
 		color1([0,0,0]);
 		this.dt(dt);
-		dir(1);
+		dir(0);
 		return this;
 	}
 

@@ -15,7 +15,7 @@
 	"preBuildCommands": [
 		"gcc -c -o bcm2708.o source/spi/bcm2708.c",
 		"gcc -c -o checksum.o ../../../common_software/src/checksum.c -I../../../common_software/include",
-		"gcc -c -o utils.o ../../../common_software/src/utils.c -I../../../common_software/include",
+		"gcc -c -o utils.o ../../../common_software/src/utils.c -I../../../common_software/include"
 	],
 	"sourceFiles": [
 		"bcm2708.o",
@@ -23,5 +23,13 @@
 		"utils.o"
 	],
 	"libs": [
-	]
+	],
+	"buildTypes": {
+		"debug": {
+			"buildOptions": ["debugMode", "debugInfo"]
+		},
+		"release": {
+			"buildOptions": ["releaseMode", "optimize", "inline", "debugInfo"]
+		}
+	}
 }

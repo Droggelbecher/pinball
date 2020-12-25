@@ -5,22 +5,16 @@ import std.variant;
 
 class Signal {
 
-	//this(bool delegate() pure @safe f, bool active_side = true) {
-		////infof("Signal(delegate) %d %d", f(), active_side);
-		//this.f = f;
-		//this.active_side = active_side;
-	//}
-
 	this(bool delegate() f, bool active_side = true) {
-		//infof("Signal(delegate) %d %d", f(), active_side);
 		this.f = f;
 		this.active_side = active_side;
+		this.reset();
 	}
 
 	this(Signal f, bool active_side = true) {
-		//infof("Signal(Signal) %d %d", f(), active_side);
 		this.f = f;
 		this.active_side = active_side;
+		this.reset();
 	}
 	
 	// Note: This does not work as expected when calling eg with iface.switches[Sw.BALL_OUT] as lazy bool argument.
@@ -31,6 +25,9 @@ class Signal {
 		////infof("Signal(lazy) -> %s / %s / %s / %s", typeid(this.f), typeid(b), typeid(dg), typeid(() => b()));
 		//this.active_side = active_side;
 	//}
+
+	void reset() {
+	}
 
 	void frame_start(Duration dt) {
 		bool v;
@@ -84,6 +81,10 @@ class KeepValueDelay: Signal {
 	this(T)(T f, bool active_side, Duration delay) {
 		super(f, active_side);
 		this.delay = delay;
+	}
+
+	override
+	void reset() {
 		this.active_time = 0.msecs;
 	}
 
@@ -117,7 +118,11 @@ class Rising: Signal {
 
 	this(T)(T f, bool active_side = true) {
 		super(f, active_side);
-		this.state = true;
+	}
+
+	override
+	void reset() {
+		this.state = this.active_side;
 	}
 
 	override
