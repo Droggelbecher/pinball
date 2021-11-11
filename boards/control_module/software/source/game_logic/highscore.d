@@ -9,6 +9,8 @@ import std.file: append;
 
 auto FILENAME = "scores.csv";
 
+// TODO: Make this only keep the top N items, possibly turn this into a class
+
 Tuple!(string, int)[] top(int n) {
 	auto file = File(FILENAME, "r");
 

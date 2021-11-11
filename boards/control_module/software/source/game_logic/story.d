@@ -502,6 +502,7 @@ class Story(Interface_) : Task {
 
 			auto text_entry = new Entry(iface.canvas, input, default_font, MAX_PLAYERS);
 				//new TextEntry!(Interface.Display, Input)(iface.display, input, 4);
+			text_entry.on;
 			schedule(text_entry);
 			yield(() => !text_entry.running);
 			highscore.add_entry(text_entry.value, players[p].score);
@@ -567,6 +568,10 @@ class Story(Interface_) : Task {
 				}
 				yield(() => ball_out);
 			}
+
+			field.off;
+			score.off;
+			text.off;
 
 			enter_highscore();
 
