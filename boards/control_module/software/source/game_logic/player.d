@@ -44,6 +44,7 @@ class Player {
 
 	private:
 		int _multiplier = 1;
-		int _balls = 3;
+		// 1 for debugging
+		int _balls = 1;
 }
 

@@ -46,6 +46,8 @@ class Scheduler {
 		tasks = assumeSorted!pred(tasks.release() ~ new_tasks);
 	}
 
+	void remove(Task task) {
+	}
 
 	void stop() {
 		stopping = true;
@@ -99,15 +101,14 @@ class Scheduler {
 		}
 		
 		// III. Check any other requests from tasks, eg. scheduling of new tasks
-		//Task[] to_schedule;
 		foreach(task; tasks) {
-			//to_schedule ~= task.pop_schedule_requests();
 			foreach(sr; task.pop_schedule_requests()) {
 				add(sr.task, task.priority + sr.relative_priority);
 			}
+			if(!task.daemon && !task.running) {
+				remove(task);
+			}
 		}
-		//tasks ~= to_schedule;
-		//add(to_schedule);
 	}
 
 	private:

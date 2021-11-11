@@ -5,10 +5,11 @@ import task: Task;
 import switchable;
 import signal: Rising;
 
-class SwitchesAsInput(alias iface): Task {
+class SwitchesAsInput(Switches_): Task {
 
-	alias Interface = typeof(iface);
-	alias Sw = Interface.Switches.Index;
+	//alias Interface = typeof(iface);
+	alias Switches = Switches_;
+	alias Sw = Switches.Index;
 
 	mixin Switchable switchable;
 
@@ -21,10 +22,11 @@ class SwitchesAsInput(alias iface): Task {
 		Command command;
 	}
 
-	this() {
-		this.left = new Rising(() => iface.switches[Sw.FLIPPER_LEFT], true);
-		this.right = new Rising(() => iface.switches[Sw.FLIPPER_RIGHT], true);
+	this(Switches switches) {
+		this.left = new Rising(() => switches[Sw.FLIPPER_LEFT], true);
+		this.right = new Rising(() => switches[Sw.FLIPPER_RIGHT], true);
 		this.command = Command.NONE;
+		this.switches = switches;
 	}
 
 	override void frame_start(Duration dt) {
@@ -43,7 +45,11 @@ class SwitchesAsInput(alias iface): Task {
 		}
 	}
 
-	Command query() {
+	bool has_command() {
+		return command != Command.NONE;
+	}
+
+	Command pop_command() {
 		Command c = command;
 		command = Command.NONE;
 		return c;
@@ -58,6 +64,10 @@ class SwitchesAsInput(alias iface): Task {
 			this.right.reset;
 		}
 		switchable.on(enabled);
+	}
+
+	private {
+		Switches switches;
 	}
 }
 

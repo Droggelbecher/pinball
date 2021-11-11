@@ -48,7 +48,6 @@ class Display(Spi): Task {
 			return;
 		}
 
-		//tracef("SPI Display: SS enable");
 		spi.select_only(Spi.SlaveIndex.Display);
 
 		for(int i = modules - 1; i >= 0; i--) {
@@ -63,17 +62,13 @@ class Display(Spi): Task {
 		}
 
 		spi.deselect_all();
-		//tracef("SPI Display: SS disable");
 	}
 
 	private:
 		Spi spi;
 		ubyte modules = 0;
-		//const Coord module_size;
 		BufferCanvas buffer;
 		BufferCanvas module_buffer;
-		//ubyte[] screen;
-
 }
 
 

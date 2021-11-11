@@ -10,7 +10,6 @@ import std.typecons;
 import core.stdc.stdio;
 import std.format;
 import std.random: choice;
-import std.file: append;
 
 import audio_sdl; // initialize_audio
 import canvas:       blit, blit_center, clear, set_color;
@@ -34,8 +33,7 @@ import condition: make_condition, Condition;
 import leia_r2d2: leia_r2d2_sprite;
 import death_star_reach: death_star_reach_sprite;
 import highscore;
-
-alias Font!(font_5x8_size) FontNormal;
+import text_entry;
 
 /**
  * Main story flow.
@@ -43,10 +41,23 @@ alias Font!(font_5x8_size) FontNormal;
 class Story(Interface_) : Task {
 
 	alias Interface = Interface_;
+
+	/// Interface with the user (includes display, solenoid control, inputs)
+	Interface iface;
+
+	// Several type aliases for convenience & readability
+
+	alias Font!(font_5x8_size) DefaultFont;
 	alias Sw = Interface.Switches.Index;
 	alias Lamp = Interface.LEDStripe.Lamp;
 	alias C = Coordinate!();
-	alias Command = SwitchesAsInput!iface.Command;
+	alias Input = SwitchesAsInput!(iface.Switches);
+	alias Command = Input.Command;
+	alias Entry = TextEntry!(Interface.Canvas, Input, DefaultFont);
+	alias Field = PlayingField!iface;
+	alias Text = TextDisplay!iface;
+	alias Score = ScoreDisplay!iface;
+
 
 	enum RGB {
 		YELLOW = [0xf0, 0x60, 0x00],
@@ -57,18 +68,18 @@ class Story(Interface_) : Task {
 
 	enum MAX_PLAYERS = 4;
 
-	Interface iface;
-
 	private {
+		DefaultFont default_font;
+
 		Playlist playlist;
 		SoundRepository sounds;
 		string[] dtb_sounds;
 		string[] fail_sounds;
 
-		PlayingField!iface playing_field;
-		SwitchesAsInput!iface switches_as_input;
-		TextDisplay!iface text;
-		ScoreDisplay!iface score_display;
+		Field field;
+		Input input;
+		Text text;
+		Score score;
 		Sprite current_animation = null;
 
 		int n_players = 1;
@@ -79,6 +90,8 @@ class Story(Interface_) : Task {
 
 	this(Interface iface) {
 		this.iface = iface;
+
+		this.default_font = new DefaultFont(font_5x8_data);
 
 		//
 		// Audio
@@ -115,18 +128,20 @@ class Story(Interface_) : Task {
 			"utini", "r2d2_02", "obi_druiden", "han_rasender_falke", "leia_so_klein"
 		];
 
-		this.playing_field = new PlayingField!(this.iface)();
-		this.playing_field.off;
-		schedule(this.playing_field);
+		this.field = new Field(); //new PlayingField!(this.iface)();
+		this.field.off;
+		schedule(this.field);
 
-		this.switches_as_input = new SwitchesAsInput!(this.iface)();
-		this.switches_as_input.off;
-		schedule(this.switches_as_input);
+		this.input = new Input(iface.switches);
+		this.input.off;
+		schedule(this.input);
 
-		this.text = new TextDisplay!(this.iface)();
+		this.text = new Text(); //new TextDisplay!(this.iface)();
+		//this.text_entry = new TextEntry!(this.iface.display, this.switchas_as_input)(4);
+		//schedule(this.text_ently);
 
-		this.score_display = new ScoreDisplay!(this.iface)();
-		this.score_display.off;
+		this.score = new Score();
+		this.score.off;
 
 		for(int i=0; i<MAX_PLAYERS; i++) {
 			players[i] = new Player();
@@ -146,14 +161,14 @@ class Story(Interface_) : Task {
 			blit(current_animation, Coord(), current_animation.size, iface.canvas, Coord());
 		}
 
-		if(!playing_field.enabled) {
+		if(!field.enabled) {
 			return;
 		}
 
 		check_scoring();
-		score_display.frame_start(dt);
+		score.frame_start(dt);
 
-		if(playing_field.ball_out()) {
+		if(field.ball_out()) {
 			ball_out = true;
 			infof("Player %d ball out at %d balls.", current_player + 1, player.balls);
 		}
@@ -168,35 +183,35 @@ class Story(Interface_) : Task {
 		}
 
 	/**
-	  Check `playing_field` status for any scoring in the past frame and inform
-	  `score_display` about the added score if any. Also schedules scoring
+	  Check `field` status for any scoring in the past frame and inform
+	  `score` about the added score if any. Also schedules scoring
 	  sounds.
 	 */
 	void check_scoring() {
-		if(!playing_field.enabled) {
+		if(!field.enabled) {
 			return;
 		}
 
-		with(playing_field) {
+		with(field) {
 			if(spinner_scored()) {
 				sounds.play("spin");
-				score_display.add_score(1);
+				score.add_score(1);
 			}
 
 			if(slingshot_scored()) {
 				sounds.play("bumper");
-				score_display.add_score(10);
+				score.add_score(10);
 			}
 
 			if(bumper_scored()) {
 				sounds.play("bumper");
-				score_display.add_score(10);
+				score.add_score(10);
 			}
 
 			foreach(i, dtb; dtb_scored) {
 				if(dtb()) {
 					sounds.play(dtb_sounds[i]);
-					score_display.add_score(100);
+					score.add_score(100);
 					player.increase_multiplier(2);
 					// DEBUG: toggle DS_WEAPON on score so we know it works
 					//iface.led_stripe[Lamp.DS_WEAPON] = !iface.led_stripe[Lamp.DS_WEAPON];
@@ -204,12 +219,12 @@ class Story(Interface_) : Task {
 			} // foreach
 			if(dtb_all_scored()) {
 				sounds.play("score_01");
-				score_display.add_score(100);
+				score.add_score(100);
 			}
 
 			if(hole0_hit()) {
 				//sounds.play("explode");
-				score_display.add_score(1000);
+				score.add_score(1000);
 
 				schedule({
 						for(int i = 0; i < 5; i++) {
@@ -220,7 +235,7 @@ class Story(Interface_) : Task {
 						}
 						});
 			}
-		} // playing_field
+		} // field
 	} // check_scoring()
 
 	/**
@@ -232,15 +247,16 @@ class Story(Interface_) : Task {
 			double speed = 5, Duration initial_wait = 0.msecs, bool interruptible = false)
 	{
 		auto n = count(s, '\n');
-		score_display.off;
-		text.scroll.reset;
-		text.s(s, cast(ubyte)color);
-		text.on;
-		iface.led_stripe.full(RGB.YELLOW).dt(cast(ubyte)(initial_wait.total!"msecs"));
-		yield(initial_wait);
-		iface.led_stripe.rotmod(RGB.YELLOW, 3, cast(ubyte)(100 / speed));
+		this.score.off;
+		this.text.scroll.reset;
+		this.text.s(s, cast(ubyte)color);
+		this.text.on;
+		this.iface.led_stripe.full(RGB.YELLOW).dt(cast(ubyte)(initial_wait.total!"msecs"));
 
-		text.scroll.speed = Coordinate!double(-speed, 0);
+		this.yield(initial_wait);
+
+		this.iface.led_stripe.rotmod(RGB.YELLOW, 3, cast(ubyte)(100 / speed));
+		this.text.scroll.speed = Coordinate!double(-speed, 0);
 		if(n > 2) {
 			// speed is in pixels per sec
 			// to display all n+1 lines we need to scroll (n+1-1)*8 pixels
@@ -256,29 +272,29 @@ class Story(Interface_) : Task {
 						);
 			}
 
-			yield(condition);
+			this.yield(condition);
 		}
-		text.scroll.stop;
-		iface.led_stripe.full(RGB.BLACK);
-		text.off;
-		score_display.on;
+		this.text.scroll.stop;
+		this.iface.led_stripe.full(RGB.BLACK);
+		this.text.off;
+		this.score.on;
 	}
 
 	/**
 	  Show current highscore and "STAR WARS" intro text
 	 */
 	void intro() {
-		text.off;
-		playlist.play;
-		yield(800.msecs);
+		this.text.off;
+		this.playlist.play;
+		this.yield(800.msecs);
 
-		string text = "  STAR\n  WARS\n\n\n\n";
-		foreach(hs; highscore.read) {
-			text ~= format!"%s\n%8d\n"(hs[0], hs[1]);
+		string intro_text = "  STAR\n  WARS\n\n\n\n";
+		foreach(hs; highscore.top(5)) {
+			intro_text ~= format!"%s\n%8d\n"(hs[0], hs[1]);
 		}
-		text ~= "\n\n\n\n";
+		intro_text ~= "\n\n\n\n";
 
-		scroll_text(text, DColor.YELLOW, 10, 2000.msecs, true);
+		this.scroll_text(intro_text, DColor.YELLOW, 10, 2000.msecs, true);
 	}
 
 	/**
@@ -286,15 +302,15 @@ class Story(Interface_) : Task {
 	  Sets `this.n_players` and `this.current_player`.
 	 */
 	void choose_player_count() {
-		playing_field.off;
-		switches_as_input.on;
-		text.scroll.reset;
+		this.field.off;
+		this.input.on;
+		this.text.scroll.reset;
 
 		while(true) {
-			text.s(format!"   %d\n Player%s"(n_players, n_players > 1 ? "s" : ""), DColor.GREEN);
+			this.text.s(format!"   %d\n Player%s"(n_players, n_players > 1 ? "s" : ""), DColor.GREEN);
 			blink_text(100.msecs);
 
-			Command c = switches_as_input.query;
+			Command c = input.pop_command;
 
 			if(c == Command.NEXT) {
 				sounds.play("select");
@@ -319,20 +335,20 @@ class Story(Interface_) : Task {
 	  Story/game sequence for a single player
 	 */
 	void player_go(int n) {
-		playing_field.reset;
+		field.reset;
 
 		{
-			score_display.off;
-			scope(exit) score_display.on;
+			score.off;
+			scope(exit) score.on;
 
 			iface.logger.logf("Player %d's turn.", n + 1);
 
 			current_player = n;
 			player.reset();
-			score_display.player = player;
+			score.player = player;
 
 			ball_out = false;
-			playing_field.return_ball;
+			field.return_ball;
 
 			scroll_text(format!"\n\nPLAYER %d\n\n %2d\x03  \n\nMAY THE\n FORCE  \nBE WITH\n  YOU  \n\n\n"(current_player + 1, player.balls), DColor.YELLOW, 10.0);
 
@@ -354,8 +370,8 @@ class Story(Interface_) : Task {
 
 			// Leia Sequence
 			{
-				score_display.off;
-				scope(exit) score_display.on;
+				score.off;
+				scope(exit) score.on;
 
 				yield(playlist.fade_out);
 				scope(exit) playlist.play;
@@ -367,7 +383,7 @@ class Story(Interface_) : Task {
 				sounds.play("leia_helft_mir_kurz");
 				yield(4000.msecs);
 			}
-			score_display.add_score(10000);
+			score.add_score(10000);
 		}
 
 
@@ -381,11 +397,11 @@ class Story(Interface_) : Task {
 		// TODO: Vader breathing
 		iface.led_stripe.lamp(Lamp.VADER, true);
 
-		yield(() => playing_field.hole0_hit() || ball_out);
+		yield(() => field.hole0_hit() || ball_out);
 		if(ball_out) { return; }
 
 		sounds.play("obi_mond_raumstation");
-		score_display.add_score(10000);
+		score.add_score(10000);
 
 		// Phase III: Angriff auf Todesstern
 		// - Goal:
@@ -404,17 +420,17 @@ class Story(Interface_) : Task {
 			iface.led_stripe.lamp(Lamp.TARGET, true);
 
 			yield(() =>
-					playing_field.hole0_hit()
+					field.hole0_hit()
 					|| ball_out
-					|| playing_field.dtb_all_scored()
+					|| field.dtb_all_scored()
 				 );
 			if(ball_out) { return; }
 
-			if(playing_field.hole0_hit()) {
+			if(field.hole0_hit()) {
 				sounds.play("explode");
 			}
 
-			score_display.add_score(10000);
+			score.add_score(10000);
 		}
 	}
 
@@ -426,7 +442,7 @@ class Story(Interface_) : Task {
 		yield(1000.msecs);
 		sounds.play(choice(fail_sounds));
 
-		score_display.off;
+		score.off;
 		text.scroll.reset;
 		text.on;
 		text.s(format!"PLAYER %d\n %2d\x03"(current_player + 1, player.balls), DColor.GREEN);
@@ -450,45 +466,60 @@ class Story(Interface_) : Task {
 		}
 
 		text.off;
-		score_display.on;
+		score.on;
 		return false;
 	}
 
 	/**
-	  Display `this.score_display` in with blinking interval `interval` for a total of `duration`.
+	  Display `this.score` in with blinking interval `interval` for a total of `duration`.
 	 */
 	void blink_text(Duration duration = 1000.msecs, Duration interval = 100.msecs) {
-		auto score_display_bak = score_display.enabled();
-		score_display.off;
+		auto score_bak = score.enabled();
+		score.off;
 		auto t = 0.msecs;
 		while(t < duration) {
 			text.toggle;
 			yield(interval);
 			t += interval;
 		}
-		score_display.on(score_display_bak);
+		score.on(score_bak);
 	}
 
 	void enter_highscore() {
-		playing_field.off;
-		switches_as_input.on;
-		text.scroll.reset;
-		yield(playlist.fade_out());
+		this.field.off;
+		this.text.scroll.reset;
+		this.yield(this.playlist.fade_out());
 
-		sounds.play("lorbeeren");
+		this.sounds.play("lorbeeren");
+
+		//this.text_entry.on;
 
 		// TODO: FIXME: seems this doesnt work and leads to and endless busy loop
 		for(int p = 0; p < n_players; p++) {
-			char[4] name = "AAAA";
-			int pos = 0;
+			//this.input.on;
+			//this.text_entry.on;
+			//this.text_entry.reset;
 
+			auto text_entry = new Entry(iface.canvas, input, default_font, MAX_PLAYERS);
+				//new TextEntry!(Interface.Display, Input)(iface.display, input, 4);
+			schedule(text_entry);
+			yield(() => !text_entry.running);
+			highscore.add_entry(text_entry.value, players[p].score);
+			//append("scores.csv", format!"%s,%d\n"(text_entry.value, players[p].score));
+
+
+			//char[4] name = "AAAA";
+			//int pos = 0;
+
+			/+
 			while(true) {
 				// TODO: change this to two blits
-				text.s(format!"Player %d\n  %s"(p+1, name), DColor.YELLOW);
+				this.text.s(format!"Player %d\n  %s"(p+1), DColor.YELLOW);
+				this.text.s(format!"  %s"(name), DColor.YELLOW);
 				//text.s(format!"\n  %s"(name), DColor.GREEN);
 				yield(100.msecs);
 
-				Command c = switches_as_input.query;
+				Command c = input.query;
 				if(c == Command.NEXT) {
 					sounds.play("select");
 					name[pos]++;
@@ -506,6 +537,7 @@ class Story(Interface_) : Task {
 					}
 				}
 			} // while
+			+/
 		} // for
 
 	}
@@ -520,8 +552,8 @@ class Story(Interface_) : Task {
 			choose_player_count();
 
 			iface.logger.log("Game started.");
-			playing_field.on;
-			score_display.on;
+			field.on;
+			score.on;
 
 			player_go(0);
 
@@ -537,6 +569,7 @@ class Story(Interface_) : Task {
 			}
 
 			enter_highscore();
+
 
 		}
 

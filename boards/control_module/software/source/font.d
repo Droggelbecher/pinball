@@ -12,6 +12,11 @@ class Font(Coordinate!() size_, int padding_ = 0) {
 
 	this(ubyte[size_.area()][char] font_data) {
 		this.font_data = font_data;
+		assert(this.font_data != null);
+	}
+
+	auto opCall(dchar c, ubyte color = 1) {
+		return opCall(cast(string)[c], color);
 	}
 
 	auto opCall(string s, ubyte color = 1) {

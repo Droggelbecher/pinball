@@ -1,7 +1,7 @@
 
 mixin template Switchable() {
 	void off() {
-		this._enabled = false;
+		this.on(false);
 	}
 
 	void on(bool enabled=true) {
@@ -9,7 +9,7 @@ mixin template Switchable() {
 	}
 
 	void toggle() {
-		this._enabled = !this._enabled;
+		this.on(!this.enabled());
 	}
 
 	bool enabled() {
