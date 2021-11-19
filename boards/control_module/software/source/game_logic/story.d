@@ -58,6 +58,15 @@ class Story(Interface_) : Task {
 	alias Text = TextDisplay!iface;
 	alias Score = ScoreDisplay!iface;
 
+	// How much various playing field elements will score
+	enum SCORE_SPINNER = 10;
+	enum SCORE_SLINGSHOT = 10;
+	enum SCORE_BUMPER = 10;
+	enum SCORE_DTB = 100;
+	enum MULTIPLIER_DTB = 2;
+	enum SCORE_DTB_ALL = 100;
+	enum SCORE_HOLE0 = 1000;
+
 
 	enum RGB {
 		YELLOW = [0xf0, 0x60, 0x00],
@@ -71,9 +80,13 @@ class Story(Interface_) : Task {
 	private {
 		DefaultFont default_font;
 
+		/// Audio related
+
 		Playlist playlist;
 		SoundRepository sounds;
+		// Sounds to play when DTB is scored
 		string[] dtb_sounds;
+		// Sounds to play on ball out
 		string[] fail_sounds;
 
 		Field field;
@@ -82,9 +95,12 @@ class Story(Interface_) : Task {
 		Score score;
 		Sprite current_animation = null;
 
+		/// Player related
+
 		int n_players = 1;
 		int current_player = 0;
 		Player[MAX_PLAYERS] players;
+
 		bool ball_out = false;
 	}
 
@@ -101,7 +117,7 @@ class Story(Interface_) : Task {
 		this.sounds = new SoundRepository("./resources/sounds/");
 
 		/**
-		  playlist is generally independent from player/game state, start
+		  Playlist is generally independent from player/game state, start
 		  with main theme synced up to STAR WARS prompt
 		 */
 
@@ -113,7 +129,6 @@ class Story(Interface_) : Task {
 				"./resources/music/original/04_V_imperial_march.mp3",
 				"./resources/music/original/05_V_yodas_theme.mp3",
 				"./resources/music/original/10_IV_here_they_come.mp3",
-				// 03 the little people
 				);
 
 		this.playlist.set_volume(0.5);
@@ -124,11 +139,12 @@ class Story(Interface_) : Task {
 			"obi_du_musst_tun", "vader_beklagenswert"
 		];
 
+		// TODO(HeH) some of these are too long, cut or replace!
 		this.dtb_sounds = [
 			"utini", "r2d2_02", "obi_druiden", "han_rasender_falke", "leia_so_klein"
 		];
 
-		this.field = new Field(); //new PlayingField!(this.iface)();
+		this.field = new Field();
 		this.field.off;
 		schedule(this.field);
 
@@ -136,10 +152,10 @@ class Story(Interface_) : Task {
 		this.input.off;
 		schedule(this.input);
 
-		this.text = new Text(); //new TextDisplay!(this.iface)();
-		//this.text_entry = new TextEntry!(this.iface.display, this.switchas_as_input)(4);
-		//schedule(this.text_ently);
+		// text.frame_start() is scheduled manually in our frame_start()
+		this.text = new Text();
 
+		// score.frame_start() is scheduled manually in our frame_start()
 		this.score = new Score();
 		this.score.off;
 
@@ -178,9 +194,9 @@ class Story(Interface_) : Task {
 	  Return the currently active player.
 	 */
 	@property
-		Player player() {
-			return this.players[this.current_player];
-		}
+	Player player() {
+		return this.players[this.current_player];
+	}
 
 	/**
 	  Check `field` status for any scoring in the past frame and inform
@@ -195,45 +211,47 @@ class Story(Interface_) : Task {
 		with(field) {
 			if(spinner_scored()) {
 				sounds.play("spin");
-				score.add_score(1);
+				score.add_score(SCORE_SPINNER);
 			}
 
 			if(slingshot_scored()) {
+				// TODO(HeH): Separate slingshot sound
 				sounds.play("bumper");
-				score.add_score(10);
+				score.add_score(SCORE_SLINGSHOT);
 			}
 
 			if(bumper_scored()) {
 				sounds.play("bumper");
-				score.add_score(10);
+				score.add_score(SCORE_BUMPER);
 			}
 
 			foreach(i, dtb; dtb_scored) {
 				if(dtb()) {
 					sounds.play(dtb_sounds[i]);
-					score.add_score(100);
-					player.increase_multiplier(2);
+					score.add_score(SCORE_DTB);
+					player.increase_multiplier(MULTIPLIER_DTB);
 					// DEBUG: toggle DS_WEAPON on score so we know it works
 					//iface.led_stripe[Lamp.DS_WEAPON] = !iface.led_stripe[Lamp.DS_WEAPON];
 				}
 			} // foreach
+
 			if(dtb_all_scored()) {
 				sounds.play("score_01");
-				score.add_score(100);
+				score.add_score(SCORE_DTB_ALL);
 			}
 
 			if(hole0_hit()) {
 				//sounds.play("explode");
-				score.add_score(1000);
+				score.add_score(SCORE_HOLE0);
 
 				schedule({
-						for(int i = 0; i < 5; i++) {
+					for(int i = 0; i < 5; i++) {
 						iface.led_stripe.lamp(Lamp.DS_LIGHT, true);
 						yield(100.msecs);
 						iface.led_stripe.lamp(Lamp.DS_LIGHT, false);
 						yield(100.msecs);
-						}
-						});
+					}
+				});
 			}
 		} // field
 	} // check_scoring()
@@ -241,7 +259,16 @@ class Story(Interface_) : Task {
 	/**
 	  Display a given string (may contain newlines) with vertical scrolling for
 	  the given amount of time.  Will display scrolling lights on the LED
-	  stripe in matching speed and color.
+	  stripe in matching speed.
+	
+	  Args:
+		s: Text to display
+		color: Text color to use
+		speed: Scrolling speed
+		initial_wait: Wait this long before starting to scroll
+		interruptible: Iff True, abort text display when any flipper is hit
+		TODO stripe_color: Color to use for LED stripe
+		
 	 */
 	void scroll_text(string s, DColor color = DColor.YELLOW,
 			double speed = 5, Duration initial_wait = 0.msecs, bool interruptible = false)
@@ -252,9 +279,9 @@ class Story(Interface_) : Task {
 		this.text.s(s, cast(ubyte)color);
 		this.text.on;
 		this.iface.led_stripe.full(RGB.YELLOW).dt(cast(ubyte)(initial_wait.total!"msecs"));
-
+		
 		this.yield(initial_wait);
-
+		
 		this.iface.led_stripe.rotmod(RGB.YELLOW, 3, cast(ubyte)(100 / speed));
 		this.text.scroll.speed = Coordinate!double(-speed, 0);
 		if(n > 2) {
@@ -262,16 +289,19 @@ class Story(Interface_) : Task {
 			// to display all n+1 lines we need to scroll (n+1-1)*8 pixels
 			// which should take (n-1)*8/speed seconds
 			// or 8000*(n-1)/speed msecs
-
+			
+			// End when we scrolled through
 			Condition condition = make_condition(
-					msecs(cast(long)(8000.0 * (n - 1) / speed))
-					);
+				msecs(cast(long)(8000.0 * (n - 1) / speed))
+			);
+			
 			if(interruptible) {
+				// ... OR a flipper was pressed
 				condition = condition | make_condition(
-						() => iface.switches[Sw.FLIPPER_LEFT]
+						() => iface.switches[Sw.FLIPPER_LEFT] || iface.switches[Sw.FLIPPER_RIGHT]
 						);
 			}
-
+			
 			this.yield(condition);
 		}
 		this.text.scroll.stop;
@@ -286,6 +316,8 @@ class Story(Interface_) : Task {
 	void intro() {
 		this.text.off;
 		this.playlist.play;
+
+		// This is timed to the wav file
 		this.yield(800.msecs);
 
 		string intro_text = "  STAR\n  WARS\n\n\n\n";
@@ -302,6 +334,7 @@ class Story(Interface_) : Task {
 	  Sets `this.n_players` and `this.current_player`.
 	 */
 	void choose_player_count() {
+		// Turn off playing field, use flippers as data input
 		this.field.off;
 		this.input.on;
 		this.text.scroll.reset;

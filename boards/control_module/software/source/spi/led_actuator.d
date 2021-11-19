@@ -35,13 +35,13 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 		DS_WEAPON,
 		DS_LIGHT ,
 		TARGET   ,
-		VADER    ,
-		FALCON   ,
+		SS0      ,
+		SS1      ,
 		BMP0     ,
 		BMP1     ,
 		BMP2     ,
-		SS0      ,
-		SS1
+		VADER    ,
+		FALCON 
 	};
 
 

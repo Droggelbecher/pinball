@@ -5,6 +5,9 @@ import task: Task;
 import signal: KeepValueDelay, Rising, Signal;
 import switchable;
 
+/**
+  Track overall state of the playing field.
+  */
 class PlayingField(alias iface) : Task {
 
 	alias Interface = typeof(iface);
@@ -18,20 +21,28 @@ class PlayingField(alias iface) : Task {
 		// Overall state of the playing field
 		bool     resetting;
 
-		// Playing field items abstractions
+		/// Playing field items abstractions
+
+		// True iff any DTB target scored previous frame
 		Signal[] dtb_scored;
+		// True iff all DTB targets are down
 		Signal   dtb_all_scored;
 
+		// True iff "Hole 0" was hit previous frame
 		Signal   hole0_hit;
+		// True iff spinner triggered previous frame
 		Signal   spinner_scored;
+		// True iff any slingshot triggered previous frame
 		Signal   slingshot_scored;
+		// True iff any bumper triggered previous frame
 		Signal   bumper_scored;
 
-		//KeepValueDelay ball_out;
+		// True iff ball went into out previous frame
 		Signal   ball_out;
 	}
 
 	private {
+		// If true, return ball on `ball_out`
 		bool _enable_ball_return = false;
 	}
 
@@ -120,6 +131,7 @@ class PlayingField(alias iface) : Task {
 		slingshot_scored.frame_start(dt);
 
 		with(iface) {
+			// Playing field is on so connect flippers/slingshots etc.. in the obvious ways
 			solenoids[Sol.FLIPPER_LEFT]  = switches[Sw.FLIPPER_LEFT];
 			solenoids[Sol.FLIPPER_RIGHT] = switches[Sw.FLIPPER_RIGHT];
 			solenoids[Sol.SLINGSHOT0]    = switches[Sw.SLINGSHOT0];
@@ -147,12 +159,18 @@ class PlayingField(alias iface) : Task {
 		}
 	} // frame_start()
 
+	/**
+	  Wait for ball to be out and return it.
+	*/
 	void return_ball() {
+		bool prev_ball_return = _enable_ball_return;
+		scope(exit) {
+			_enable_ball_return = prev_ball_return;
+		}
+
 		_enable_ball_return = true;
 		while(iface.switches[Sw.BALL_OUT]) {
-			//infof("return_ball(): ball is out");
 			yield(100.msecs);
 		}
-		_enable_ball_return = false;
 	}
 }

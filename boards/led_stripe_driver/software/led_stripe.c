@@ -116,7 +116,7 @@ int main(void) {
 
 		// Measured 9/2019:
 		// ~ 500us xfer_spi()
-		// ~2200us execute()
+		// ~2200us execute() (at 60 LEDs thats ~37us per LED)
 		//
 		// Note: at 30FPS, SPI transfer should happen every ~3300us
 

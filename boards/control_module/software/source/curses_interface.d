@@ -111,8 +111,8 @@ public:
 		{ ',',  '<',"HOLE0", Sw.HOLE0,         false },
 
 		{ 'l', 'L', "SW_01", Sw.SW_01,         false },
-		{ '/', '?', "SW_06", Sw.SW_06,         false },
-		{ '=', '+', "SPIN",  Sw.SPINNER,       false },
+		{ '/', '?', "SPIN",  Sw.SPINNER,       false },
+		{ '=', '+', "SW_07", Sw.SW_07,         false },
 	];
 
 	// Switch states

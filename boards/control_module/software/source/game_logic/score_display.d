@@ -13,13 +13,21 @@ import font:         Font, StringCanvas;
 import player: Player;
 import switchable;
 
+/**
+  Display a players score, multiplier and balls.
+  */
 class ScoreDisplay(alias iface): Task {
 	alias blit = canvas.blit;
 	alias blit = scrolling.blit;
 	alias Font!(font_5x8_size) FontNormal;
 	alias Interface = typeof(iface);
 
+	enum Duration SCORE_COUNTUP_TIME = 2000.msecs;
+	enum int MAX_DISPLAY_SCORE = 99999999;
+
+	// Score currently displayed, might be different from player score for "counting up" effect
 	size_t display_score;
+	// How long yet to count up
 	Duration show_score;
 	StringCanvas!FontNormal score_text;
 	FontNormal font_normal;
@@ -31,7 +39,7 @@ class ScoreDisplay(alias iface): Task {
 	}
 
 	this() {
-		this.show_score = 2000.msecs;
+		this.show_score = SCORE_COUNTUP_TIME;
 		this.font_normal = new FontNormal(font_5x8_data);
 	}
 
@@ -58,12 +66,10 @@ class ScoreDisplay(alias iface): Task {
 		}
 	}
 
+	// Show score of this player
 	@property
 	Player player(Player value) {
 		this._player = value;
-
-		// set display score to a little less so we show tehe new players score
-		//this.display_score = cast(size_t)(this._player.score * 0.9);
 		this.display_score = 0;
 		render_score();
 		return this._player;
@@ -71,15 +77,15 @@ class ScoreDisplay(alias iface): Task {
 
 	void add_score(int score) {
 		this._player.score += score * this._player.multiplier;
-		this.show_score = 2000.msecs;
+		this.show_score = SCORE_COUNTUP_TIME;
 		render_score();
 	}
 
 	void render_score() {
 		char[20] score_string;
 		auto s = this.display_score;
-		if(s > 99999999) {
-			s = 99999999;
+		if(s > MAX_DISPLAY_SCORE) {
+			s = MAX_DISPLAY_SCORE;
 		}
 		snprintf(score_string.ptr, score_string.length, "%2d\x03  x%d\n%8d", this._player.balls, this._player.multiplier, s);
 		// Alas, not entirely nogc, but lets try to reduce the per-frame allocations to a necessary minimum

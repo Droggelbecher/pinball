@@ -40,7 +40,19 @@ SPI Pins
 ( 9) SS22 Lamps
 (10) SS18 LED Stripe
 
-Switches
+Switches (here: bank 0)
+
+( 1) 3 FR
+( 2) 2 SS1 (R)
+( 3) 1
+( 4) 0
+( 5) 6 SPIN
+( 6) 7
+( 7) Sel (GND)
+( 8) - / Sel
+( 9) 5 SS0 (L)
+(10) 4 FL
+
 
 TODO XXX Check this! Top/Bottom view confusion?
 ( 1) 3

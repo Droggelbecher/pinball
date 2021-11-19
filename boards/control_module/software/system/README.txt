@@ -1,4 +1,31 @@
 
+
+# 1. Configure network
+
+Set local IP Address to eg 10.0.0.1
+Pinball has addr 10.0.0.42 ssh pinball/pinball
+
+# 2. Deploy
+
+Run deploy.sh to copy over the sourcecode
+
+# 3. Compile
+
+Log into to pinball machine go to /home/pinball/sw and run
+
+dub build -b release
+
+Hint: build as "pinball" user, that one has all the dub packages
+
+# 4. Run
+
+./control_module
+
+Hint: Run only as root b/c access to BCM device
+
+# Cron job (outdated)
+
+
 Run check_compile.sh automatically via cron to download the latest
 release and run it:
 
