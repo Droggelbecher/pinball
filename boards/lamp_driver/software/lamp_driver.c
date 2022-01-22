@@ -175,6 +175,7 @@ void set_column(uint8_t c) {
 
 	// Colum ports:
 	// Pin: PC0 PC1 PC2 PC3 PC4 PC5 PB1 PD7
+	//       37  36  35  34  33  32  52  38
 	// Bit:   0   1   2   3   4   5   6   7
 
 	// PORTC = 01cccccc 

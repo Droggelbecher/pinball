@@ -240,6 +240,7 @@ void start_execute() {
 			break;
 	}
 	PORT_LAMPS0 = lamps(c)[0];
+	PORT_LAMPS0 = lamps(c)[1];
 	ws2812_setleds(led, LEDS);
 }
 
@@ -247,6 +248,7 @@ void execute() {
 	uint8_t *c = active_buffer();
 
 	PORT_LAMPS0 = lamps(c)[0];
+	PORT_LAMPS1 = lamps(c)[1];
 
 	if(dt(c) == 0) {
 		return;
@@ -326,11 +328,13 @@ void setup_spi(void) {
 }
 
 void setup(void) {
-	// LED data out pin
+	// LED STRIPE data out pin
 	DDRC |= (1 << PC0);
 
 	DDR_LAMPS0 = 0xff;
 	PORT_LAMPS0 = 0x00;
+	DDR_LAMPS1 = 0xff;
+	PORT_LAMPS1 = 0x00;
 
 	// PK3 = A11 = selftest switch
 	DDR_TEST &= ~(1 << PSELFTEST);

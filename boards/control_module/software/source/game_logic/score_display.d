@@ -21,6 +21,7 @@ class ScoreDisplay(alias iface): Task {
 	alias blit = scrolling.blit;
 	alias Font!(font_5x8_size) FontNormal;
 	alias Interface = typeof(iface);
+	alias DColor = Interface.Display.Color;
 
 	enum Duration SCORE_COUNTUP_TIME = 2000.msecs;
 	enum int MAX_DISPLAY_SCORE = 99999999;
@@ -31,6 +32,7 @@ class ScoreDisplay(alias iface): Task {
 	Duration show_score;
 	StringCanvas!FontNormal score_text;
 	FontNormal font_normal;
+	DColor color;
 
 	mixin Switchable;
 
@@ -38,9 +40,10 @@ class ScoreDisplay(alias iface): Task {
 		Player _player;
 	}
 
-	this() {
+	this(DColor color = DColor.YELLOW) {
 		this.show_score = SCORE_COUNTUP_TIME;
 		this.font_normal = new FontNormal(font_5x8_data);
+		this.color = color;
 	}
 
 	override
@@ -89,7 +92,7 @@ class ScoreDisplay(alias iface): Task {
 		}
 		snprintf(score_string.ptr, score_string.length, "%2d\x03  x%d\n%8d", this._player.balls, this._player.multiplier, s);
 		// Alas, not entirely nogc, but lets try to reduce the per-frame allocations to a necessary minimum
-		this.score_text = font_normal(to!string(score_string.ptr));
+		this.score_text = font_normal(to!string(score_string.ptr), cast(ubyte)(this.color));
 	}
 }
 

@@ -27,9 +27,11 @@
 
 #define PORT_LAMPS0 PORTA
 #define DDR_LAMPS0 DDRA
+#define PORT_LAMPS1 PORTL
+#define DDR_LAMPS1 DDRL
 
 // PF0 = Analog 0
-// PC0 = Diginal 37
+// PC0 = Digital 37
 // src: https://www.arduino.cc/en/uploads/Hacking/PinMap2560big.png
 
 typedef uint8_t Command[15];

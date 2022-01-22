@@ -1,9 +1,9 @@
 
 import bit_actuator;
 
-// DEPRECATED.
+// DEPRECATED. Use LEDActuator!
 // TODO: Remove
-
+/+
 enum LampsIndex {
 	DS_WHITE  ,
 	DS_WEAPON ,
@@ -16,4 +16,4 @@ enum LampsIndex {
 }
 
 alias Lamps(Spi) = BitActuator!(Spi, LampsIndex, Spi.SlaveIndex.Lamps);
-
++/

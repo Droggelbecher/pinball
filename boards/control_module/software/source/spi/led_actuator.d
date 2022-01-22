@@ -32,6 +32,7 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 	enum ID_INCREMENT = 0x20;
 
 	enum Lamp {
+		// Bank 0
 		DS_WEAPON,
 		DS_LIGHT ,
 		TARGET   ,
@@ -40,6 +41,8 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 		BMP0     ,
 		BMP1     ,
 		BMP2     ,
+
+		// Bank 1
 		VADER    ,
 		FALCON 
 	};
@@ -123,17 +126,17 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 	bool opIndex(Lamp index) {
 		int bit = index % 8;
 		int byte_ = index / 8;
-		return (command[11 + byte_] & (1 << cast(int)index)) != 0;
+		return (command[11 + byte_] & (1 << cast(int)bit)) != 0;
 	}
 
 	bool opIndexAssign(bool v, Lamp index) {
 		int bit = index % 8;
 		int byte_ = index / 8;
 		if(v) {
-			command[11 + byte_] |= (1 << cast(int)index);
+			command[11 + byte_] |= (1 << cast(int)bit);
 		}
 		else {
-			command[11 + byte_] &= ~(1 << cast(int)index);
+			command[11 + byte_] &= ~(1 << cast(int)bit);
 		}
 		return this[index];
 	}
@@ -143,9 +146,10 @@ class LEDActuator(Spi, int SlaveIdx): Task {
 		spi.transfer_and_check(cast(Spi.SlaveIndex)SlaveIdx, command);
 	}
 
+	ubyte[DATA_BYTES] command;
+
 	private {
 		Spi spi;
-		ubyte[DATA_BYTES] command;
 	}
 }
 

@@ -21,6 +21,7 @@ Tuple!(string, int)[] top(int n) {
 	}
 	// Sort descending by score
 	r.sort!("a[1] > b[1]");
+	// TODO: if len < n, fill up with dummies
 	return r[0 .. n];
 }
 

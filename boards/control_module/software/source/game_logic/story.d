@@ -67,13 +67,24 @@ class Story(Interface_) : Task {
 	enum SCORE_DTB_ALL = 100;
 	enum SCORE_HOLE0 = 1000;
 
+	enum SCORE_PHASE2_REQUIRED = 10000;
+	enum SCORE_PHASE2_BONUS = 1000;
+
 
 	enum RGB {
+		BLACK = [0x00, 0x00, 0x00],
+		WHITE = [0xf0, 0xf0, 0xf0],
+
 		YELLOW = [0xf0, 0x60, 0x00],
-		BLACK = [0x20, 0x20, 0x20],
+		BLUE = [0x00, 0x00, 0xf0],
+		GREEN = [0x20, 0xe0, 0x00],
+		RED = [0xf0, 0x00, 0x00],
+		ORANGE = [0xf0, 0x30, 0x00],
 	};
 
 	alias DColor = Interface.Display.Color;
+	alias ColorMode = Interface.LEDStripe.ColorMode;
+	alias AnimationMode = Interface.LEDStripe.AnimationMode;
 
 	enum MAX_PLAYERS = 4;
 
@@ -101,10 +112,23 @@ class Story(Interface_) : Task {
 		int current_player = 0;
 		Player[MAX_PLAYERS] players;
 
+		ubyte[3][MAX_PLAYERS] player_rgb; //= [
+			//RGB.YELLOW, RGB.GREEN, RGB.RED, RGB.ORANGE
+		//];
+		DColor[MAX_PLAYERS] player_dcolor = [
+			DColor.YELLOW, DColor.GREEN, DColor.RED, DColor.ORANGE
+		];
+
 		bool ball_out = false;
 	}
 
 	this(Interface iface) {
+
+		player_rgb[0] = RGB.YELLOW;
+		player_rgb[1] = RGB.GREEN;
+		player_rgb[2] = RGB.RED;
+		player_rgb[3] = RGB.ORANGE;
+
 		this.iface = iface;
 
 		this.default_font = new DefaultFont(font_5x8_data);
@@ -242,6 +266,8 @@ class Story(Interface_) : Task {
 
 			if(hole0_hit()) {
 				//sounds.play("explode");
+				sounds.play("obi_mond_raumstation");
+				// TODO(HeH): Maybe "das ist kein mond, das ist eine raumstation"?
 				score.add_score(SCORE_HOLE0);
 
 				schedule({
@@ -281,6 +307,8 @@ class Story(Interface_) : Task {
 		this.iface.led_stripe.full(RGB.YELLOW).dt(cast(ubyte)(initial_wait.total!"msecs"));
 		
 		this.yield(initial_wait);
+
+		//ubyte[3] rgb_color = this.player_rgb[current_player];
 		
 		this.iface.led_stripe.rotmod(RGB.YELLOW, 3, cast(ubyte)(100 / speed));
 		this.text.scroll.speed = Coordinate!double(-speed, 0);
@@ -305,7 +333,19 @@ class Story(Interface_) : Task {
 			this.yield(condition);
 		}
 		this.text.scroll.stop;
-		this.iface.led_stripe.full(RGB.BLACK);
+		//this.iface.led_stripe.full(RGB.BLACK);
+
+		// Reset LED stripe to player color
+
+		// Gradient to black
+		//this.iface.led_stripe.mode(ColorMode.GRADIENT, AnimationMode.ROTATE);
+		//this.iface.led_stripe.color0(RGB.BLACK);
+		//this.iface.led_stripe.color1(cast(ubyte[3])(this.player_rgb[current_player]));
+		//this.iface.led_stripe.dt(100);
+		//this.iface.led_stripe.mod(1);
+
+		this.iface.led_stripe.rotmod(cast(ubyte[3])(this.player_rgb[current_player]), 6, 60);
+
 		this.text.off;
 		this.score.on;
 	}
@@ -379,11 +419,12 @@ class Story(Interface_) : Task {
 			current_player = n;
 			player.reset();
 			score.player = player;
+			score.color = player_dcolor[current_player];
 
-			ball_out = false;
 			field.return_ball;
+			ball_out = false;
 
-			scroll_text(format!"\n\nPLAYER %d\n\n %2d\x03  \n\nMAY THE\n FORCE  \nBE WITH\n  YOU  \n\n\n"(current_player + 1, player.balls), DColor.YELLOW, 10.0);
+			scroll_text(format!"\n\nPLAYER %d\n\n %2d\x03  \n\nMAY THE\n FORCE  \nBE WITH\n  YOU \n\n\n"(current_player + 1, player.balls), player_dcolor[current_player], 10.0);
 
 			sounds.play("start");
 		}
@@ -396,13 +437,15 @@ class Story(Interface_) : Task {
 		// (- Alle Drop targets: Cantina Band special mit Multiball?)
 		// -> "Helft mir Obi Wan Kenobi, ihr seid meine letzte Hoffnung"
 
-		if(player.score < 17000) {
+		if(player.score < SCORE_PHASE2_REQUIRED) {
 
-			yield(() => player.score >= 17000 || ball_out);
+			yield(() => player.score >= SCORE_PHASE2_REQUIRED || ball_out);
 			if(ball_out) { return; }
 
 			// Leia Sequence
 			{
+				yield(2000.msecs);
+
 				score.off;
 				scope(exit) score.on;
 
@@ -416,7 +459,10 @@ class Story(Interface_) : Task {
 				sounds.play("leia_helft_mir_kurz");
 				yield(4000.msecs);
 			}
-			score.add_score(10000);
+			scroll_text("\n\n Enter  \n  the   \n Death  \n Star!\n\n  +3\x03\n\n\n\n", DColor.GREEN,
+					10.0);
+			score.add_score(SCORE_PHASE2_BONUS);
+			player.balls = player.balls + 3;
 		}
 
 

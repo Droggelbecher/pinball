@@ -8,6 +8,7 @@
 // shift register pins
 #define SR_DDR DDRD
 #define SR_PORT PORTD
+
 // data input
 #define SR_DS (1 << PD2)
 // storage register clock
