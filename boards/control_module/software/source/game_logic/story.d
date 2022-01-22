@@ -247,17 +247,32 @@ class Story(Interface_) : Task {
 			if(bumper_scored()) {
 				sounds.play("bumper");
 				score.add_score(SCORE_BUMPER);
+				schedule({
+					iface.led_stripe.full(RGB.WHITE);
+					yield(100.msecs);
+					reset_ledstripe();
+				});
 			}
 
+			bool any_dtb = false;
 			foreach(i, dtb; dtb_scored) {
 				if(dtb()) {
 					sounds.play(dtb_sounds[i]);
 					score.add_score(SCORE_DTB);
 					player.increase_multiplier(MULTIPLIER_DTB);
+					any_dtb = true;
 					// DEBUG: toggle DS_WEAPON on score so we know it works
 					//iface.led_stripe[Lamp.DS_WEAPON] = !iface.led_stripe[Lamp.DS_WEAPON];
 				}
 			} // foreach
+
+			if(any_dtb) {
+				schedule({
+					iface.led_stripe.full(RGB.WHITE);
+					yield(100.msecs);
+					reset_ledstripe();
+				});
+			}
 
 			if(dtb_all_scored()) {
 				sounds.play("score_01");
@@ -272,11 +287,14 @@ class Story(Interface_) : Task {
 
 				schedule({
 					for(int i = 0; i < 5; i++) {
+						iface.led_stripe.full(RGB.RED);
 						iface.led_stripe.lamp(Lamp.DS_LIGHT, true);
 						yield(100.msecs);
+						iface.led_stripe.full(RGB.BLACK);
 						iface.led_stripe.lamp(Lamp.DS_LIGHT, false);
 						yield(100.msecs);
 					}
+					reset_ledstripe();
 				});
 			}
 		} // field
@@ -335,19 +353,23 @@ class Story(Interface_) : Task {
 		this.text.scroll.stop;
 		//this.iface.led_stripe.full(RGB.BLACK);
 
-		// Reset LED stripe to player color
-
-		// Gradient to black
-		//this.iface.led_stripe.mode(ColorMode.GRADIENT, AnimationMode.ROTATE);
-		//this.iface.led_stripe.color0(RGB.BLACK);
-		//this.iface.led_stripe.color1(cast(ubyte[3])(this.player_rgb[current_player]));
-		//this.iface.led_stripe.dt(100);
-		//this.iface.led_stripe.mod(1);
-
-		this.iface.led_stripe.rotmod(cast(ubyte[3])(this.player_rgb[current_player]), 6, 60);
+		reset_ledstripe();
 
 		this.text.off;
 		this.score.on;
+	}
+
+	void reset_ledstripe() {
+		// Reset LED stripe to player color
+
+		// Gradient to black
+		this.iface.led_stripe.mode(ColorMode.GRADIENT, AnimationMode.ROTATE);
+		this.iface.led_stripe.color1(RGB.BLACK);
+		this.iface.led_stripe.color0((this.player_rgb[current_player]));
+		this.iface.led_stripe.dt(30);
+		this.iface.led_stripe.mod(1);
+
+		//this.iface.led_stripe.rotmod(cast(ubyte[3])(this.player_rgb[current_player]), 6, 60);
 	}
 
 	/**
@@ -524,10 +546,12 @@ class Story(Interface_) : Task {
 		score.off;
 		text.scroll.reset;
 		text.on;
-		text.s(format!"PLAYER %d\n %2d\x03"(current_player + 1, player.balls), DColor.GREEN);
+		text.s(format!"PLAYER %d\n %2d\x03"(current_player + 1, player.balls),
+				cast(ubyte)player_dcolor[current_player]);
 		yield(1000.msecs);
 		player.balls = player.balls - 1;
-		text.s(format!"PLAYER %d\n %2d\03"(current_player + 1, player.balls), DColor.RED);
+		text.s(format!"PLAYER %d\n %2d\03"(current_player + 1, player.balls),
+				cast(ubyte)player_dcolor[current_player]);
 		blink_text(1000.msecs);
 		yield(1000.msecs);
 

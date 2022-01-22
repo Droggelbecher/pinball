@@ -221,7 +221,7 @@ void start_execute() {
 
 		case COLOR_GRADIENT: {
 			int n = (LEDS/2) / (mod(c) + 1);
-			for(int i = 0; i <= n; i++) {
+			for(int i = 0; i < n; i++) {
 				for(int offs = 0; offs < LEDS/2; offs += 2 * n) {
 					led[i].r = r0(c) + i * (r1(c) - r0(c)) / (n - 1);
 					led[i].g = g0(c) + i * (g1(c) - g0(c)) / (n - 1);
