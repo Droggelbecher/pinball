@@ -9,7 +9,7 @@
 	"dependencies": {
 		"derelict-alure": ">=1.0.2",
 		"derelict-sdl2": "~>1.2.0",
-		"ncurses": "~master"
+		"ncurses": "0.0.141"
 	},
 	"dflags-gdc": [ ],
 	"preBuildCommands": [

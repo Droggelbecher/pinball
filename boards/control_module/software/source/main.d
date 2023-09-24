@@ -83,7 +83,8 @@ void init_logging(Logger iface_logger) {
 	auto global_logger = new MultiLogger(LogLevel.all);
 	global_logger.insertLogger("iface_logger", iface_logger);
 	global_logger.insertLogger("file_logger", file_logger);
-	sharedLog = global_logger;
+	//sharedLog = global_logger;
+	stdThreadLocalLog = global_logger;
 
 	//infof("Built with D%d.%d using %s", version_major, version_minor, name);
 }

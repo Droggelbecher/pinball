@@ -5,7 +5,7 @@
 		"derelict-alure": "1.0.2",
 		"derelict-sdl2": "1.2.16",
 		"derelict-util": "2.0.6",
-		"ncurses": "~master",
+		"ncurses": "0.0.141",
 		"nice-curses": "0.2.4"
 	}
 }
