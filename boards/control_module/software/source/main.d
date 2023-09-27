@@ -5,6 +5,7 @@ import std.format;
 import core.thread;
 import std.experimental.logger;
 import std.compiler;
+import std.getopt;
 
 import story : Story;
 import scheduler : Scheduler;
@@ -24,6 +25,7 @@ import led_actuator;
 import display;
 import task;
 import coordinate;
+import audio_sdl;
 
 void test_spi() {
 	import bcm2708_spi: Spi;
@@ -117,7 +119,12 @@ void run_game() {
 	scheduler.run();
 }
 
-void main() {
+void main(string[] args) {
+
+	bool no_audio;
+	auto opt = getopt(args, "no-audio", &no_audio);
+	audio_sdl.audio_enabled = !no_audio;
+
 	debug {
 		writeln("DEBUG (Mock-SPI) build.");
 	}

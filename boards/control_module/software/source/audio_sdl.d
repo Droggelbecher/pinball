@@ -11,12 +11,18 @@ import derelict.sdl2.mixer;
 import task;
 import utils;
 
+bool audio_enabled = true;
+
 private {
 	bool _audio_initialized = false;
 }
 
 
 void initialize_audio() {
+	if(!audio_enabled) {
+		return;
+	}
+
 	Mix_Init(MIX_INIT_MP3);
 	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
 		throw new Exception("Mix_OpenAudio");
