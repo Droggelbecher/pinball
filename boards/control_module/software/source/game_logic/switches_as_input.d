@@ -7,7 +7,6 @@ import signal: Rising;
 
 class SwitchesAsInput(Switches_): Task {
 
-	//alias Interface = typeof(iface);
 	alias Switches = Switches_;
 	alias Sw = Switches.Index;
 

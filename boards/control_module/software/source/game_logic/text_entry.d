@@ -19,7 +19,6 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 	Font _font;
 	Canvas canvas;
 	Input input;
-	//alias DColor = Display.Color;
 
 	this(Canvas canvas, Input input, Font font, int n) {
 		this._value = new char[n];
@@ -43,9 +42,6 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 			return;
 		}
 
-		// TODO blit all non-active chars
-		// TODO blit active char blinking & in active color
-		
 		Coord p;
 		foreach(c; rendered) {
 			blit(c, Coord(), c.size, this.canvas, p);
@@ -59,7 +55,6 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 	override
 	void run() {
 		input.on;
-		//scope(exit) { input.off; }
 
 		while(true) {
 			yield(() => input.has_command);
@@ -83,8 +78,6 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 				}
 			}
 		}
-
-		//input.off;
 	}
 
 	string value() {

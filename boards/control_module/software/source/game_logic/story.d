@@ -423,6 +423,8 @@ class Story(Interface_) : Task {
 			}
 		}
 
+		this.input.off;
+
 		for(int i=0; i<n_players; i++) {
 			players[i] = new Player;
 		}
@@ -602,53 +604,12 @@ class Story(Interface_) : Task {
 		// TODO: Seems we start into this with an "FL_R" some times, i.e. skipping
 		// the first character, fix!
 
-		//this.text_entry.on;
-
-		// TODO: FIXME: seems this doesnt work and leads to and endless busy loop
 		for(int p = 0; p < n_players; p++) {
-			//this.input.on;
-			//this.text_entry.on;
-			//this.text_entry.reset;
-
 			auto text_entry = new Entry(iface.canvas, input, default_font, MAX_PLAYERS);
-				//new TextEntry!(Interface.Display, Input)(iface.display, input, 4);
 			text_entry.on;
 			schedule(text_entry);
 			yield(() => !text_entry.running);
 			this.highscore.add(text_entry.value, cast(int)players[p].score);
-			//append("scores.csv", format!"%s,%d\n"(text_entry.value, players[p].score));
-
-
-			//char[4] name = "AAAA";
-			//int pos = 0;
-
-			/+
-			while(true) {
-				// TODO: change this to two blits
-				this.text.s(format!"Player %d\n  %s"(p+1), DColor.YELLOW);
-				this.text.s(format!"  %s"(name), DColor.YELLOW);
-				//text.s(format!"\n  %s"(name), DColor.GREEN);
-				yield(100.msecs);
-
-				Command c = input.query;
-				if(c == Command.NEXT) {
-					sounds.play("select");
-					name[pos]++;
-					if(name[pos] > 'Z') {
-						name[pos] = 'A';
-					}
-				}
-				else if(c == Command.SELECT) {
-					sounds.play("select2");
-					pos++;
-					if(pos >= 4) {
-						// TODO: Actually save high score somewhere?
-						append("scores.csv", format!"%s,%d\n"(name, players[p].score));
-						break;
-					}
-				}
-			} // while
-			+/
 		} // for
 
 	}
