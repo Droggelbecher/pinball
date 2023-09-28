@@ -25,8 +25,6 @@ import score_display;
 import playing_field;
 import switches_as_input;
 import sprite: Sprite;
-//import img_canvas: ImgCanvas;
-//import string_canvas: string_to_canvas, test_animation;
 import player: Player;
 import condition: make_condition, Condition;
 
@@ -330,8 +328,6 @@ class Story(Interface_) : Task {
 		
 		this.yield(initial_wait);
 
-		//ubyte[3] rgb_color = this.player_rgb[current_player];
-		
 		this.iface.led_stripe.rotmod(RGB.YELLOW, 3, cast(ubyte)(100 / speed));
 		this.text.scroll.speed = Coordinate!double(-speed, 0);
 		if(n > 2) {
@@ -355,7 +351,6 @@ class Story(Interface_) : Task {
 			this.yield(condition);
 		}
 		this.text.scroll.stop;
-		//this.iface.led_stripe.full(RGB.BLACK);
 
 		reset_ledstripe();
 
@@ -600,9 +595,6 @@ class Story(Interface_) : Task {
 		this.yield(this.playlist.fade_out());
 
 		this.sounds.play("lorbeeren");
-
-		// TODO: Seems we start into this with an "FL_R" some times, i.e. skipping
-		// the first character, fix!
 
 		for(int p = 0; p < n_players; p++) {
 			auto text_entry = new Entry(iface.canvas, input, default_font, MAX_PLAYERS);

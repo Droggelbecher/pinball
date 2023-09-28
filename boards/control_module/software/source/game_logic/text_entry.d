@@ -7,6 +7,7 @@ import std.range: enumerate;
 import canvas:       blit, blit_center, clear, set_color;
 import font;
 import display: Color;
+import core.time: MonoTime;
 
 class TextEntry(Canvas_, Input_, Font_): Task {
 	mixin Switchable switchable;
@@ -21,17 +22,20 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 	Input input;
 
 	this(Canvas canvas, Input input, Font font, int n) {
-		this._value = new char[n];
-		this._value[0..$] = 'A';
+		this._value = new char[n + 1];
+		this._value[] = 'A';
+		this._value[$-1] = '\004';
 		this.daemon = false;
 		this.canvas = canvas;
 		this.input = input;
 		this._font = font;
 		this.update_render;
+		this.space = this._font(' ', active_color);
 	}
 
 	void reset() {
-		this._value[0..$] = 'A';
+		this._value[] = 'A';
+		this._value[$-1] = '\004';
 		this.active_index = 0;
 		this.update_render;
 	}
@@ -42,9 +46,17 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 			return;
 		}
 
+		auto t = cast(float)MonoTime.currTime.ticks() / cast(float)MonoTime.ticksPerSecond;
+
 		Coord p;
-		foreach(c; rendered) {
-			blit(c, Coord(), c.size, this.canvas, p);
+		foreach(i, c; rendered) {
+			if(i == this.active_index && ((t % 0.8) > 0.4)) {
+				blit(space, Coord(), c.size, this.canvas, p);
+			}
+			else {
+				blit(c, Coord(), c.size, this.canvas, p);
+			}
+
 			p.column += c.size.column;
 		}
 	}
@@ -58,24 +70,30 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 
 		while(true) {
 			yield(() => input.has_command);
-			//yield(100.msecs);
 			
 			Command c = input.pop_command;
+
 			if(c == Command.NEXT) {
-				_value[active_index]++;
-				if(_value[active_index] > 'Z') {
-					_value[active_index] = 'A';
+				if(active_index < _value.length - 1) {
+					_value[active_index]++;
+					if(_value[active_index] > 'Z') {
+						_value[active_index] = 'A';
+					}
+					update_render;
 				}
-				update_render;
-			}
-			else if(c == Command.SELECT) {
-				active_index++;
-				update_render;
-				if(active_index >= _value.length) {
+				else {
+					// Last char is the special "OK" button character
 					input.off;
 					switchable.off;
 					return;
 				}
+			}
+			else if(c == Command.SELECT) {
+				active_index++;
+				if(active_index >= _value.length) {
+					active_index = 0;
+				}
+				update_render;
 			}
 		}
 	}
@@ -108,6 +126,7 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 		char[] _value;
 		int active_index = 0;
 		StringCanvas!Font[] rendered;
+		StringCanvas!Font space;
 	}
 
 }
