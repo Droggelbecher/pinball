@@ -90,7 +90,7 @@ class ScoreDisplay(alias iface): Task {
 		if(s > MAX_DISPLAY_SCORE) {
 			s = MAX_DISPLAY_SCORE;
 		}
-		snprintf(score_string.ptr, score_string.length, "%2d\x03  x%d\n%8d", this._player.balls, this._player.multiplier, s);
+		snprintf(score_string.ptr, score_string.length, "%2d\x03  x%d\n%8ld", this._player.balls, this._player.multiplier, s);
 		// Alas, not entirely nogc, but lets try to reduce the per-frame allocations to a necessary minimum
 		this.score_text = font_normal(to!string(score_string.ptr), cast(ubyte)(this.color));
 	}

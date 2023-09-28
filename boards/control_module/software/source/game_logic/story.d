@@ -90,6 +90,7 @@ class Story(Interface_) : Task {
 
 	private {
 		DefaultFont default_font;
+		Highscore!Interface highscore;
 
 		/// Audio related
 
@@ -130,6 +131,8 @@ class Story(Interface_) : Task {
 		player_rgb[3] = RGB.ORANGE;
 
 		this.iface = iface;
+
+		this.highscore = new Highscore!(Interface)(this.iface);
 
 		this.default_font = new DefaultFont(font_5x8_data);
 
@@ -279,10 +282,10 @@ class Story(Interface_) : Task {
 				score.add_score(SCORE_DTB_ALL);
 			}
 
+			// TODO: This seems to trigger once at game start for some reason
 			if(hole0_hit()) {
 				//sounds.play("explode");
 				sounds.play("obi_mond_raumstation");
-				// TODO(HeH): Maybe "das ist kein mond, das ist eine raumstation"?
 				score.add_score(SCORE_HOLE0);
 
 				schedule({
@@ -383,7 +386,7 @@ class Story(Interface_) : Task {
 		this.yield(800.msecs);
 
 		string intro_text = "  STAR\n  WARS\n\n\n\n";
-		foreach(hs; highscore.top(5)) {
+		foreach(hs; this.highscore.get()) {
 			intro_text ~= format!"%s\n%8d\n"(hs[0], hs[1]);
 		}
 		intro_text ~= "\n\n\n\n";
@@ -450,6 +453,8 @@ class Story(Interface_) : Task {
 
 			sounds.play("start");
 		}
+
+		// TODO: Seems first player starts off with 1000 score for some reason?!
 
 		// Phase I
 		// - Goal: Get to score X
@@ -595,6 +600,9 @@ class Story(Interface_) : Task {
 
 		this.sounds.play("lorbeeren");
 
+		// TODO: Seems we start into this with an "FL_R" some times, i.e. skipping
+		// the first character, fix!
+
 		//this.text_entry.on;
 
 		// TODO: FIXME: seems this doesnt work and leads to and endless busy loop
@@ -608,7 +616,7 @@ class Story(Interface_) : Task {
 			text_entry.on;
 			schedule(text_entry);
 			yield(() => !text_entry.running);
-			highscore.add_entry(text_entry.value, players[p].score);
+			this.highscore.add(text_entry.value, cast(int)players[p].score);
 			//append("scores.csv", format!"%s,%d\n"(text_entry.value, players[p].score));
 
 
