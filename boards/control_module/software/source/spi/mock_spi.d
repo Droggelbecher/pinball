@@ -1,5 +1,6 @@
 
 import std.experimental.logger;
+import switches;
 
 class Spi {
 
@@ -32,7 +33,17 @@ class Spi {
 	const(void[]) transfer_and_check(SlaveIndex slave, void[] input) {
 		// TODO log
 
-		buffer[0 .. input.length] = 0xff; //cast(ubyte[])input;
+		buffer[0 .. input.length] = 0xff;
+
+		// Flip bit of the death star hole light barrier
+		// signal as that is low-off.
+		if(slave == SlaveIndex.Switches) {
+			auto idx = SwitchesIndex.HOLE0;
+			const uint byte_ = cast(uint)idx / 8;
+			const uint bit = cast(uint)idx % 8;
+			buffer[byte_] &= ~(1 << bit);
+		}
+
 		return buffer[0 .. input.length];
 	}
 

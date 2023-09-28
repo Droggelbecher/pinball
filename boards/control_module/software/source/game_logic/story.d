@@ -282,7 +282,8 @@ class Story(Interface_) : Task {
 				score.add_score(SCORE_DTB_ALL);
 			}
 
-			// TODO: This seems to trigger once at game start for some reason
+			// This triggers once at game start for the mock build
+			// as 
 			if(hole0_hit()) {
 				//sounds.play("explode");
 				sounds.play("obi_mond_raumstation");
@@ -453,8 +454,6 @@ class Story(Interface_) : Task {
 
 			sounds.play("start");
 		}
-
-		// TODO: Seems first player starts off with 1000 score for some reason?!
 
 		// Phase I
 		// - Goal: Get to score X
