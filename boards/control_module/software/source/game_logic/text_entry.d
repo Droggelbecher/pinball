@@ -99,7 +99,7 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 	}
 
 	string value() {
-		return this._value.dup;
+		return this._value[0..$-1].dup;
 	}
 
 	void on(bool enabled=true) {
