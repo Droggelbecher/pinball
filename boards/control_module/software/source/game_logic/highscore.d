@@ -69,6 +69,33 @@ private:
 	}
 
 public:
+	int[] get_highscore_indices(int[] scores) {
+
+		Tuple!(int, int)[] hiscores;
+		hiscores.reserve(this.scores.length + scores.length);
+		hiscores.length = this.scores.length + scores.length;
+
+		for (int i = 0; i < this.scores.length; i++) {
+			// Previous high score
+			hiscores[i] = tuple(this.scores[i][1], -1);
+		}
+		for (int i = 0; i < scores.length; i++) {
+			// index of new score
+			hiscores[i + this.scores.length] = tuple(scores[i], i);
+		}
+
+		sort!("a[0] > b[0]")(hiscores[]);
+
+		int[] r;
+		for (int i = 0; i < N_SCORES; i++) {
+			if (hiscores[i][1] != -1) {
+				r ~= hiscores[i][1];
+			}
+		}
+
+		return r;
+	}
+
 	this(Interface iface) {
 		this.scores[] = tuple("Luke", 0);
 		this.iface = iface;
@@ -76,7 +103,7 @@ public:
 	}
 
 	Tuple!(string, int)[] get() {
-		return scores;
+		return scores[0..$-1];
 	}
 
 	void add(string name, int score) {
@@ -91,23 +118,3 @@ public:
 }
 
 
-// TODO: Make this only keep the top N items, possibly turn this into a class
-/*
-Tuple!(string, int)[] top(int n) {
-	auto file = File(FILENAME, "r");
-
-	Tuple!(string, int)[] r;
-
-	foreach(record;csvReader!(Tuple!(string, int))(file.byLine.joiner("\n"))) {
-		r ~= record;
-	}
-	// Sort descending by score
-	r.sort!("a[1] > b[1]");
-	// TODO: if len < n, fill up with dummies
-	return r[0 .. n];
-}
-
-void add_entry(string name, ulong score) {
-	append(FILENAME, format!"%s,%d\n"(name, score));
-}
-*/

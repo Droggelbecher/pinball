@@ -21,7 +21,7 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 	Canvas canvas;
 	Input input;
 
-	this(Canvas canvas, Input input, Font font, int n) {
+	this(Canvas canvas, Input input, Font font, int n, string label) {
 		this._value = new char[n + 1];
 		this._value[] = 'A';
 		this._value[$-1] = '\004';
@@ -31,6 +31,7 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 		this._font = font;
 		this.update_render;
 		this.space = this._font(' ', active_color);
+		this.label = this._font(label, inactive_color);
 	}
 
 	void reset() {
@@ -59,6 +60,10 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 
 			p.column += c.size.column;
 		}
+
+		p.row += 8;
+		p.column = 0;
+		blit(this.label, Coord(), this.label.size, this.canvas, p);
 	}
 
 	/**
@@ -127,6 +132,7 @@ class TextEntry(Canvas_, Input_, Font_): Task {
 		int active_index = 0;
 		StringCanvas!Font[] rendered;
 		StringCanvas!Font space;
+		StringCanvas!Font label;
 	}
 
 }

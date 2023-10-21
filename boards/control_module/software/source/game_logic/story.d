@@ -596,8 +596,17 @@ class Story(Interface_) : Task {
 
 		this.sounds.play("lorbeeren");
 
-		for(int p = 0; p < n_players; p++) {
-			auto text_entry = new Entry(iface.canvas, input, default_font, MAX_PLAYERS);
+		int[] scores;
+		scores.length = players.length;
+		foreach(i, p; players) {
+			scores[i] = cast(int)p.score;
+		}
+		auto hiscore_indices = this.highscore.get_highscore_indices(scores);
+
+		//for(int p = 0; p < n_players; p++) {
+		foreach(p; hiscore_indices) {
+			auto text_entry = new Entry(iface.canvas, input, default_font, MAX_PLAYERS,
+					format!"Player %d"(p + 1));
 			text_entry.on;
 			schedule(text_entry);
 			yield(() => !text_entry.running);
